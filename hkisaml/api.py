@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from rest_framework import permissions, routers, serializers, generics, mixins
+from rest_framework import permissions, serializers, generics, mixins
 from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope
 
 
@@ -8,6 +8,8 @@ class UserSerializer(serializers.ModelSerializer):
         ret = super(UserSerializer, self).to_representation(obj)
         if hasattr(obj, 'profile'):
             ret['department_name'] = obj.profile.department_name
+        if obj.first_name and obj.last_name:
+            ret['full_name'] = '%s %s' % (obj.first_name, obj.last_name)
         return ret
 
     class Meta:
