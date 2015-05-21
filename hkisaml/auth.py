@@ -1,4 +1,8 @@
 from djangosaml2.backends import Saml2Backend
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 class HelsinkiBackend(Saml2Backend):
     def _clean_attributes(self, session_info):

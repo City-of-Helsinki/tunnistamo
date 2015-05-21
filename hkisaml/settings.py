@@ -106,6 +106,7 @@ SAML_ATTRIBUTE_MAPPING = {
     'lastName': ['last_name'],
     'windowsAccountName': 'username',
     'organizationName': ['department_name'],
+    'primarySID': ['primary_sid'],
 }
 
 SAML_CONFIG = {
