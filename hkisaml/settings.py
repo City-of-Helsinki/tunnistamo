@@ -87,6 +87,7 @@ USE_TZ = True
 
 LOGIN_URL = '/sso/saml2/login/'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+AUTH_USER_MODEL = 'hkiprofile.User'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
@@ -98,16 +99,17 @@ from os import path
 import saml2
 from saml2 import saml
 BASEDIR = path.dirname(path.abspath(__file__))
-#SAML_USE_NAME_ID_AS_USERNAME = True
 SAML_ATTRIBUTE_MAPPING = {
+    'uuid': ['uuid'],
     'emailAddress': ['email'],
     'displayName': ['full_name'],
     'firstName': ['first_name'],
     'lastName': ['last_name'],
-    'windowsAccountName': 'username',
+    'windowsAccountName': ['username'],
     'organizationName': ['department_name'],
     'primarySID': ['primary_sid'],
 }
+SAML_DJANGO_USER_MAIN_ATTRIBUTE = 'uuid'
 
 SAML_CONFIG = {
     # full path to the xmlsec1 binary programm

@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.conf.urls.static import static
 from django.contrib.staticfiles import views as static_views
 
-from .api import UserView
+from .api import UserView, GetJWTView
 
 
 def show_login(request):
@@ -25,6 +25,7 @@ urlpatterns = patterns('',
     url(r'^oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^user/(?P<username>[\w.@+-]+)/?$', UserView.as_view()),
     url(r'^user/$', UserView.as_view()),
+    url(r'^jwt-token/$', GetJWTView.as_view()),
     url(r'^', include('django.contrib.auth.urls'))
 )
 

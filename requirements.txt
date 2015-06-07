@@ -3,3 +3,4 @@ djangosaml2
 django-oauth-toolkit
 django-cors-headers
 djangorestframework
+pyjwt
