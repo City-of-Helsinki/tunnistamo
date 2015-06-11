@@ -35,10 +35,15 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
     'djangosaml2',
     'oauth2_provider',
     'corsheaders',
-    'hkiprofile',
+
+    'helusers',
+
+    'hkijwt',
+    'users',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -87,7 +92,7 @@ USE_TZ = True
 
 LOGIN_URL = '/sso/saml2/login/'
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
-AUTH_USER_MODEL = 'hkiprofile.User'
+AUTH_USER_MODEL = 'users.User'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
@@ -187,9 +192,9 @@ SAML_CONFIG = {
         'contact_type': 'technical'
     }],
     # you can set multilanguage information here
-    #'organization': {
+    # 'organization': {
     #    'name': [('City of Helsinki', 'en'), ('Helsingin kaupunki', 'fi')],
-    #},
+    # },
     'valid_for': 24,  # how long is our metadata valid
 }
 
@@ -210,12 +215,12 @@ LOGGING = {
             'level': 'DEBUG',
             'class': 'django.utils.log.NullHandler',
         },
-        'console':{
+        'console': {
             'level': 'DEBUG',
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
-    },   
+    },
     'loggers': {
         'django': {
             'handlers': ['console'],
@@ -248,6 +253,11 @@ LOGGING = {
 LOGIN_REDIRECT_URL = '/sso/accounts/profile/'
 
 CORS_ORIGIN_ALLOW_ALL = True
+
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'
+OAUTH2_PROVIDER = {
+    'CLIENT_SECRET_GENERATOR_LENGTH': 96,
+}
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (

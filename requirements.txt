@@ -4,3 +4,4 @@ django-oauth-toolkit
 django-cors-headers
 djangorestframework
 pyjwt
+git+https://github.com/City-of-Helsinki/django-helusers.git#egg=django-helusers

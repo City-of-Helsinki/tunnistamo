@@ -1,9 +1,16 @@
+import logging
 import jwt
+import datetime
 
 from django.contrib.auth import get_user_model
 from rest_framework import permissions, serializers, generics, mixins, views
 from rest_framework.response import Response
+from rest_framework.exceptions import PermissionDenied
 from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope
+from oauth2_provider.models import get_application_model
+from hkijwt.models import AppToAppPermission
+
+logger = logging.getLogger(__name__)
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -46,11 +53,35 @@ class UserView(generics.RetrieveAPIView,
 
 
 class GetJWTView(views.APIView):
-    # permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+    permission_classes = [permissions.IsAuthenticated, TokenHasReadWriteScope]
+
     def get(self, request, format=None):
-        secret = '12345'
-        user = get_user_model().objects.first()
+        requester_app = request.auth.application
+        target_app = request.QUERY_PARAMS.get('target_app', '').strip()
+        if target_app:
+            qs = get_application_model().objects.all()
+            target_app = generics.get_object_or_404(qs, client_id=target_app)
+            try:
+                perm = AppToAppPermission.objects.get(requester=requester_app,
+                                                      target=target_app)
+            except AppToAppPermission.DoesNotExist:
+                raise PermissionDenied()
+        else:
+            target_app = requester_app
+
+        secret = target_app.client_secret
+        user = request.user
+
         payload = UserSerializer(user).data
+        delete_fields = ['last_login', 'date_joined', 'uuid']
+        for field in delete_fields:
+            if field in payload:
+                del payload[field]
+
+        payload['iss'] = 'https://api.hel.fi/sso'  # FIXME: Make configurable
+        payload['sub'] = str(user.uuid)
+        payload['aud'] = target_app.client_id
+        payload['exp'] = datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
         encoded = jwt.encode(payload, secret, algorithm='HS256')
         return Response({'token': encoded})
 
