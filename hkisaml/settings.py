@@ -130,7 +130,8 @@ SAML_CONFIG = {
     'service': {
         'sp': {
             'name': 'City of Helsinki Open Software Development SAML',
-            'name_id_format': saml.NAMEID_FORMAT_PERSISTENT,
+            'name_id_format': saml.NAMEID_FORMAT_UNSPECIFIED1,
+            #'name_id_format': '',
             'allow_unsolicited': True,
             'endpoints': {
                 # url and binding to the assetion consumer service view
