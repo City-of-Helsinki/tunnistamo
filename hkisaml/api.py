@@ -81,7 +81,7 @@ class GetJWTView(views.APIView):
         payload['iss'] = 'https://api.hel.fi/sso'  # FIXME: Make configurable
         payload['sub'] = str(user.uuid)
         payload['aud'] = target_app.client_id
-        payload['exp'] = datetime.datetime.utcnow() + datetime.timedelta(minutes=60)
+        payload['exp'] = request.auth.expires
         encoded = jwt.encode(payload, secret, algorithm='HS256')
         return Response({'token': encoded})
 
