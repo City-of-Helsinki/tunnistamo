@@ -6,6 +6,7 @@ from django.conf.urls.static import static
 from django.contrib.staticfiles import views as static_views
 
 from .api import UserView, GetJWTView
+from users.views import LoginView
 
 
 def show_login(request):
@@ -22,11 +23,12 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
     url(r'^saml2/', include('djangosaml2.urls')),
     url(r'^accounts/profile/', show_login),
+    url(r'^accounts/', include('allauth.urls')),
     url(r'^oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^user/(?P<username>[\w.@+-]+)/?$', UserView.as_view()),
     url(r'^user/$', UserView.as_view()),
     url(r'^jwt-token/$', GetJWTView.as_view()),
-    url(r'^', include('django.contrib.auth.urls'))
+    url(r'^login/$', LoginView.as_view()),
 )
 
 if settings.DEBUG:

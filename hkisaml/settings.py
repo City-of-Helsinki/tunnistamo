@@ -27,19 +27,28 @@ ALLOWED_HOSTS = []
 INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'users',
+
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.facebook',
+
     'rest_framework',
     'djangosaml2',
     'oauth2_provider',
     'corsheaders',
+    'bootstrap3',
 
     'helusers',
 
     'hkijwt',
-    'users',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -56,6 +65,7 @@ MIDDLEWARE_CLASSES = (
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'hkisaml.auth.HelsinkiBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
 )
 
 ROOT_URLCONF = 'hkisaml.urls'
@@ -68,8 +78,8 @@ WSGI_APPLICATION = 'hkisaml.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'hkisaml',
     }
 }
 
@@ -86,7 +96,9 @@ USE_L10N = True
 
 USE_TZ = True
 
-LOGIN_URL = '/sso/saml2/login/'
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/profile/'
+
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 AUTH_USER_MODEL = 'users.User'
 
@@ -94,6 +106,8 @@ AUTH_USER_MODEL = 'users.User'
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
 STATIC_URL = '/sso/static/'
+
+SITE_ID = 1
 
 
 from os import path
@@ -247,8 +261,6 @@ LOGGING = {
     }
 }
 
-LOGIN_REDIRECT_URL = '/sso/accounts/profile/'
-
 CORS_ORIGIN_ALLOW_ALL = True
 
 OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'
@@ -262,6 +274,15 @@ REST_FRAMEWORK = {
     )
 }
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_SCHEME', 'https')
+
+SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_PROVIDERS = {
+    'facebook': {
+        'SCOPE': ['email', 'public_profile'],
+        'VERIFIED_EMAIL': True,
+        'VERSION': 'v2.4'
+    }
+}
 
 
 # local_settings.py can be used to override environment-specific settings
