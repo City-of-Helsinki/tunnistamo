@@ -273,6 +273,9 @@ REST_FRAMEWORK = {
         'oauth2_provider.ext.rest_framework.OAuth2Authentication',
     )
 }
+CSRF_COOKIE_NAME = 'sso-csrftoken'
+SESSION_COOKIE_NAME = 'sso-sessionid'
+
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_SCHEME', 'https')
 
 SOCIALACCOUNT_AUTO_SIGNUP = True
