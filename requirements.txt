@@ -7,3 +7,4 @@ pyjwt
 git+https://github.com/City-of-Helsinki/django-helusers.git#egg=django-helusers
 django-allauth
 django-bootstrap3
+psycopg2
