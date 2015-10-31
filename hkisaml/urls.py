@@ -4,6 +4,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.conf.urls.static import static
 from django.contrib.staticfiles import views as static_views
+from django.views.defaults import permission_denied
 
 from .api import UserView, GetJWTView
 from users.views import LoginView
@@ -24,6 +25,7 @@ urlpatterns = patterns('',
     url(r'^saml2/', include('djangosaml2.urls')),
     url(r'^accounts/profile/', show_login),
     url(r'^accounts/', include('allauth.urls')),
+    url(r'^oauth2/applications/', permission_denied),
     url(r'^oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     url(r'^user/(?P<username>[\w.@+-]+)/?$', UserView.as_view()),
     url(r'^user/$', UserView.as_view()),
