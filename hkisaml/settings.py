@@ -33,6 +33,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'oauth2_provider',
     'users',
 
     'allauth',
@@ -42,7 +43,6 @@ INSTALLED_APPS = (
 
     'rest_framework',
     'djangosaml2',
-    'oauth2_provider',
     'corsheaders',
     'bootstrap3',
 
@@ -263,7 +263,7 @@ LOGGING = {
 
 CORS_ORIGIN_ALLOW_ALL = True
 
-OAUTH2_PROVIDER_APPLICATION_MODEL = 'oauth2_provider.Application'
+OAUTH2_PROVIDER_APPLICATION_MODEL = 'users.Application'
 OAUTH2_PROVIDER = {
     'CLIENT_SECRET_GENERATOR_LENGTH': 96,
 }
