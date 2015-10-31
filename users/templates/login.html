@@ -8,9 +8,7 @@
     <h2>Sign in with</h2>
     <div>
         {% for method in login_methods %}
-        <a href="{{ method.url }}">
-            <button class="btn btn-primary btn-lg">{{ method.name }}</button>
-        </a>
+        <a href="{{ method.url }}" class="btn btn-primary btn-lg">{{ method.name }}</a>
         {% endfor %}
     </div>
 </div>
