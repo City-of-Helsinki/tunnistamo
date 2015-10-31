@@ -57,7 +57,7 @@ class GetJWTView(views.APIView):
 
     def get(self, request, format=None):
         requester_app = request.auth.application
-        target_app = request.QUERY_PARAMS.get('target_app', '').strip()
+        target_app = request.query_params.get('target_app', '').strip()
         if target_app:
             qs = get_application_model().objects.all()
             target_app = generics.get_object_or_404(qs, client_id=target_app)
@@ -65,7 +65,7 @@ class GetJWTView(views.APIView):
                 perm = AppToAppPermission.objects.get(requester=requester_app,
                                                       target=target_app)
             except AppToAppPermission.DoesNotExist:
-                raise PermissionDenied()
+                raise PermissionDenied("no permissions for app %s" % target_app)
         else:
             target_app = requester_app
 
