@@ -1,3 +1,7 @@
 from django.contrib import admin
+from .models import AppToAppPermission
 
-# Register your models here.
+
+class AppToAppPermissionAdmin(admin.ModelAdmin):
+    pass
+admin.site.register(AppToAppPermission, AppToAppPermissionAdmin)
