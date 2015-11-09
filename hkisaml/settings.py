@@ -40,6 +40,8 @@ INSTALLED_APPS = (
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.facebook',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.google',
 
     'rest_framework',
     'djangosaml2',
@@ -70,6 +72,22 @@ AUTHENTICATION_BACKENDS = (
 
 ROOT_URLCONF = 'hkisaml.urls'
 
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'DIRS': [],
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.template.context_processors.debug',
+                'django.template.context_processors.request',
+                'django.contrib.auth.context_processors.auth',
+                'django.contrib.messages.context_processors.messages',
+            ],
+        },
+    },
+]
+
 WSGI_APPLICATION = 'hkisaml.wsgi.application'
 
 
@@ -86,7 +104,14 @@ DATABASES = {
 # Internationalization
 # https://docs.djangoproject.com/en/1.7/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'fi'
+
+LANGUAGES = (
+    ('fi', 'suomi'),
+    ('en', 'English'),
+    ('sv', 'svenska')
+)
+
 
 TIME_ZONE = 'UTC'
 
@@ -279,12 +304,21 @@ SESSION_COOKIE_NAME = 'sso-sessionid'
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_SCHEME', 'https')
 
 SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_ENABLED = True
+
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {
         'SCOPE': ['email', 'public_profile'],
         'VERIFIED_EMAIL': True,
         'VERSION': 'v2.4'
-    }
+    },
+    'github': {
+        'VERIFIED_EMAIL': True,
+    },
+    'google': {
+        'SCOPE': ['email'],
+        'VERIFIED_EMAIL': True,
+    },
 }
 
 
