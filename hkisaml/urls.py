@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.conf.urls.static import static
 from django.contrib.staticfiles import views as static_views
 from django.views.defaults import permission_denied
-
+from allauth.account.views import LogoutView
 from .api import UserView, GetJWTView
 from users.views import LoginView
 
@@ -31,6 +31,7 @@ urlpatterns = patterns('',
     url(r'^user/$', UserView.as_view()),
     url(r'^jwt-token/$', GetJWTView.as_view()),
     url(r'^login/$', LoginView.as_view()),
+    url(r'^logout/$', LogoutView.as_view())
 )
 
 if settings.DEBUG:
