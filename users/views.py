@@ -13,9 +13,10 @@ login_methods = LoginMethodModel.objects.all()
 
 
 class LoginMethod(object):
-    def __init__(self, url, name):
+    def __init__(self, url, name, social_id):
         self.url = url
         self.name = name
+        self.social_id = social_id
 
 
 class LoginView(TemplateView):
@@ -55,9 +56,8 @@ class LoginView(TemplateView):
                 login_url = p.get_login_url(self.request)
                 if next_url:
                     login_url += '?next=' + next_url
-
-            method = LoginMethod(url=login_url, name=m.name)
-            methods.append(method)
+            m.login_url = login_url
+            methods.append(m)
 
         if len(methods) == 1:
             return redirect(methods[0].url)

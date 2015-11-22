@@ -8,7 +8,18 @@
     <h2>Kirjautumismenetelmä</h2>
     <div>
         {% for method in login_methods %}
-        <a href="{{ method.url }}" class="btn btn-primary btn-lg">{{ method.name }}</a>
+        {% if not method.logo_url %}
+        <a href="{{ method.login_url }}" class="btn btn-block btn-social btn-{{ method.provider_id }}">
+            <span class="fa fa-{{ method.provider_id }}"></span> {{ method.name }}
+        </a>
+        {% else %}
+        <a href="{{ method.login_url }}" class="btn btn-block btn-social btn-primary" style="background-color: {{ method.background_color }}; border-color: {{ method.background_color }}">
+            <span style="height: 32px; width: 32px">
+                <img height=24 width=24 style="padding-bottom: 4px" src="{{ method.logo_url }}" />
+            </span>
+            {{ method.name }}
+        </a>
+        {% endif %}
         {% endfor %}
     </div>
 </div>

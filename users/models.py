@@ -28,9 +28,15 @@ def get_login_methods():
 class LoginMethod(models.Model):
     provider_id = models.CharField(max_length=50, unique=True)
     name = models.CharField(max_length=100)
+    background_color = models.CharField(max_length=50, null=True, blank=True)
+    logo_url = models.URLField(null=True, blank=True)
+    order = models.PositiveIntegerField(null=True)
 
     def __str__(self):
         return "{} ({})".format(self.name, self.provider_id)
+
+    class Meta:
+        ordering = ('order',)
 
 
 class Application(AbstractApplication):

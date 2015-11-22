@@ -1,5 +1,5 @@
 django
-djangosaml2
+git+https://github.com/City-of-Helsinki/djangosaml2.git#egg=djangosaml2
 django-oauth-toolkit
 django-cors-headers
 djangorestframework

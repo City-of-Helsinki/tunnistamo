@@ -30,7 +30,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.messages',
     'django.contrib.staticfiles',
 
     'oauth2_provider',
@@ -49,6 +48,7 @@ INSTALLED_APPS = (
     'bootstrap3',
 
     'helusers',
+    'helusers.providers.yletunnus',
 
     'hkijwt',
 )
@@ -129,6 +129,10 @@ AUTH_USER_MODEL = 'users.User'
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
+
+STATICFILES_DIRS = (
+    os.path.join(BASE_DIR, 'static'),
+)
 
 STATIC_URL = '/sso/static/'
 
@@ -305,6 +309,8 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_SCHEME', 'https')
 
 SOCIALACCOUNT_AUTO_SIGNUP = True
 SOCIALACCOUNT_ENABLED = True
+ACCOUNT_LOGOUT_ON_GET = True
+SOCIALACCOUNT_ADAPTER = 'users.adapter.SocialAccountAdapter'
 
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {
@@ -319,6 +325,10 @@ SOCIALACCOUNT_PROVIDERS = {
         'SCOPE': ['email'],
         'VERIFIED_EMAIL': True,
     },
+    'yletunnus': {
+        'VERIFIED_EMAIL': True,
+    },
+
 }
 
 

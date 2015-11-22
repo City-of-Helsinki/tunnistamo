@@ -1,11 +1,16 @@
 {% extends 'bootstrap3/bootstrap3.html' %}
 {% load url from future %}
 {% load bootstrap3 %}
+{% load static %}
+
+{% block bootstrap3_extra_head %}
+<link href="{% static 'css/bootstrap-social.css' %}" rel="stylesheet" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+{% endblock %}
 
 {% block bootstrap3_content %}
     <div class="container">
         <h1>{% block title %}{% endblock %}</h1>
-        {% bootstrap_messages %}
         {% block content %}(no content){% endblock %}
     </div>
 {% endblock %}
