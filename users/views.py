@@ -60,7 +60,7 @@ class LoginView(TemplateView):
             methods.append(m)
 
         if len(methods) == 1:
-            return redirect(methods[0].url)
+            return redirect(methods[0].login_url)
 
         self.login_methods = methods
         return super(LoginView, self).get(request, *args, **kwargs)
