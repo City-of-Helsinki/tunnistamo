@@ -1,9 +1,11 @@
 from urlparse import urlparse, parse_qs
 
-from django.views.generic.base import TemplateView
+from django.views.generic.base import TemplateView, View
 from django.core.urlresolvers import reverse
 from django.utils.http import quote
 from django.shortcuts import redirect
+from django.contrib.auth import logout as auth_logout
+
 from allauth.socialaccount import providers
 from oauth2_provider.models import get_application_model
 
@@ -69,3 +71,15 @@ class LoginView(TemplateView):
         context = super(LoginView, self).get_context_data(**kwargs)
         context['login_methods'] = self.login_methods
         return context
+
+
+class LogoutView(TemplateView):
+    template_name = 'logout_done.html'
+
+    def get(self, *args, **kwargs):
+        if self.request.user.is_authenticated():
+            auth_logout(self.request)
+        url = self.request.GET.get('next')
+        if url:
+            return redirect(url)
+        return super(LogoutView, self).get(*args, **kwargs)

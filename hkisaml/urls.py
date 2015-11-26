@@ -5,9 +5,8 @@ from django.http import HttpResponse
 from django.conf.urls.static import static
 from django.contrib.staticfiles import views as static_views
 from django.views.defaults import permission_denied
-from allauth.account.views import LogoutView
 from .api import UserView, GetJWTView
-from users.views import LoginView
+from users.views import LoginView, LogoutView
 
 
 def show_login(request):
