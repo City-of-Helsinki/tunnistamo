@@ -1,3 +1,5 @@
+import re
+
 from urlparse import urlparse, parse_qs
 
 from django.views.generic.base import TemplateView, View
@@ -80,6 +82,6 @@ class LogoutView(TemplateView):
         if self.request.user.is_authenticated():
             auth_logout(self.request)
         url = self.request.GET.get('next')
-        if url:
+        if url and re.match(r'http[s]?://', url):
             return redirect(url)
         return super(LogoutView, self).get(*args, **kwargs)
