@@ -8,4 +8,11 @@
 <h1>Kirjautuminen ei onnistunut</h1>
 
 <p>Kokeile uudestaan toisella kirjautumismenetelmällä.</p>
+{% if request.other_logins %}
+<p>Olet aiemmin kirjautunut sisään kirjautumismenetelmällä
+{% for login in request.other_logins %}
+{{ login.name }}.
+{% endfor %}
+</p>
+{% endif %}
 {% endblock %}

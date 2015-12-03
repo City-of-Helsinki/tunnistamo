@@ -13,8 +13,6 @@ from oauth2_provider.models import get_application_model
 
 from .models import LoginMethod as LoginMethodModel
 
-login_methods = LoginMethodModel.objects.all()
-
 
 class LoginMethod(object):
     def __init__(self, url, name, social_id):
@@ -46,7 +44,7 @@ class LoginView(TemplateView):
         if app:
             allowed_methods = app.login_methods.all()
         else:
-            allowed_methods = login_methods
+            allowed_methods = LoginMethodModel.objects.all()
 
         provider_map = providers.registry.provider_map
         methods = []
