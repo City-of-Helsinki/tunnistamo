@@ -11,14 +11,7 @@ from django.contrib.auth import logout as auth_logout
 from allauth.socialaccount import providers
 from oauth2_provider.models import get_application_model
 
-from .models import LoginMethod as LoginMethodModel
-
-
-class LoginMethod(object):
-    def __init__(self, url, name, social_id):
-        self.url = url
-        self.name = name
-        self.social_id = social_id
+from .models import LoginMethod
 
 
 class LoginView(TemplateView):
@@ -44,7 +37,7 @@ class LoginView(TemplateView):
         if app:
             allowed_methods = app.login_methods.all()
         else:
-            allowed_methods = LoginMethodModel.objects.all()
+            allowed_methods = LoginMethod.objects.all()
 
         provider_map = providers.registry.provider_map
         methods = []
