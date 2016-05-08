@@ -15,6 +15,8 @@ class LoginMethodAdmin(admin.ModelAdmin):
 
 
 class ApplicationAdmin(admin.ModelAdmin):
+    list_display = ('name', 'site_type')
+    list_filter = ('site_type',)
     model = Application
 
 admin.site.unregister(Application)

@@ -41,4 +41,14 @@ class LoginMethod(models.Model):
 
 
 class Application(AbstractApplication):
+    SITE_TYPES = (
+        ('dev', 'Development'),
+        ('test', 'Testing'),
+        ('production', 'Production')
+    )
+    site_type = models.CharField(max_length=20, choices=SITE_TYPES, null=True,
+                                 verbose_name='Site type')
     login_methods = models.ManyToManyField(LoginMethod)
+
+    class Meta:
+        ordering = ('site_type', 'name')
