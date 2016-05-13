@@ -83,7 +83,9 @@ class GetJWTView(views.APIView):
         payload['aud'] = target_app.client_id
         payload['exp'] = request.auth.expires
         encoded = jwt.encode(payload, secret, algorithm='HS256')
-        return Response({'token': encoded})
+
+        ret = dict(token=encoded, expires_at=request.auth.expires)
+        return Response(ret)
 
 
 #router = routers.DefaultRouter()
