@@ -1,6 +1,5 @@
 from django.dispatch import receiver
 from allauth.account.signals import user_logged_in as allauth_user_logged_in
-from djangosaml2.signals import post_authenticated as saml_user_logged_in
 from django.utils import timezone
 
 
@@ -21,8 +20,3 @@ def handle_allauth_login(sender, request, user, **kwargs):
         request.session.set_expiry(delta.total_seconds())
     else:
         request.session.set_expiry(3600)
-
-
-@receiver(saml_user_logged_in)
-def handle_saml_login(sender, request, **kwargs):
-    request.session.set_expiry(3600)

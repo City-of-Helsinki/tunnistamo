@@ -1,6 +1,6 @@
 import re
 
-from urlparse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs
 
 from django.views.generic.base import TemplateView, View
 from django.core.urlresolvers import reverse

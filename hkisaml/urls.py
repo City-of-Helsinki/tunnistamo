@@ -1,8 +1,7 @@
 from django.conf import settings
-from django.conf.urls import patterns, include, url
+from django.conf.urls import include, url
 from django.contrib import admin
 from django.http import HttpResponse
-from django.conf.urls.static import static
 from django.contrib.staticfiles import views as static_views
 from django.views.defaults import permission_denied
 from .api import UserView, GetJWTView
@@ -19,9 +18,8 @@ def show_login(request):
     return HttpResponse(html)
 
 
-urlpatterns = patterns('',
+urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
-    url(r'^saml2/', include('djangosaml2.urls')),
     url(r'^accounts/profile/', show_login),
     url(r'^accounts/', include('allauth.urls')),
     url(r'^oauth2/applications/', permission_denied),
@@ -31,7 +29,7 @@ urlpatterns = patterns('',
     url(r'^jwt-token/$', GetJWTView.as_view()),
     url(r'^login/$', LoginView.as_view()),
     url(r'^logout/$', LogoutView.as_view())
-)
+]
 
 if settings.DEBUG:
     urlpatterns += [url(r'^static/(?P<path>.*)$', static_views.serve)]
