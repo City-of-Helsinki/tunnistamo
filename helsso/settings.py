@@ -1,5 +1,5 @@
 """
-Django settings for hkisaml project.
+Django settings for helsso project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.7/topics/settings/
@@ -69,7 +69,7 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-ROOT_URLCONF = 'hkisaml.urls'
+ROOT_URLCONF = 'helsso.urls'
 
 TEMPLATES = [
     {
@@ -87,22 +87,21 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'hkisaml.wsgi.application'
+WSGI_APPLICATION = 'helsso.wsgi.application'
 
-
+#
 # Database
-# https://docs.djangoproject.com/en/1.7/ref/settings/#databases
-
+#
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'hkisaml',
+        'NAME': 'helsso',
     }
 }
 
+#
 # Internationalization
-# https://docs.djangoproject.com/en/1.7/topics/i18n/
-
+#
 LANGUAGE_CODE = 'fi'
 
 LANGUAGES = (
