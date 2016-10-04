@@ -43,12 +43,10 @@ class LoginView(TemplateView):
         methods = []
         for m in allowed_methods:
             if m.provider_id == 'saml':
-                login_url = reverse('saml2_login')
-                if next_url:
-                    login_url += '?next=' + next_url
+                continue  # SAML support removed
             else:
                 p = provider_map[m.provider_id]
-                login_url = p.get_login_url(self.request)
+                login_url = p(request).get_login_url(request=self.request)
                 if next_url:
                     login_url += '?next=' + next_url
             m.login_url = login_url
