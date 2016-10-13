@@ -1,32 +1,18 @@
-{% extends 'bootstrap3/bootstrap3.html' %}
-{% load bootstrap3 %}
+{% extends 'kanslia_theme/base.html' %}
 {% load static %}
+{% block body_content %}
+<div class="hel-login-box">
+    <img src="{% static 'images/helsinki-vaakuna-helfisininen.svg' %}"
+         class="hel-login-logo">
+  <h5>Helsingin kaupunki</h5>
+  <h1>{% block title %}{% endblock %}</h1>
+  <h4>Digitaalinen Helsinki - digi.hel.fi</h4>
 
-{% block bootstrap3_extra_head %}
-<link href="{% static 'css/bootstrap-social.css' %}" rel="stylesheet" />
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
-<style>
-.jumbotron h2 {
-    margin-bottom: 16px;
-}
-.login-method {
-    margin-top: 4px;
-    margin-bottom: 4px;
-}
-.short-description {
-    margin-top: 12px;
-    margin-bottom: 12px;
-}
-.short-description p {
-    font-size: 12px;
-    margin-bottom: 0px;
-}
-</style>
-{% endblock %}
+  {% block content %}{% endblock %}
 
-{% block bootstrap3_content %}
-    <div class="container">
-        <h1>{% block title %}{% endblock %}</h1>
-        {% block content %}(no content){% endblock %}
-    </div>
+  {% comment TODO %}
+  <a href="#">Takaisin palveluun</a> |
+  <a href="#">Kysy tai lähetä palautetta</a>
+  {% endcomment %}
+</div>
 {% endblock %}
