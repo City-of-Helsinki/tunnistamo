@@ -44,6 +44,7 @@ INSTALLED_APPS = (
 
     'rest_framework',
     'corsheaders',
+    'kanslia_theme',
     'bootstrap3',
 
     'helusers',
