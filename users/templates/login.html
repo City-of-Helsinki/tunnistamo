@@ -1,35 +1,39 @@
 {% extends 'base.html' %}
 
 {% block title %}Kirjaudu sisään{% endblock %}
-{% block bootstrap3_title %}Kirjaudu sisään | Helsingin kaupunki{% endblock %}
 
 {% block content %}
-
-<div class="jumbotron">
-    <h2>Kirjautumismenetelmä</h2>
-    <div>
-        {% for method in login_methods %}
-        <div class="login-method">
-            {% if not method.logo_url %}
-            <a href="{{ method.login_url }}" class="btn btn-block btn-social btn-{{ method.provider_id }}">
-                <span class="fa fa-{{ method.provider_id }}"></span> {{ method.name }}
-            </a>
-            {% else %}
-            <a href="{{ method.login_url }}" class="btn btn-block btn-social btn-primary" style="background-color: {{ method.background_color }}; border-color: {{ method.background_color }}">
-                <span style="height: 32px; width: 32px">
-                    <img height=24 width=24 style="padding-bottom: 4px" src="{{ method.logo_url }}" />
-                </span>
-                {{ method.name }}
-            </a>
-            {% endif %}
-            {% if method.short_description %}
-            <div class="short-description">
-            {{ method.short_description|safe }}
-            </div>
-            {% endif %}
-        </div>
-        {% endfor %}
-    </div>
+<p class="doc">
+  Tähän palveluun voit tunnistautua käyttämällä jotain näistä
+  kirjautumistavoista.
+</p>
+<div class="hel-login-methods">
+  {% for method in login_methods %}
+  <div class="login-method
+              {% if method.order == 0 %}login-method__primary{% endif %}">
+      {% if not method.logo_url %}
+      <a href="{{ method.login_url }}"
+         class="btn btn-block btn-social btn-{{ method.provider_id }}">
+          <span class="fa fa-{{ method.provider_id }}"></span>
+          {{ method.name }}
+      </a>
+      {% else %}
+      <a href="{{ method.login_url }}"
+         class="btn btn-block btn-social btn-primary"
+         style="background-color: {{ method.background_color }};
+                border-color: {{ method.background_color }}">
+          <span class="ext-icon">
+              <img src="{{ method.logo_url }}" />
+          </span>
+          {{ method.name }}
+      </a>
+      {% endif %}
+      {% if method.short_description %}
+      <div class="short-description">
+      {{ method.short_description|safe }}
+      </div>
+      {% endif %}
+  </div>
+  {% endfor %}
 </div>
 {% endblock %}
-
