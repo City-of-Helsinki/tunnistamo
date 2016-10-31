@@ -14,7 +14,7 @@ class ADFSAccount(ProviderAccount):
 
     def to_str(self):
         dflt = super(ADFSAccount, self).to_str()
-        return self.account.extra_data.get('name', dflt)
+        return self.account.extra_data.get('username', dflt)
 
 
 class ADFSProvider(OAuth2Provider):
