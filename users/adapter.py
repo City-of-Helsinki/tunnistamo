@@ -23,6 +23,9 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
             user.uuid = data.get('uuid')
             user.department_name = data.get('department_name')
 
+        if callable(getattr(user, 'set_username_from_uuid', None)):
+            user.set_username_from_uuid()
+
         return user
 
     def clean_username(self, username, shallow=False):
