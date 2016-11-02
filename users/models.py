@@ -26,7 +26,9 @@ def get_login_methods():
 
 @python_2_unicode_compatible
 class LoginMethod(models.Model):
-    provider_id = models.CharField(max_length=50, unique=True)
+    provider_id = models.CharField(
+        max_length=50, unique=True,
+        choices=sorted(providers.registry.as_choices()))
     name = models.CharField(max_length=100)
     background_color = models.CharField(max_length=50, null=True, blank=True)
     logo_url = models.URLField(null=True, blank=True)
