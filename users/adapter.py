@@ -8,17 +8,23 @@ from .models import LoginMethod
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
-    def populate_user(self, request, sociallogin, data):
-        User = get_user_model()
-        if sociallogin.account.provider == 'adfs':
-            try:
-                user = User.objects.get(uuid=data.get('uuid'))
-                sociallogin.user = user
-            except User.DoesNotExist:
-                pass
+    def pre_social_login(self, request, sociallogin):
+        if sociallogin.account.provider == 'helsinki_adfs':
+            if not sociallogin.is_existing:
+                # Check is this really a new login or is there already a
+                # previously created User with the UUID value: If there
+                # is, then it's an account which is created by the
+                # previous SAML signup and it should be connected to
+                # this social login instance.
+                uuid = sociallogin.account.uid
+                user = get_user_model().objects.filter(uuid=uuid).first()
+                if user:
+                    sociallogin.connect(request, user)
 
+    def populate_user(self, request, sociallogin, data):
         user = super().populate_user(request, sociallogin, data)
-        if sociallogin.account.provider == 'adfs':
+
+        if sociallogin.account.provider == 'helsinki_adfs':
             user.primary_sid = data.get('primary_sid')
             user.department_name = data.get('department_name')
 
@@ -34,7 +40,7 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         email = user_email(sociallogin.user)
         assert email
         # Always trust ADFS logins
-        if sociallogin.account.provider == 'adfs':
+        if sociallogin.account.provider == 'helsinki_adfs':
             return True
         if email_address_exists(email):
             return False

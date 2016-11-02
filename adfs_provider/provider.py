@@ -1,7 +1,8 @@
+import uuid
+
 from allauth.socialaccount import providers
 from allauth.socialaccount.providers.base import ProviderAccount
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
-from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.account.models import EmailAddress
 
 
@@ -23,19 +24,10 @@ class ADFSProvider(OAuth2Provider):
     package = 'adfs_provider'
     account_class = ADFSAccount
 
-    def get_app(self, request):
-        realm = getattr(request, '_adfs_realm', None)
-        if not realm:
-            # FIXME
-            realm = 'helsinki'
-            #return super(ADFSProvider, self).get_app(request)
-
-        from allauth.socialaccount.models import SocialApp
-
-        return SocialApp.objects.get(name=realm, provider=self.id)
-
     def extract_uid(self, data):
-        return data['uuid']
+        sid = data['primary_sid']
+        user_uuid = uuid.uuid5(self.domain_uuid, sid).hex
+        return user_uuid
 
     def extract_common_fields(self, data):
         return data.copy()
@@ -49,12 +41,17 @@ class ADFSProvider(OAuth2Provider):
                        primary=True))
         return ret
 
-    def get_default_scope(self):
-        return []
-
     def get_auth_params(self, request, action):
         ret = super().get_auth_params(request, action)
-        ret['resource'] = 'https://api.hel.fi/sso/adfs'
+        ret['resource'] = self.resource
         return ret
 
-providers.registry.register(ADFSProvider)
+
+class HelsinkiADFSProvider(ADFSProvider):
+    id = 'helsinki_adfs'
+    name = 'Helsinki ADFS'
+    resource = 'https://api.hel.fi/sso/adfs'
+    domain_uuid = uuid.UUID('1c8974a1-1f86-41a0-85dd-94a643370621')
+
+
+providers.registry.register(HelsinkiADFSProvider)
