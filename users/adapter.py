@@ -20,7 +20,6 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         user = super().populate_user(request, sociallogin, data)
         if sociallogin.account.provider == 'adfs':
             user.primary_sid = data.get('primary_sid')
-            user.uuid = data.get('uuid')
             user.department_name = data.get('department_name')
 
         if callable(getattr(user, 'set_username_from_uuid', None)):
