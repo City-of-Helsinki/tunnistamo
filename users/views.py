@@ -42,11 +42,13 @@ class LoginView(TemplateView):
         provider_map = providers.registry.provider_map
         methods = []
         for m in allowed_methods:
+            assert isinstance(m, LoginMethod)
             if m.provider_id == 'saml':
                 continue  # SAML support removed
             else:
-                p = provider_map[m.provider_id]
-                login_url = p(request).get_login_url(request=self.request)
+                provider_cls = provider_map[m.provider_id]
+                provider = provider_cls(request)
+                login_url = provider.get_login_url(request=self.request)
                 if next_url:
                     login_url += '?next=' + next_url
             m.login_url = login_url
