@@ -1,9 +1,10 @@
 django
 django-oauth-toolkit
+django-oidc-provider>=0.4.4
 django-cors-headers
 djangorestframework
 pyjwt
--e git+https://github.com/City-of-Helsinki/django-helusers.git@v0.2#egg=django-helusers==0.2
+-e git+https://github.com/City-of-Helsinki/django-helusers.git@v0.2.1#egg=django-helusers==0.2.1
 django-allauth
 django-bootstrap3
 psycopg2
