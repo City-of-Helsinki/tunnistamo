@@ -1,11 +1,14 @@
+import oidc_provider.urls
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.http import HttpResponse
 from django.contrib.staticfiles import views as static_views
+from django.http import HttpResponse
 from django.views.defaults import permission_denied
-from .api import UserView, GetJWTView
+
 from users.views import LoginView, LogoutView
+
+from .api import GetJWTView, UserView
 
 
 def show_login(request):
@@ -24,6 +27,7 @@ urlpatterns = [
     url(r'^accounts/', include('allauth.urls')),
     url(r'^oauth2/applications/', permission_denied),
     url(r'^oauth2/', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    url(r'^openid/', include(oidc_provider.urls, namespace='oidc_provider')),
     url(r'^user/(?P<username>[\w.@+-]+)/?$', UserView.as_view()),
     url(r'^user/$', UserView.as_view()),
     url(r'^jwt-token/$', GetJWTView.as_view()),
