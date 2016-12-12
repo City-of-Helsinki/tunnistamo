@@ -55,7 +55,8 @@ class ADFSOAuth2Adapter(OAuth2Adapter):
     def complete_login(self, request, app, token, **kwargs):
         cert_der = base64.b64decode(self.cert)
         x509_cert = x509.load_der_x509_certificate(cert_der, backend=x509_backend)
-        jwt_token = jwt.decode(token.token, key=x509_cert.public_key(), options={'verify_aud': False})
+        jwt_token = jwt.decode(token.token, key=x509_cert.public_key(),
+                               leeway=10, options={'verify_aud': False})
         data = self.clean_attributes(jwt_token)
         return self.get_provider().sociallogin_from_response(request, data)
 
