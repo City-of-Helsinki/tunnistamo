@@ -1,8 +1,12 @@
-from django.contrib.auth import get_user_model
+from urllib.parse import urlencode
 
+from allauth.account.utils import user_email
+from allauth.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.utils import email_address_exists
-from allauth.account.utils import user_email
+from django.contrib.auth import get_user_model
+from django.shortcuts import redirect
+from django.urls import reverse
 
 from .models import LoginMethod
 
@@ -20,6 +24,9 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
                 user = get_user_model().objects.filter(uuid=uuid).first()
                 if user:
                     sociallogin.connect(request, user)
+        elif sociallogin.account.provider == 'facebook':
+            if not sociallogin.email_addresses:
+                handle_facebook_without_email(sociallogin)
 
     def populate_user(self, request, sociallogin, data):
         user = super().populate_user(request, sociallogin, data)
@@ -37,14 +44,12 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         return username.lower()
 
     def is_auto_signup_allowed(self, request, sociallogin):
-        email = user_email(sociallogin.user)
-        assert email
         # Always trust ADFS logins
         if sociallogin.account.provider == 'helsinki_adfs':
             return True
-        if email_address_exists(email):
-            return False
-        return True
+        # Parent checks if email is new or reserved
+        parent = super(SocialAccountAdapter, self)
+        return parent.is_auto_signup_allowed(request, sociallogin)
 
     def is_open_for_signup(self, request, sociallogin):
         email = user_email(sociallogin.user)
@@ -66,3 +71,14 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
             return False
         else:
             return True
+
+
+def handle_facebook_without_email(sociallogin):
+    if 'rerequest' not in sociallogin.state['auth_params']:
+        login_uri = reverse('facebook_login')
+        auth_params = urlencode({'auth_params': 'auth_type=rerequest'})
+        get_params = urlencode({'reauth_uri': login_uri + '?' + auth_params})
+        redirect_to = reverse('email_needed') + '?' + get_params
+    else:
+        redirect_to = reverse('socialaccount_login_cancelled')
+    raise ImmediateHttpResponse(redirect(redirect_to))

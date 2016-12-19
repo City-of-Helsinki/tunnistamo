@@ -76,3 +76,15 @@ class LogoutView(TemplateView):
         if url and re.match(r'http[s]?://', url):
             return redirect(url)
         return super(LogoutView, self).get(*args, **kwargs)
+
+
+class EmailNeededView(TemplateView):
+    template_name = 'email_needed.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(EmailNeededView, self).get_context_data(**kwargs)
+        reauth_uri = self.request.GET.get('reauth_uri', '')
+        if '//' in reauth_uri:  # Prevent open redirect
+            reauth_uri = ''
+        context['reauth_uri'] = reauth_uri
+        return context
