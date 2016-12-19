@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+
+{% block title %}Sähköposti tarvitaan{% endblock %}
+
+{% block content %}
+<p>
+    Palvelu vaatii sähköpostiosoitteen. Annathan luvan
+    sähköpostiosoitteen välittämiseen Helsingin kertakirjautumiselle.
+</p>
+
+<a href="{{reauth_uri}}">Kirjaudu uudestaan</a>
+{% endblock %}
