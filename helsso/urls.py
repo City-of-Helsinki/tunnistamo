@@ -25,6 +25,8 @@ def show_login(request):
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^accounts/profile/', show_login),
+    url(r'^accounts/login/', LoginView.as_view()),
+    url(r'^accounts/logout/', LogoutView.as_view()),
     url(r'^accounts/', include(allauth.urls)),
     url(r'^oauth2/applications/', permission_denied),
     url(r'^oauth2/', include(oauth2_provider.urls, namespace='oauth2_provider')),
