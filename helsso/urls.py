@@ -1,11 +1,13 @@
 from django.conf import settings
 from django.conf.urls import include, url
 from django.contrib import admin
-from django.http import HttpResponse
 from django.contrib.staticfiles import views as static_views
+from django.http import HttpResponse
 from django.views.defaults import permission_denied
-from .api import UserView, GetJWTView
+
 from users.views import EmailNeededView, LoginView, LogoutView
+
+from .api import GetJWTView, UserView
 
 
 def show_login(request):
