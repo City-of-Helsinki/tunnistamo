@@ -1,6 +1,7 @@
 from django.conf.urls import include, url
 
-from .views import ADFSOAuth2Adapter, HelsinkiADFSOAuth2Adapter
+from .views import ADFSOAuth2Adapter, HelsinkiADFSOAuth2Adapter, \
+    EspooADFSOAuth2Adapter
 
 
 def get_urlpatterns(adapter_cls):
@@ -15,3 +16,4 @@ def get_urlpatterns(adapter_cls):
     ]
 
 urlpatterns = get_urlpatterns(HelsinkiADFSOAuth2Adapter)
+urlpatterns += get_urlpatterns(EspooADFSOAuth2Adapter)
