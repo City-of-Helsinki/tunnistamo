@@ -76,8 +76,17 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
 def handle_facebook_without_email(sociallogin):
     if 'rerequest' not in sociallogin.state['auth_params']:
         login_uri = reverse('facebook_login')
-        auth_params = urlencode({'auth_params': 'auth_type=rerequest'})
-        get_params = urlencode({'reauth_uri': login_uri + '?' + auth_params})
+
+        # Preserve state otherwise, but override auth_params to pass in
+        # "auth_type=rerequest".  This should ensure that login process
+        # will continue correctly (with correct next URL, scope etc.)
+        # after the rerequest.
+        state = dict(sociallogin.state)
+        state['auth_params'] = 'auth_type=rerequest'
+
+        # Pass state via GET parameters
+        state_params = urlencode(state)
+        get_params = urlencode({'reauth_uri': login_uri + '?' + state_params})
         redirect_to = reverse('email_needed') + '?' + get_params
     else:
         redirect_to = reverse('socialaccount_login_cancelled')
