@@ -13,20 +13,24 @@ from .models import LoginMethod
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
     def pre_social_login(self, request, sociallogin):
+        """
+        Intervene social logins.
+
+        Invoked just after a user successfully authenticates via a
+        social provider, but before the login is actually processed.
+
+        :type request: django.http.HttpRequest
+        :type sociallogin: allauth.socialaccount.models.SocialLogin
+        """
         if sociallogin.account.provider == 'helsinki_adfs':
             if not sociallogin.is_existing:
-                # Check is this really a new login or is there already a
-                # previously created User with the UUID value: If there
-                # is, then it's an account which is created by the
-                # previous SAML signup and it should be connected to
-                # this social login instance.
-                uuid = sociallogin.account.uid
-                user = get_user_model().objects.filter(uuid=uuid).first()
-                if user:
-                    sociallogin.connect(request, user)
+                link_old_helsinki_saml_users(request, sociallogin)
         elif sociallogin.account.provider == 'facebook':
             if not sociallogin.email_addresses:
                 handle_facebook_without_email(sociallogin)
+
+        return super(SocialAccountAdapter, self).pre_social_login(
+            request, sociallogin)
 
     def populate_user(self, request, sociallogin, data):
         user = super().populate_user(request, sociallogin, data)
@@ -71,6 +75,26 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
             return False
         else:
             return True
+
+
+def link_old_helsinki_saml_users(request, sociallogin):
+    """
+    Handle linking old Helsinki SAML users to a new ADFS account.
+
+    Check is this really a new login or is there already a previously
+    created User with the UUID value: If there is, then it's an account
+    which is created by the previous SAML signup and it should be
+    connected to this social login instance.
+
+    :type request: django.http.HttpRequest
+    :type sociallogin: allauth.socialaccount.models.SocialLogin
+    """
+    assert sociallogin.account.provider == 'helsinki_adfs'
+    assert not sociallogin.is_existing, "Not yet linked to user"
+    uuid = sociallogin.account.uid
+    user = get_user_model().objects.filter(uuid=uuid).first()
+    if user:
+        sociallogin.connect(request, user)
 
 
 def handle_facebook_without_email(sociallogin):
