@@ -1,9 +1,11 @@
 from urllib.parse import urlencode
 
+from allauth.account.models import EmailAddress
 from allauth.account.utils import user_email
 from allauth.exceptions import ImmediateHttpResponse
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.utils import email_address_exists
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -28,6 +30,11 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         elif sociallogin.account.provider == 'facebook':
             if not sociallogin.email_addresses:
                 handle_facebook_without_email(sociallogin)
+
+        trusted_providers = settings.TRUSTED_SOCIALLOGIN_PROVIDERS
+        if sociallogin.account.provider in trusted_providers:
+            if not sociallogin.is_existing:
+                link_by_trusted_email(request, sociallogin)
 
         return super(SocialAccountAdapter, self).pre_social_login(
             request, sociallogin)
@@ -115,3 +122,43 @@ def handle_facebook_without_email(sociallogin):
     else:
         redirect_to = reverse('socialaccount_login_cancelled')
     raise ImmediateHttpResponse(redirect(redirect_to))
+
+
+def link_by_trusted_email(request, sociallogin):
+    """
+    Link social login to existing User by trusted email address.
+
+    :type request: django.http.HttpRequest
+    :type sociallogin: allauth.socialaccount.models.SocialLogin
+    """
+    assert not sociallogin.is_existing, "Not yet linked to user"
+    for email_address in sociallogin.email_addresses:
+        if email_address.verified:
+            email = email_address.email
+            # Note: get_users_for finds only verified email addresses
+            users = EmailAddress.objects.get_users_for(email=email)
+            for user in users:
+                sociallogin.connect(request, user)
+            unverified_emails = EmailAddress.objects.filter(
+                email__iexact=email, verified=False)
+            for unverified_email in unverified_emails:
+                remove_email(unverified_email)
+
+
+def remove_email(email_obj):
+    """
+    Remove email address and clean it from the user.
+
+    :type email_obj: EmailAddress
+    """
+    email = email_obj.email
+    user = email_obj.user
+    if user.email and user.email.lower() == email.lower():
+        other_emails = EmailAddress.objects.filter(
+            user=user).exclude(email__iexact=email)
+        if other_emails:
+            user.email = other_emails.first().email
+        else:
+            user.email = ''
+        user.save()
+    email_obj.delete()
