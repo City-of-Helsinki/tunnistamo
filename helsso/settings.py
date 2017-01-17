@@ -218,6 +218,11 @@ ACCOUNT_LOGOUT_ON_GET = True
 SOCIALACCOUNT_ADAPTER = 'users.adapter.SocialAccountAdapter'
 ACCOUNT_UNIQUE_EMAIL = True
 
+TRUSTED_SOCIALLOGIN_PROVIDERS = [
+    'helsinki_adfs',
+    'espoo_adfs',
+]
+
 SOCIALACCOUNT_PROVIDERS = {
     'facebook': {
         'SCOPE': ['email', 'public_profile'],
