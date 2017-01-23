@@ -3,6 +3,7 @@ from urllib.parse import urlencode
 from allauth.account.models import EmailAddress
 from allauth.account.utils import user_email
 from allauth.exceptions import ImmediateHttpResponse
+from allauth.socialaccount import app_settings
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.utils import email_address_exists
 from django.conf import settings
@@ -31,7 +32,7 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
             if not sociallogin.email_addresses:
                 handle_facebook_without_email(sociallogin)
 
-        trusted_providers = settings.TRUSTED_SOCIALLOGIN_PROVIDERS
+        trusted_providers = get_trusted_providers()
         if sociallogin.account.provider in trusted_providers:
             if not sociallogin.is_existing:
                 link_by_trusted_email(request, sociallogin)
@@ -162,3 +163,11 @@ def remove_email(email_obj):
             user.email = ''
         user.save()
     email_obj.delete()
+
+
+def get_trusted_providers():
+    trusted_providers = set()
+    for provider_name, provider_settings in app_settings.PROVIDERS.items():
+        if provider_settings.get('TRUSTED', False):
+            trusted_providers.add(provider_name)
+    return trusted_providers
