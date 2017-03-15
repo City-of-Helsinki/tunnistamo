@@ -8663,10 +8663,21 @@ html, body {
 
 .hel-login-box {
   margin: 10px auto;
+  padding: 12px;
   max-width: 400px; }
 
+.hel-login--header {
+  color: #005eb8; }
+
 .hel-login-logo {
-  height: 5em; }
+  height: 4em; }
+
+.hel-login-org-title {
+  float: right; }
+
+.hel-login-box p.doc {
+  color: #005eb8;
+}
 
 .login-method {
   margin-bottom: 1em; }

@@ -2,12 +2,13 @@
 {% load static %}
 {% block body_content %}
 <div class="hel-login-box">
-    <img src="{% static 'images/helsinki-vaakuna-helfisininen.svg' %}"
-         class="hel-login-logo">
-  <h5>Helsingin kaupunki</h5>
-  <h1>{% block title %}{% endblock %}</h1>
-  <h4>Kertakirjautuminen</h4>
-
+  <div class="hel-login--header">
+    <img src="{% static 'images/helsinki-vaakuna-sininen.svg' %}"
+           class="hel-login-logo">
+    <h6 class="hel-login-org-title">Helsingin kaupunki</h6>
+    <h2>{% block title %}{% endblock %}</h2>
+    <h5>Kertakirjautuminen</h5>
+  </div>
   {% block content %}{% endblock %}
 
   {% comment TODO %}
