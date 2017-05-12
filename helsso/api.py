@@ -14,6 +14,11 @@ logger = logging.getLogger(__name__)
 
 
 class UserSerializer(serializers.ModelSerializer):
+    ad_groups = serializers.SerializerMethodField()
+
+    def get_ad_groups(self, obj):
+        return [x.display_name for x in obj.ad_groups.order_by('display_name')]
+
     def to_representation(self, obj):
         ret = super(UserSerializer, self).to_representation(obj)
         if obj.first_name and obj.last_name:
@@ -23,7 +28,8 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         fields = [
             'last_login', 'username', 'email', 'date_joined',
-            'first_name', 'last_name', 'uuid', 'department_name'
+            'first_name', 'last_name', 'uuid', 'department_name',
+            'ad_groups'
         ]
         model = get_user_model()
 
@@ -77,6 +83,8 @@ class GetJWTView(views.APIView):
         for field in delete_fields:
             if field in payload:
                 del payload[field]
+        if not target_app.include_ad_groups:
+            del payload['ad_groups']
 
         payload['iss'] = 'https://api.hel.fi/sso'  # FIXME: Make configurable
         payload['sub'] = str(user.uuid)

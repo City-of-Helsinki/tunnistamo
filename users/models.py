@@ -51,6 +51,7 @@ class Application(AbstractApplication):
     site_type = models.CharField(max_length=20, choices=SITE_TYPES, null=True,
                                  verbose_name='Site type')
     login_methods = models.ManyToManyField(LoginMethod)
+    include_ad_groups = models.BooleanField(default=False)
 
     class Meta:
         ordering = ('site_type', 'name')

@@ -5,13 +5,17 @@ from allauth.account.utils import user_email
 from allauth.exceptions import ImmediateHttpResponse
 from allauth.socialaccount import app_settings
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
+from allauth.socialaccount.signals import social_account_updated, social_account_added
 from allauth.utils import email_address_exists
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.dispatch import receiver
 
 from .models import LoginMethod
+from adfs_provider.provider import ADFSProvider
+from users.models import User
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -50,6 +54,10 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         if callable(getattr(user, 'set_username_from_uuid', None)):
             user.set_username_from_uuid()
 
+        return user
+
+    def save_user(self, request, sociallogin, form=None):
+        user = super().save_user(request, sociallogin, form)
         return user
 
     def clean_username(self, username, shallow=False):
@@ -171,3 +179,26 @@ def get_trusted_providers():
         if provider_settings.get('TRUSTED', False):
             trusted_providers.add(provider_name)
     return trusted_providers
+
+
+def update_ad_groups(account):
+    provider = account.get_provider()
+    if not isinstance(provider, ADFSProvider):
+        return
+    if 'ad_groups' not in account.extra_data:
+        return
+    ad_group_names = account.extra_data['ad_groups']
+    account.user.update_ad_groups(ad_group_names)
+
+
+@receiver(social_account_updated)
+def user_updated(sociallogin, **kwargs):
+    user = sociallogin.user
+    account = sociallogin.account
+    user.save()
+    update_ad_groups(account)
+
+
+@receiver(social_account_added)
+def user_added(sociallogin, **kwargs):
+    update_ad_groups(sociallogin.account)

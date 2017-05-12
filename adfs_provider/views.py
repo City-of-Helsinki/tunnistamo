@@ -60,7 +60,7 @@ class HelsinkiADFSOAuth2Adapter(ADFSOAuth2Adapter):
     def clean_attributes(self, attrs_in):
         attr_map = {
             'primarysid': 'primary_sid',
-            'Company': 'department_name',
+            'company': 'department_name',
             'email': 'email',
             'winaccountname': 'username',
             'group': 'ad_groups',
@@ -68,6 +68,9 @@ class HelsinkiADFSOAuth2Adapter(ADFSOAuth2Adapter):
             'given_name': 'first_name',
             'family_name': 'last_name',
         }
+
+        # Convert attribute names to lowercase
+        attrs_in = {k.lower(): v for k, v in attrs_in.items()}
 
         attrs = {}
         for in_name, out_name in attr_map.items():
