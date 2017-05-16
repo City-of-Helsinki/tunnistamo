@@ -1,0 +1,73 @@
+@startuml
+'skinparam handwritten true
+skinparam sequence {
+    ParticipantPadding 20
+    BoxPadding 20
+    ParticipantBackgroundColor #9fc9eb
+    ParticipantBorderColor #9fc9eb
+    ActorBorderColor #f5a3c7
+    ActorBackgroundColor #f5a3c7
+    ArrowColor #bd2719
+}
+skinparam {
+    NoteBackgroundColor #ffe977
+    NoteBorderColor #ffe977
+}
+
+hide footbox
+
+actor Browser
+participant UI as "UI\n(Javascript)"
+box "Authentication"
+    participant Tunnistamo as "Tunnistamo\n//api.hel.fi/sso//"
+    participant ADFS as "ADFS\n//fs.hel.fi//"
+end box
+participant API1 as "Service 1 API"
+participant API2 as "Service 2 API"
+
+activate UI
+Browser ->> UI: Click login
+UI ->> Browser: Redirect to **Tunnistamo/login**
+deactivate UI
+|||
+Browser ->> Tunnistamo: Want to login
+activate Tunnistamo
+Tunnistamo ->> Browser: Show login method selection
+Browser ->> Tunnistamo: Click ADFS
+Tunnistamo ->> Browser: Redirect to **ADFS/login**
+|||
+Browser ->> ADFS: Want to login
+activate ADFS
+ADFS ->> Browser: Show ADFS login form
+Browser ->> ADFS: Supply username and password
+Note over ADFS: Validate credentials
+Note over ADFS: Generate //ADFS Token//
+ADFS ->> Browser: Redirect to **Tunnistamo/callback** (with ADFS Token)
+deactivate ADFS
+|||
+Browser ->> Tunnistamo: Pass //ADFS Token//
+Note over Tunnistamo: Validate //ADFS Token//
+Note over Tunnistamo: Generate //ID Token// for UI and\n//Access Tokens// for Service APIs
+Tunnistamo ->> Browser: Redirect to **UI/callback**
+deactivate Tunnistamo
+|||
+Browser ->> UI: Pass //ID Token// and //Access Tokens//
+activate UI
+Note over UI: Validate //ID Token//
+|||
+UI ->> Browser: Make request to Service 1
+activate API1
+Browser ->> API1: Make authenticated API request using //Access Token 1//
+API1 ->> Browser: API reply
+deactivate API1
+Browser ->> UI: Pass reply
+|||
+UI ->> Browser: Make request to Service 2
+activate API2
+Browser ->> API2: Make authenticated API request using //Access Token 2//
+API2 ->> Browser: API reply
+deactivate API2
+Browser ->> UI: Pass reply
+
+deactivate UI
+@enduml
