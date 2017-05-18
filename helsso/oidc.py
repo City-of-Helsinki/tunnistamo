@@ -1,6 +1,8 @@
 from django.utils.translation import ugettext_lazy as _
 from oidc_provider.lib.claims import ScopeClaims, StandardScopeClaims
 
+from hkijwt.models import ApiScope
+
 
 def sub_generator(user):
     return str(user.uuid)
@@ -21,27 +23,63 @@ class GithubUsernameScopeClaims(ScopeClaims):
         }
 
 
+class ApiAuthorizationScopeClaims(ScopeClaims):
+    @classmethod
+    def get_scopes_info(cls, scopes=[]):
+        scopes_by_identifier = {
+            api_scope.identifier: api_scope
+            for api_scope in ApiScope.objects.by_identifiers(scopes)
+        }
+        api_scopes = (scopes_by_identifier.get(scope) for scope in scopes)
+        return [
+            {
+                'scope': api_scope.identifier,
+                'name': api_scope.name,
+                'description': api_scope.description,
+            }
+            for api_scope in api_scopes if api_scope
+        ]
+
+    def create_response_dic(self):
+        result = super(ApiAuthorizationScopeClaims, self).create_response_dic()
+        api_data = ApiScope.get_data_for_request(self.scopes, self.client)
+        result.update(api_data.authorization_claims)
+        return result
+
+
 class CombinedScopeClaims(ScopeClaims):
     combined_scope_claims = [
         StandardScopeClaims,
         GithubUsernameScopeClaims,
+        ApiAuthorizationScopeClaims,
     ]
 
     @classmethod
     def get_scopes_info(cls, scopes=[]):
+        extended_scopes = cls._extend_scope(scopes)
         scopes_info_map = {}
         for claim_cls in cls.combined_scope_claims:
-            for info in claim_cls.get_scopes_info(scopes):
+            for info in claim_cls.get_scopes_info(extended_scopes):
                 scopes_info_map[info['scope']] = info
         return [
             scopes_info_map[scope]
-            for scope in scopes
+            for scope in extended_scopes
             if scope in scopes_info_map
         ]
+
+    @classmethod
+    def _extend_scope(cls, scopes):
+        api_data = ApiScope.get_data_for_request(scopes)
+        extended_scopes = list(scopes)
+        for scope in api_data.required_scopes:
+            if scope not in extended_scopes:
+                extended_scopes.append(scope)
+        return extended_scopes
 
     def create_response_dic(self):
         result = super(CombinedScopeClaims, self).create_response_dic()
         token = FakeToken.from_claims(self)
+        token.scope = self._extend_scope(token.scope)
         for claim_cls in self.combined_scope_claims:
             claim = claim_cls(token)
             result.update(claim.create_response_dic())
