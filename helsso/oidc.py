@@ -1,7 +1,42 @@
 from django.utils.translation import ugettext_lazy as _
+from jwkest.jwt import JWT
 from oidc_provider.lib.claims import ScopeClaims, StandardScopeClaims
+from oidc_provider.lib.utils.token import TokenModule
 
 from hkijwt.models import ApiScope
+
+
+class HelssoTokenModule(TokenModule):
+    def create_id_token(self, user, client, nonce='', at_hash='',
+                        request=None, scope=[]):
+        """
+        :type user: users.models.User
+        :type client: oidc_provider.models.Client
+        :type nonce: str
+        :type at_hast: str
+        :type request: django.http.HttpRequest|None
+        :type scope: list[str]
+        """
+        payload = super(HelssoTokenModule, self).create_id_token(
+            user, client, nonce, at_hash, request, scope)
+
+        api_data = ApiScope.get_data_for_request(scope, client)
+
+        extended_scope = set(scope) | set(api_data.required_scopes)
+        userinfo = get_userinfo_by_scopes(user, extended_scope, client)
+        payload.update(userinfo)
+        payload.update(api_data.authorization_claims)
+        payload['aud'] = [client.client_id] + api_data.audiences
+        payload['azp'] = client.client_id
+        return payload
+
+    def client_id_from_id_token(self, id_token):
+        payload = JWT().unpack(id_token).payload()
+        # See https://stackoverflow.com/questions/32013835
+        azp = payload.get('azp', None)  # azp = Authorized Party
+        aud = payload.get('aud', None)
+        first_aud = aud[0] if isinstance(aud, list) else aud
+        return azp if azp else first_aud
 
 
 def sub_generator(user):
@@ -151,3 +186,11 @@ def get_userinfo(claims, user):
     claims['zoneinfo'] = None
 
     return claims
+
+
+def get_userinfo_by_scopes(user, scopes, client=None):
+    token = FakeToken(user, scopes, client)
+    result = {}
+    result.update(StandardScopeClaims(token).create_response_dic())
+    result.update(CombinedScopeClaims(token).create_response_dic())
+    return result

@@ -243,6 +243,7 @@ SOCIALACCOUNT_PROVIDERS = {
 OIDC_USERINFO = 'helsso.oidc.get_userinfo'
 OIDC_IDTOKEN_SUB_GENERATOR = 'helsso.oidc.sub_generator'
 OIDC_EXTRA_SCOPE_CLAIMS = 'helsso.oidc.CombinedScopeClaims'
+OIDC_TOKEN_MODULE = 'helsso.oidc.HelssoTokenModule'
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.

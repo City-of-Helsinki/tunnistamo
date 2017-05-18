@@ -3,7 +3,7 @@ django-multiselectfield
 django-oauth-toolkit
 django-parler
 django-cors-headers
-django-oidc-provider
+git+https://github.com/suutari-ai/django-oidc-provider.git@hel#egg=django-oidc-provider==0.4.4.post1+hel
 djangorestframework
 pyjwt
 django-helusers
