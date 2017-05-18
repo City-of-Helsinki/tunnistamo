@@ -32,6 +32,8 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.staticfiles',
 
+    'parler',
+
     'oauth2_provider',
     'oidc_provider',
     'users',
@@ -107,11 +109,10 @@ DATABASES = {
 LANGUAGE_CODE = 'fi'
 
 LANGUAGES = (
-    ('fi', 'suomi'),
+    ('fi', 'Finnish'),
     ('en', 'English'),
-    ('sv', 'svenska')
+    ('sv', 'Swedish')
 )
-
 
 TIME_ZONE = 'UTC'
 
@@ -138,6 +139,7 @@ STATIC_URL = '/sso/static/'
 
 SITE_ID = 1
 
+PARLER_LANGUAGES = {SITE_ID: [{'code': code} for (code, name) in LANGUAGES]}
 
 LOGGING = {
     'version': 1,
