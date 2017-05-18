@@ -1,5 +1,54 @@
+from oidc_provider.lib.claims import ScopeClaims, StandardScopeClaims
+
+
 def sub_generator(user):
     return str(user.uuid)
+
+
+class CombinedScopeClaims(ScopeClaims):
+    combined_scope_claims = [
+        StandardScopeClaims,
+    ]
+
+    @classmethod
+    def get_scopes_info(cls, scopes=[]):
+        scopes_info_map = {}
+        for claim_cls in cls.combined_scope_claims:
+            for info in claim_cls.get_scopes_info(scopes):
+                scopes_info_map[info['scope']] = info
+        return [
+            scopes_info_map[scope]
+            for scope in scopes
+            if scope in scopes_info_map
+        ]
+
+    def create_response_dic(self):
+        result = super(CombinedScopeClaims, self).create_response_dic()
+        token = FakeToken.from_claims(self)
+        for claim_cls in self.combined_scope_claims:
+            claim = claim_cls(token)
+            result.update(claim.create_response_dic())
+        return result
+
+
+class FakeToken(object):
+    """
+    Object that adapts a token.
+
+    ScopeClaims constructor needs a token, but really uses just its
+    user, scope and client attributes.  This adapter makes it possible
+    to create a token like object from those three attributes or from a
+    claims object (which doesn't store the token) allowing it to be
+    passed to a ScopeClaims constructor.
+    """
+    def __init__(self, user, scope, client):
+        self.user = user
+        self.scope = scope
+        self.client = client
+
+    @classmethod
+    def from_claims(cls, claims):
+        return cls(claims.user, claims.scopes, claims.client)
 
 
 def get_userinfo(claims, user):

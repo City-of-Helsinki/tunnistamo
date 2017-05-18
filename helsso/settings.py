@@ -240,6 +240,7 @@ SOCIALACCOUNT_PROVIDERS = {
 # django-oidc-provider settings for OpenID Connect support
 OIDC_USERINFO = 'helsso.oidc.get_userinfo'
 OIDC_IDTOKEN_SUB_GENERATOR = 'helsso.oidc.sub_generator'
+OIDC_EXTRA_SCOPE_CLAIMS = 'helsso.oidc.CombinedScopeClaims'
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
