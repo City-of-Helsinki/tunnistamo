@@ -1,3 +1,4 @@
+from django.utils.translation import ugettext_lazy as _
 from oidc_provider.lib.claims import ScopeClaims, StandardScopeClaims
 
 
@@ -5,9 +6,25 @@ def sub_generator(user):
     return str(user.uuid)
 
 
+class GithubUsernameScopeClaims(ScopeClaims):
+    info_github_username = (
+        _("GitHub username"), _("Access to your GitHub username."))
+
+    def scope_github_username(self):
+        social_accounts = self.user.socialaccount_set
+        github_account = social_accounts.filter(provider='github').first()
+        if not github_account:
+            return {}
+        github_data = github_account.extra_data
+        return {
+            'github_username': github_data.get('login'),
+        }
+
+
 class CombinedScopeClaims(ScopeClaims):
     combined_scope_claims = [
         StandardScopeClaims,
+        GithubUsernameScopeClaims,
     ]
 
     @classmethod
