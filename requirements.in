@@ -1,6 +1,7 @@
 django
 django-oauth-toolkit
 django-cors-headers
+django-oidc-provider
 djangorestframework
 pyjwt
 django-helusers
