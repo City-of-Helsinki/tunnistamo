@@ -23,6 +23,11 @@ class UserSerializer(serializers.ModelSerializer):
         ret = super(UserSerializer, self).to_representation(obj)
         if obj.first_name and obj.last_name:
             ret['display_name'] = '%s %s' % (obj.first_name, obj.last_name)
+        request = self.context.get('request', None)
+        if request:
+            app = getattr(request.auth, 'application', None)
+            if app and not app.include_ad_groups and 'ad_groups' in ret:
+                del ret['ad_groups']
         return ret
 
     class Meta:
