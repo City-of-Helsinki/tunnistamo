@@ -9,7 +9,7 @@
 </p>
 <div class="hel-login-methods">
   {% for method in login_methods %}
-  <div class="login-method
+  <div class="login-method login-method-{{ method.provider_id }}
               {% if method.order == 0 %}login-method__primary{% endif %}">
       {% if not method.logo_url %}
       <a href="{{ method.login_url }}"
