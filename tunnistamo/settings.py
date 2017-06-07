@@ -35,8 +35,8 @@ INSTALLED_APPS = (
     'parler',
 
     'oauth2_provider',
-    'oidc_provider',
     'users',
+    'oidc_provider',
 
     'allauth',
     'allauth.account',
