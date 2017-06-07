@@ -1,5 +1,5 @@
 """
-Django settings for helsso project.
+Django settings for tunnistamo project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/1.7/topics/settings/
@@ -73,7 +73,7 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-ROOT_URLCONF = 'helsso.urls'
+ROOT_URLCONF = 'tunnistamo.urls'
 
 TEMPLATES = [
     {
@@ -91,7 +91,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'helsso.wsgi.application'
+WSGI_APPLICATION = 'tunnistamo.wsgi.application'
 
 #
 # Database
@@ -99,7 +99,7 @@ WSGI_APPLICATION = 'helsso.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'helsso',
+        'NAME': 'tunnistamo',
     }
 }
 
@@ -240,10 +240,10 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 # django-oidc-provider settings for OpenID Connect support
-OIDC_USERINFO = 'helsso.oidc.get_userinfo'
-OIDC_IDTOKEN_SUB_GENERATOR = 'helsso.oidc.sub_generator'
-OIDC_EXTRA_SCOPE_CLAIMS = 'helsso.oidc.CombinedScopeClaims'
-OIDC_TOKEN_MODULE = 'helsso.oidc.HelssoTokenModule'
+OIDC_USERINFO = 'tunnistamo.oidc.get_userinfo'
+OIDC_IDTOKEN_SUB_GENERATOR = 'tunnistamo.oidc.sub_generator'
+OIDC_EXTRA_SCOPE_CLAIMS = 'tunnistamo.oidc.CombinedScopeClaims'
+OIDC_TOKEN_MODULE = 'tunnistamo.oidc.HelssoTokenModule'
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
