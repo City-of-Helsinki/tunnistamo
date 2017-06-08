@@ -52,8 +52,8 @@ INSTALLED_APPS = (
     'bootstrap3',
 
     'helusers',
-    'helusers.providers.yletunnus',
 
+    'yletunnus',
     'adfs_provider',
     'hkijwt',
 )
