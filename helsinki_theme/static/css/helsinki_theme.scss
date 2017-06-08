@@ -1,20 +1,20 @@
 // Font awesome
-$fa-font-path: '../fonts/font-awesome';
-@import 'font-awesome/scss/font-awesome';
+$fa-font-path: "../fonts/font-awesome";
+@import "font-awesome/scss/font-awesome";
 
 // Helsinki brand variables
-@import 'hel-bootstrap-3/src/sass/helsinki-variables';
-@import 'application-variables';
+@import "hel-bootstrap-3/src/sass/helsinki-variables";
+@import "application-variables";
 
 // Bootstrap with custom variables
-@import 'hel-bootstrap-3/src/sass/theme-bootstrap-variables';
-@import 'bootstrap-sass/assets/stylesheets/bootstrap';
+@import "hel-bootstrap-3/src/sass/theme-bootstrap-variables";
+@import "bootstrap-sass/assets/stylesheets/bootstrap";
 
 // Helsinki Bootstrap overrides
-@import 'hel-bootstrap-3/src/sass/theme-custom-styles';
+@import "hel-bootstrap-3/src/sass/theme-custom-styles";
 
 // Bootstrap Social
-@import 'bootstrap-social/bootstrap-social.scss';
+@import "bootstrap-social/bootstrap-social.scss";
 
 // Tunnistamo styles
 
@@ -25,15 +25,16 @@ $fa-font-path: '../fonts/font-awesome';
 .content-card {
   padding: $line-height-computed;
   background-color: $white;
-  box-shadow: 3px 3px 3px #333;
+  box-shadow: 3px 3px 3px rgba($black, .5);
   @extend .clearfix;
 
   header {
     @extend .clearfix;
-  }
-  header .logo {
-    height: 4em;
-    float: right;
+
+    .logo {
+      height: 4em;
+      float: right;
+    }
   }
 }
 
@@ -45,8 +46,8 @@ $fa-font-path: '../fonts/font-awesome';
   }
 
   .ext-icon img {
-    max-width: 24px;
     max-height: 24px;
+    max-width: 24px;
   }
 }
 
