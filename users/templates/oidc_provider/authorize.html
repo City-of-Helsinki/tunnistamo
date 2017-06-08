@@ -1,6 +1,8 @@
-<h1>Request for Permission</h1>
+{% extends 'base.html' %}
+{% block content %}
+<h2>Lupapyyntö</h2>
 
-<p>Client <strong>{{ client.name }}</strong> would like to access this information of you ...</p>
+<p>Palvelu <strong>{{ client.name }}</strong> pyytää lupaa käyttää käyttäjätilisi seuraavia tietoja</p>
 
 <form method="post" action="{% url 'oidc_provider:authorize' %}">
 
@@ -8,13 +10,14 @@
 
     {{ hidden_inputs }}
 
-    <ul>
+    <ul class="list-group">
         {% for scope in scopes %}
-        <li><strong>{{ scope.name }}</strong> <br><i>{{ scope.description }}</i></li>
+        <li class="list-group-item"><strong>{{ scope.name }}</strong> <br><i>{{ scope.description }}</i></li>
         {% endfor %}
     </ul>
-
-    <input type="submit" value="Decline" />
-    <input name="allow" type="submit" value="Authorize" />
-
+    <div class="pull-right">
+      <input class="btn btn-default" type="submit" value="Älä anna lupaa" />
+      <input class="btn btn-primary" name="allow" type="submit" value="Anna lupa" />
+    </div>
 </form>
+{% endblock %}

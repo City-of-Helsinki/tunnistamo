@@ -1,0 +1,58 @@
+// Font awesome
+$fa-font-path: '../fonts/font-awesome';
+@import 'font-awesome/scss/font-awesome';
+
+// Helsinki brand variables
+@import 'hel-bootstrap-3/src/sass/helsinki-variables';
+@import 'application-variables';
+
+// Bootstrap with custom variables
+@import 'hel-bootstrap-3/src/sass/theme-bootstrap-variables';
+@import 'bootstrap-sass/assets/stylesheets/bootstrap';
+
+// Helsinki Bootstrap overrides
+@import 'hel-bootstrap-3/src/sass/theme-custom-styles';
+
+// Bootstrap Social
+@import 'bootstrap-social/bootstrap-social.scss';
+
+// Tunnistamo styles
+
+.content-container {
+  margin-top: $line-height-computed;
+}
+
+.content-card {
+  padding: $line-height-computed;
+  background-color: $white;
+  box-shadow: 3px 3px 3px #333;
+  @extend .clearfix;
+
+  header {
+    @extend .clearfix;
+  }
+  header .logo {
+    height: 4em;
+    float: right;
+  }
+}
+
+.login-method {
+  margin-bottom: $line-height-computed / 2;
+
+  .short-description {
+    margin-top: 6px;
+  }
+
+  .ext-icon img {
+    max-width: 24px;
+    max-height: 24px;
+  }
+}
+
+.login-method__primary {
+  border-bottom: 1px solid $theme-primary-dark;
+  border-top: 1px solid $theme-primary-dark;
+  padding-top: 1em;
+}
+

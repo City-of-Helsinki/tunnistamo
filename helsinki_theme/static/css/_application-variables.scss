@@ -1,0 +1,30 @@
+//
+// Application specific visual customisation
+// --------------------------------------------------
+
+$theme-primary-dark:    $hel-coat !default;
+$theme-primary-light:   $hel-summer !default;
+
+$theme-secondary-dark:  $hel-brick !default;
+$theme-secondary-light: $hel-fog !default;
+
+$theme-highlight-dark:  $hel-bus !default;
+$theme-highlight-light: $hel-copper !default;
+
+// Non brand colors
+
+$white:         #ffffff;
+$light-gray:    #ebedf1;
+$dark-gray:     #525a65;
+$medium-gray:   #abb2bd;
+$black:         #000000;
+
+$theme-success: $hel-tram;
+$theme-info:    $hel-fog;
+$theme-warning: $hel-summer;
+$theme-danger:  $hel-metro;
+
+$icon-font-path: unquote(get-setting(NODE_MODULES_URL) + "bootstrap-sass/assets/fonts/bootstrap/");
+
+
+$font-family-sans-serif:  $hel-grotesk;

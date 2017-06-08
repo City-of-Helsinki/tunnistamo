@@ -142,6 +142,12 @@ STATICFILES_FINDERS = (
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/sso/static/'
 
+STATICFILES_DIRS = [
+    ('node_modules', 'node_modules/'),
+]
+
+NODE_MODULES_URL = STATIC_URL + 'node_modules/'
+
 SITE_ID = 1
 
 PARLER_LANGUAGES = {SITE_ID: [{'code': code} for (code, name) in LANGUAGES]}

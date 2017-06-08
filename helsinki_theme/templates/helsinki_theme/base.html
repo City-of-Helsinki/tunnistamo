@@ -1,4 +1,4 @@
-{% load static %}
+{% load static sass_tags %}
 <!DOCTYPE html>
 <html{% if request.LANGUAGE_CODE %} lang="{{ request.LANGUAGE_CODE }}"{% endif %}>
 
@@ -10,11 +10,21 @@
         {% block head_title %}{% block title %}{% endblock %} |
         Helsingin kaupunki{% endblock %}
     </title>
-    <link href="{% static 'css/helsinki_theme.css' %}" rel="stylesheet" id="theme-css" />
+    <link href="{% sass_src 'css/helsinki_theme.scss' %}" rel="stylesheet" type="text/css" />
 </head>
 
-<body>
-{% block body_content %}{% endblock %}
+<body class="bg-info">
+  <div class="container content-container">
+    <div class="col-sm-8 col-sm-offset-2 col-md-6 col-md-offset-3">
+      <div class="content-card">
+        <header>
+          <img src="{% static "hel-bootstrap-3/src/assets/helsinki-logo-black.svg" %}" class="logo">
+          <h5>Kertakirjautuminen</h5>
+        </header>
+        {% block body_content %}{% endblock %}
+      </div>
+    </div>
+  </div>
 </body>
 
 </html>
