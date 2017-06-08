@@ -143,10 +143,8 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/sso/static/'
 
 STATICFILES_DIRS = [
-    ('node_modules', 'node_modules/'),
+    ('node_modules', os.path.join(BASE_DIR, 'node_modules')),
 ]
-
-NODE_MODULES_URL = STATIC_URL + 'node_modules/'
 
 SITE_ID = 1
 

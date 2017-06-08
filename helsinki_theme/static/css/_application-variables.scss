@@ -24,7 +24,7 @@ $theme-info:    $hel-fog;
 $theme-warning: $hel-summer;
 $theme-danger:  $hel-metro;
 
-$icon-font-path: unquote(get-setting(NODE_MODULES_URL) + "bootstrap-sass/assets/fonts/bootstrap/");
+$icon-font-path: unquote(get-setting(STATIC_URL) + "node_modules/bootstrap-sass/assets/fonts/bootstrap/");
 
 
 $font-family-sans-serif:  $hel-grotesk;
