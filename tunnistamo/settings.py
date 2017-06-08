@@ -258,29 +258,31 @@ SASS_PRECISION = 8
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
-f = os.path.join(BASE_DIR, "local_settings.py")
-if os.path.exists(f):
+local_settings_path = os.path.join(BASE_DIR, "local_settings.py")
+if os.path.exists(local_settings_path):
     import sys
-    import imp
+    import types
     module_name = "%s.local_settings" % ROOT_URLCONF.split('.')[0]
-    module = imp.new_module(module_name)
-    module.__file__ = f
+    module = types.ModuleType(module_name)
+    module.__file__ = local_settings_path
     sys.modules[module_name] = module
-    exec(open(f, "rb").read())
+    with open(local_settings_path, "rb") as f:
+        exec(f.read())
 
 if 'SECRET_KEY' not in locals():
     secret_file = os.path.join(BASE_DIR, '.django_secret')
     try:
-        SECRET_KEY = open(secret_file).read().strip()
+        with open(secret_file) as f:
+            SECRET_KEY = f.read().strip()
     except IOError:
         import random
         system_random = random.SystemRandom()
         try:
             SECRET_KEY = ''.join([system_random.choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(64)])
-            secret = open(secret_file, 'w')
-            import os
-            os.chmod(secret_file, 0o0600)
-            secret.write(SECRET_KEY)
-            secret.close()
+            with open(secret_file, 'w') as f:
+                import os
+                os.chmod(f, 0o0600)
+                f.write(SECRET_KEY)
+                f.close()
         except IOError:
             Exception('Please create a %s file with random characters to generate your secret key!' % secret_file)
