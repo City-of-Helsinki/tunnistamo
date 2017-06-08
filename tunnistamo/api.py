@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from rest_framework import permissions, serializers, generics, mixins, views
 from rest_framework.response import Response
 from rest_framework.exceptions import PermissionDenied
-from oauth2_provider.ext.rest_framework import TokenHasReadWriteScope
+from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope
 from oauth2_provider.models import get_application_model
 from hkijwt.models import AppToAppPermission
 
