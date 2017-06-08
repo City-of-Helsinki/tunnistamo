@@ -25,7 +25,7 @@ $fa-font-path: "../fonts/font-awesome";
 .content-card {
   padding: $line-height-computed;
   background-color: $white;
-  box-shadow: 3px 3px 3px rgba($black, .5);
+  box-shadow: 3px 3px 3px rgba($black, 0.5);
   @extend .clearfix;
 
   header {
@@ -56,4 +56,3 @@ $fa-font-path: "../fonts/font-awesome";
   border-top: 1px solid $theme-primary-dark;
   padding-top: 1em;
 }
-
