@@ -4,7 +4,7 @@ from allauth.socialaccount.models import SocialApp
 
 
 class ADFSRealm(models.Model):
-    app = models.OneToOneField(SocialApp, db_index=True)
+    app = models.OneToOneField(SocialApp, db_index=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=100, db_index=True)
     adfs_url = models.URLField()
     certificate = models.TextField(editable=False)
@@ -23,7 +23,8 @@ class ADFSAttributeMapping(models.Model):
         ('first_name', _('First name')),
         ('last_name', _('Last name')),
     )
-    realm = models.ForeignKey(ADFSRealm, db_index=True, related_name='attribute_mappings')
+    realm = models.ForeignKey(ADFSRealm, db_index=True, related_name='attribute_mappings',
+                              on_delete=models.CASCADE)
     in_name = models.CharField(max_length=100)
     out_name = models.CharField(max_length=100, choices=ATTRIBUTES)
 

@@ -43,11 +43,14 @@ class ApiDomain(models.Model):
 class Api(models.Model):
     domain = models.ForeignKey(
         ApiDomain,
-        verbose_name=("domain"))
+        verbose_name=("domain"),
+        on_delete=models.CASCADE
+    )
     name = models.CharField(
         max_length=50,
         validators=[alphanumeric_validator],
-        verbose_name=_("name"))
+        verbose_name=_("name")
+    )
     required_scopes = MultiSelectField(
         choices=SCOPE_CHOICES, max_length=1000,
         default=['email', 'profile'],
@@ -55,7 +58,8 @@ class Api(models.Model):
         help_text=_(
             "Select the scopes that this API needs information from. "
             "Information from the selected scopes will be included to "
-            "the ID tokens."))
+            "the ID tokens.")
+    )
 
     class Meta:
         unique_together = [('domain', 'name')]
@@ -95,7 +99,7 @@ class ApiScope(AutoFilledIdentifier, ImmutableFields, TranslatableModel):
             "(i.e. the Resource Owner).  Generated automatically from "
             "the API identifier and the scope specifier."))
     api = models.ForeignKey(
-        Api, related_name='scopes',
+        Api, related_name='scopes', on_delete=models.CASCADE,
         verbose_name=_("API"),
         help_text=_("The API that this scope is for."))
     specifier = models.CharField(
@@ -182,7 +186,7 @@ class CombinedApiScopeData(object):
 
 class ApiScopeTranslation(TranslatedFieldsModel):
     master = models.ForeignKey(
-        ApiScope, related_name='translations', null=True,
+        ApiScope, related_name='translations', null=True, on_delete=models.CASCADE,
         verbose_name=_("API scope"))
     name = models.CharField(
         max_length=200, verbose_name=_("name"))
@@ -200,9 +204,9 @@ class ApiScopeTranslation(TranslatedFieldsModel):
 
 class AppToAppPermission(models.Model):
     requester = models.ForeignKey(settings.OAUTH2_PROVIDER_APPLICATION_MODEL,
-                                  db_index=True, related_name='+')
+                                  db_index=True, related_name='+', on_delete=models.CASCADE)
     target = models.ForeignKey(settings.OAUTH2_PROVIDER_APPLICATION_MODEL,
-                               db_index=True, related_name='+')
+                               db_index=True, related_name='+', on_delete=models.CASCADE)
 
     def __str__(self):
         return "%s -> %s" % (self.requester, self.target)
