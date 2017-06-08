@@ -132,9 +132,6 @@ AUTH_USER_MODEL = 'users.User'
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.7/howto/static-files/
 
-STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, 'static'),
-)
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -142,7 +139,7 @@ STATICFILES_FINDERS = (
     'sass_processor.finders.CssFinder',
 )
 
-
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/sso/static/'
 
 SITE_ID = 1
@@ -252,6 +249,10 @@ OIDC_USERINFO = 'tunnistamo.oidc.get_userinfo'
 OIDC_IDTOKEN_SUB_GENERATOR = 'tunnistamo.oidc.sub_generator'
 OIDC_EXTRA_SCOPE_CLAIMS = 'tunnistamo.oidc.CombinedScopeClaims'
 OIDC_TOKEN_MODULE = 'tunnistamo.oidc.TunnistamoTokenModule'
+
+SASS_PROCESSOR_INCLUDE_DIRS = [
+    os.path.join(BASE_DIR, 'node_modules'),
+]
 
 SASS_PRECISION = 8
 
