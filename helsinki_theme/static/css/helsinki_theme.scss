@@ -31,8 +31,14 @@ $fa-font-path: "../fonts/font-awesome";
   header {
     @extend .clearfix;
 
+    .service-title {
+      margin-top: 0;
+      font-size: $font-size-h4;
+    }
+
     .logo {
-      height: 4em;
+      height: 3.5em;
+      margin: -0.5em -0.5em 0 0;
       float: right;
     }
   }
