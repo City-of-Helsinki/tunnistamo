@@ -6,7 +6,7 @@ from oidc_provider.lib.utils.token import TokenModule
 from hkijwt.models import ApiScope
 
 
-class HelssoTokenModule(TokenModule):
+class TunnistamoTokenModule(TokenModule):
     def create_id_token(self, user, client, nonce='', at_hash='',
                         request=None, scope=[]):
         """
@@ -17,7 +17,7 @@ class HelssoTokenModule(TokenModule):
         :type request: django.http.HttpRequest|None
         :type scope: list[str]
         """
-        payload = super(HelssoTokenModule, self).create_id_token(
+        payload = super().create_id_token(
             user, client, nonce, at_hash, request, scope)
 
         api_data = ApiScope.get_data_for_request(scope, client)

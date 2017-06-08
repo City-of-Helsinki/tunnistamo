@@ -243,7 +243,7 @@ SOCIALACCOUNT_PROVIDERS = {
 OIDC_USERINFO = 'tunnistamo.oidc.get_userinfo'
 OIDC_IDTOKEN_SUB_GENERATOR = 'tunnistamo.oidc.sub_generator'
 OIDC_EXTRA_SCOPE_CLAIMS = 'tunnistamo.oidc.CombinedScopeClaims'
-OIDC_TOKEN_MODULE = 'tunnistamo.oidc.HelssoTokenModule'
+OIDC_TOKEN_MODULE = 'tunnistamo.oidc.TunnistamoTokenModule'
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
