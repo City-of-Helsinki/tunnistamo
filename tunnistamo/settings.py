@@ -33,6 +33,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
 
     'parler',
+    'sass_processor',
 
     'oauth2_provider',
     'users',
@@ -134,6 +135,13 @@ AUTH_USER_MODEL = 'users.User'
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'npm.finders.NpmFinder',
+    'sass_processor.finders.CssFinder',
+)
+
 
 STATIC_URL = '/sso/static/'
 
@@ -244,6 +252,8 @@ OIDC_USERINFO = 'tunnistamo.oidc.get_userinfo'
 OIDC_IDTOKEN_SUB_GENERATOR = 'tunnistamo.oidc.sub_generator'
 OIDC_EXTRA_SCOPE_CLAIMS = 'tunnistamo.oidc.CombinedScopeClaims'
 OIDC_TOKEN_MODULE = 'tunnistamo.oidc.TunnistamoTokenModule'
+
+SASS_PRECISION = 8
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.

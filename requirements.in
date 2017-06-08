@@ -13,3 +13,7 @@ psycopg2
 raven
 PyJWT
 cryptography
+django-npm
+libsass
+django-compressor
+django-sass-processor
