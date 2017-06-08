@@ -10,7 +10,6 @@ class DontRequireIdentifier(object):
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         field = super(DontRequireIdentifier, self).formfield_for_dbfield(
             db_field, request, **kwargs)
-        print(field)
         if db_field.name == 'identifier':
             field.required = False
         return field
