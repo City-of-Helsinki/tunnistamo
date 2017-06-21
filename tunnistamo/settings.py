@@ -285,7 +285,7 @@ if 'SECRET_KEY' not in locals():
             SECRET_KEY = ''.join([system_random.choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(64)])
             with open(secret_file, 'w') as f:
                 import os
-                os.chmod(f, 0o0600)
+                os.fchmod(f.fileno(), 0o0600)
                 f.write(SECRET_KEY)
                 f.close()
         except IOError:
