@@ -146,6 +146,14 @@ class Migration(migrations.Migration):
                 on_delete=django.db.models.deletion.CASCADE,
                 to='oidc_apis.ApiDomain', verbose_name='domain'),
         ),
+        migrations.AddField(
+            model_name='api',
+            name='oidc_client',
+            field=models.OneToOneField(
+                on_delete=django.db.models.deletion.CASCADE,
+                related_name='+', to='oidc_provider.Client',
+                verbose_name='OIDC client'),
+        ),
         migrations.AlterUniqueTogether(
             name='apiscopetranslation',
             unique_together=set([('language_code', 'master')]),

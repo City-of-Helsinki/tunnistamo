@@ -22,6 +22,13 @@ class ApiDomainAdmin(admin.ModelAdmin):
 class ApiAdmin(admin.ModelAdmin):
     list_display = ['identifier', 'name', 'required_scopes_string']
 
+    def formfield_for_dbfield(self, db_field, request, **kwargs):
+        field = super(ApiAdmin, self).formfield_for_dbfield(
+            db_field, request, **kwargs)
+        if db_field.name == 'oidc_client':
+            field.required = False
+        return field
+
 
 @admin.register(ApiScope)
 class ApiScopeAdmin(DontRequireIdentifier, TranslatableAdmin):

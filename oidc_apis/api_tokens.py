@@ -39,15 +39,19 @@ def get_api_tokens_by_access_token(token, request=None):
 def generate_api_token(api_scopes, token, request=None):
     assert api_scopes
     api = api_scopes[0].api
+    audience = api.oidc_client.client_id
     req_scopes = api.required_scopes
-    userinfo = get_userinfo_by_scopes(token.user, req_scopes, token.client)
-    id_token = create_id_token(token.user, aud=api.identifier, request=request)
+
+    userinfo = get_userinfo_by_scopes(token.user, req_scopes)
+    id_token = create_id_token(token.user, aud=audience, request=request)
+
     payload = {}
     payload.update(userinfo)
     payload.update(id_token)
     payload.update(_get_api_authorization_claims(api_scopes))
     payload['exp'] = _get_api_token_expires_at(token)
-    return encode_id_token(payload, token.client)
+
+    return encode_id_token(payload, api.oidc_client)
 
 
 def _get_api_authorization_claims(api_scopes):
