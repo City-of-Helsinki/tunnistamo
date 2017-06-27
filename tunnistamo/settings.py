@@ -253,6 +253,7 @@ SOCIALACCOUNT_PROVIDERS = {
 OIDC_USERINFO = 'tunnistamo.oidc.get_userinfo'
 OIDC_IDTOKEN_SUB_GENERATOR = 'tunnistamo.oidc.sub_generator'
 OIDC_EXTRA_SCOPE_CLAIMS = 'oidc_apis.scopes.CombinedScopeClaims'
+OIDC_IDTOKEN_PROCESSING_HOOK = 'oidc_apis.id_token.process_id_token'
 
 SASS_PROCESSOR_INCLUDE_DIRS = [
     os.path.join(BASE_DIR, 'node_modules'),

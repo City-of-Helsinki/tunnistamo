@@ -49,9 +49,6 @@ Tunnistamo:
       "email_verified": true,
   }
 
-TODO: Currently only the basic claims are present. Fix doc or implement
-      including the extra claims.
-
 Access Token
 ------------
 
