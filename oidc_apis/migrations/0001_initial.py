@@ -35,12 +35,12 @@ class Migration(migrations.Migration):
                     verbose_name='name')),
                 ('required_scopes',
                  multiselectfield.db.fields.MultiSelectField(
+                     blank=True,
                      choices=[
                          ('email', 'E-mail'),
                          ('profile', 'Profile'),
                          ('address', 'Address'),
                          ('github_username', 'GitHub username')],
-                     default=['email', 'profile'],
                      help_text=(
                          'Select the scopes that this API needs '
                          'information from. Information from the '

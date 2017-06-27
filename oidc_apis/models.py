@@ -47,8 +47,7 @@ class Api(models.Model):
         verbose_name=_("name")
     )
     required_scopes = MultiSelectField(
-        choices=SCOPE_CHOICES, max_length=1000,
-        default=['email', 'profile'],
+        choices=SCOPE_CHOICES, max_length=1000, blank=True,
         verbose_name=_("required scopes"),
         help_text=_(
             "Select the scopes that this API needs information from. "
