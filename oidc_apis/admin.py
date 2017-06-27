@@ -1,4 +1,7 @@
+import oidc_provider.admin
+import oidc_provider.models
 from django.contrib import admin
+from django.contrib.admin.sites import site as admin_site
 from parler.admin import TranslatableAdmin
 
 from .models import Api, ApiDomain, ApiScope, ApiScopeTranslation
@@ -48,3 +51,24 @@ class ApiScopeAdmin(DontRequireIdentifier, TranslatableAdmin):
 class ApiScopeTranslationAdmin(admin.ModelAdmin):
     list_filter = ['master', 'language_code']
     list_display = ['master', 'language_code', 'name', 'description']
+
+
+class OidcClientForm(oidc_provider.admin.ClientForm):
+    """
+    OIDC Client form which allows changing the client_id.
+    """
+    def __init__(self, *args, **kwargs):
+        super(OidcClientForm, self).__init__(*args, **kwargs)
+        self.fields['client_id'].required = True
+        self.fields['client_id'].widget.attrs.pop('disabled', None)
+
+    def clean_client_id(self):
+        return self.cleaned_data['client_id']
+
+
+admin_site.unregister(oidc_provider.models.Client)
+
+
+@admin.register(oidc_provider.models.Client)
+class ClientAdmin(oidc_provider.admin.ClientAdmin):
+    form = OidcClientForm
