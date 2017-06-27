@@ -1,5 +1,3 @@
-from collections import defaultdict
-
 from django.core.validators import RegexValidator
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -136,54 +134,11 @@ class ApiScope(AutoFilledIdentifier, ImmutableFields, TranslatableModel):
             suffix=('.' + self.specifier if self.specifier else '')
         )
 
-    @classmethod
-    def get_data_for_request(cls, scopes, client=None):
-        assert isinstance(scopes, (list, set)), repr(scopes)
-        assert client is None or isinstance(client, models.Model), repr(client)
-        known_api_scopes = cls.objects.by_identifiers(scopes)
-        allowed_api_scopes = (
-            known_api_scopes.allowed_for_client(client) if client
-            else known_api_scopes)
-        return CombinedApiScopeData(allowed_api_scopes)
-
-
-class CombinedApiScopeData(object):
-    """
-    API scope data combined from several ApiScope objects.
-    """
-    def __init__(self, api_scopes):
-        self.api_scopes = api_scopes
-        self.apis = {api_scope.api for api_scope in self.api_scopes}
-
-    @property
-    def required_scopes(self):
-        """
-        The scopes required by the APIs.
-        """
-        return set(sum((list(api.required_scopes) for api in self.apis), []))
-
-    @property
-    def audiences(self):
-        """
-        The audiences for the APIs, for ID token "aud" field.
-        """
-        return sorted(api.identifier for api in self.apis)
-
-    @property
-    def authorization_claims(self):
-        """
-        API scope authorization fields for the claims dictionary.
-        """
-        authorization_claims = defaultdict(list)
-        for api_scope in self.api_scopes:
-            field = api_scope.api.domain.identifier
-            authorization_claims[field].append(api_scope.relative_identifier)
-        return dict(authorization_claims)
-
 
 class ApiScopeTranslation(TranslatedFieldsModel):
     master = models.ForeignKey(
-        ApiScope, related_name='translations', null=True, on_delete=models.CASCADE,
+        ApiScope, related_name='translations', null=True,
+        on_delete=models.CASCADE,
         verbose_name=_("API scope"))
     name = models.CharField(
         max_length=200, verbose_name=_("name"))

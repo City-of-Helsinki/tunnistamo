@@ -252,8 +252,7 @@ SOCIALACCOUNT_PROVIDERS = {
 # django-oidc-provider settings for OpenID Connect support
 OIDC_USERINFO = 'tunnistamo.oidc.get_userinfo'
 OIDC_IDTOKEN_SUB_GENERATOR = 'tunnistamo.oidc.sub_generator'
-OIDC_EXTRA_SCOPE_CLAIMS = 'tunnistamo.oidc.CombinedScopeClaims'
-OIDC_TOKEN_MODULE = 'tunnistamo.oidc.TunnistamoTokenModule'
+OIDC_EXTRA_SCOPE_CLAIMS = 'oidc_apis.scopes.CombinedScopeClaims'
 
 SASS_PROCESSOR_INCLUDE_DIRS = [
     os.path.join(BASE_DIR, 'node_modules'),
