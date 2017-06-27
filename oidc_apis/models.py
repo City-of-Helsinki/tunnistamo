@@ -52,7 +52,7 @@ class Api(models.Model):
         help_text=_(
             "Select the scopes that this API needs information from. "
             "Information from the selected scopes will be included to "
-            "the ID tokens.")
+            "the API Tokens.")
     )
 
     class Meta:
@@ -90,7 +90,7 @@ class ApiScope(AutoFilledIdentifier, ImmutableFields, TranslatableModel):
         verbose_name=_("identifier"),
         help_text=_(
             "The scope identifier as known by the API application "
-            "(i.e. the Resource Owner).  Generated automatically from "
+            "(i.e. the Resource Server).  Generated automatically from "
             "the API identifier and the scope specifier."))
     api = models.ForeignKey(
         Api, related_name='scopes', on_delete=models.CASCADE,
