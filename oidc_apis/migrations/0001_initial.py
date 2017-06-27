@@ -45,7 +45,7 @@ class Migration(migrations.Migration):
                          'Select the scopes that this API needs '
                          'information from. Information from the '
                          'selected scopes will be included to the '
-                         'ID tokens.'),
+                         'API Tokens.'),
                      max_length=1000, verbose_name='required scopes')),
             ],
             options={
@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
                 ('identifier', models.CharField(
                     editable=False, help_text=(
                         'The scope identifier as known by the API application '
-                        '(i.e. the Resource Owner).  Generated automatically '
+                        '(i.e. the Resource Server).  Generated automatically '
                         'from the API identifier and the scope specifier.'),
                     max_length=150, unique=True, verbose_name='identifier')),
                 ('specifier', models.CharField(
