@@ -5,7 +5,6 @@ from django.utils import timezone
 from oidc_provider.lib.utils.token import create_id_token, encode_id_token
 
 from .models import ApiScope
-from .scopes import get_userinfo_by_scopes
 
 
 def get_api_tokens_by_access_token(token, request=None):
@@ -42,11 +41,10 @@ def generate_api_token(api_scopes, token, request=None):
     audience = api.oidc_client.client_id
     req_scopes = api.required_scopes
 
-    userinfo = get_userinfo_by_scopes(token.user, req_scopes)
-    id_token = create_id_token(token.user, aud=audience, request=request)
+    id_token = create_id_token(
+        token.user, aud=audience, request=request, scope=req_scopes)
 
     payload = {}
-    payload.update(userinfo)
     payload.update(id_token)
     payload.update(_get_api_authorization_claims(api_scopes))
     payload['exp'] = _get_api_token_expires_at(token)
