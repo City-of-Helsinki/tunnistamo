@@ -8,6 +8,7 @@ from django.contrib.staticfiles import views as static_views
 from django.http import HttpResponse
 from django.views.defaults import permission_denied
 
+from oidc_apis.views import get_api_tokens_view
 from users.views import EmailNeededView, LoginView, LogoutView
 
 from .api import GetJWTView, UserView
@@ -25,6 +26,7 @@ def show_login(request):
 
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
+    url(r'^api-tokens/?$', get_api_tokens_view),
     url(r'^accounts/profile/', show_login),
     url(r'^accounts/login/', LoginView.as_view()),
     url(r'^accounts/logout/', LogoutView.as_view()),
