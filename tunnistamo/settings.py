@@ -56,6 +56,7 @@ INSTALLED_APPS = (
     'yletunnus',
     'adfs_provider',
     'hkijwt',
+    'oidc_apis',
 )
 
 MIDDLEWARE_CLASSES = (
