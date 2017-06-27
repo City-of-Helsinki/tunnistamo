@@ -1,5 +1,7 @@
+from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator
 from django.db import models
+from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext_lazy as _
 from multiselectfield import MultiSelectField
 from oidc_provider.models import Client
@@ -54,6 +56,11 @@ class Api(models.Model):
             "Information from the selected scopes will be included to "
             "the API Tokens.")
     )
+    oidc_client = models.OneToOneField(
+        Client, related_name='+',
+        on_delete=models.CASCADE,
+        verbose_name=_("OIDC client")
+    )
 
     class Meta:
         unique_together = [('domain', 'name')]
@@ -72,6 +79,33 @@ class Api(models.Model):
     def required_scopes_string(self):
         return ' '.join(sorted(self.required_scopes))
     required_scopes_string.short_description = _("required scopes")
+
+    def clean(self):
+        if getattr(self, 'oidc_client', None) is None:
+            self.oidc_client = _get_or_create_oidc_client_for_api(self)
+        else:
+            if self.oidc_client.client_id != self.identifier:
+                raise ValidationError(
+                    {'oidc_client': _(
+                        "OIDC Client ID must match with the identifier")})
+        super(Api, self).clean()
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super(Api, self).save(*args, **kwargs)
+
+
+def _get_or_create_oidc_client_for_api(api):
+    (client, _created) = Client.objects.get_or_create(
+        client_id=api.identifier,
+        defaults={
+            'name': api.name,
+            'client_type': 'confidential',
+            'client_secret': get_random_string(length=50),
+            'response_type': 'code',
+            'jwt_alg': 'RS256',
+        })
+    return client
 
 
 class ApiScopeQuerySet(TranslatableQuerySet):
