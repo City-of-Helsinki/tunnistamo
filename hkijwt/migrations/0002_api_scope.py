@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 import django.core.validators
 from django.db import migrations, models
 import django.db.models.deletion
-import hkijwt.mixins
 import multiselectfield.db.fields
 import parler.models
 
@@ -54,7 +53,9 @@ class Migration(migrations.Migration):
                 'verbose_name': 'API scope',
                 'verbose_name_plural': 'API scopes',
             },
-            bases=(hkijwt.mixins.AutoFilledIdentifier, hkijwt.mixins.ImmutableFields, parler.models.TranslatableModelMixin, models.Model),
+            bases=(
+                parler.models.TranslatableModelMixin,
+                models.Model),
         ),
         migrations.CreateModel(
             name='ApiScopeTranslation',
