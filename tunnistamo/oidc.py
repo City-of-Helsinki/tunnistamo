@@ -1,3 +1,6 @@
+import oidc_provider.views
+
+
 def sub_generator(user):
     return str(user.uuid)
 
@@ -47,3 +50,57 @@ def get_userinfo(claims, user):
     claims['zoneinfo'] = None
 
     return claims
+
+
+def patch_oidc_provider_user_consent_handling():
+    """
+    Fix User consent storing of public clients on Django OIDC Provider.
+
+    This is needed, because Django OIDC Provider doesn't allow stored
+    User Consent to be used if client type is public.
+
+    This hack replaces the value "public" with another value while doing
+    the authorize request in django_oidc and finally restores the
+    original value.
+    """
+    global _oidc_provider_user_consent_handling_patched
+    if _oidc_provider_user_consent_handling_patched:
+        return
+    _oidc_provider_user_consent_handling_patched = True
+
+    client_type_hack_value = 'public (HACK to make user consent saving work)'
+
+    orig_authorize_view_get = oidc_provider.views.AuthorizeView.get
+
+    def patched_authorize_view_get(self, request, *args, **kwargs):
+        orig_authorize_endpoint = oidc_provider.views.AuthorizeEndpoint
+
+        class ModifiedAuthorizeEndpoint(orig_authorize_endpoint):
+            client_to_restore = None
+
+            @property
+            def client(self):
+                client = self._client
+                if client.client_type == 'public':
+                    client.client_type = client_type_hack_value
+                    ModifiedAuthorizeEndpoint.client_to_restore = client
+                return client
+
+            @client.setter
+            def client(self, value):
+                self._client = value
+
+        oidc_provider.views.AuthorizeEndpoint = ModifiedAuthorizeEndpoint
+
+        try:
+            return orig_authorize_view_get(self, request, *args, **kwargs)
+        finally:
+            if ModifiedAuthorizeEndpoint.client_to_restore:
+                client = ModifiedAuthorizeEndpoint.client_to_restore
+                if client.client_type == client_type_hack_value:
+                    client.client_type = 'public'
+
+    oidc_provider.views.AuthorizeView.get = patched_authorize_view_get
+
+
+_oidc_provider_user_consent_handling_patched = False
