@@ -5,7 +5,7 @@ from oidc_provider.lib.utils.oauth2 import protected_resource_view
 from .api_tokens import get_api_tokens_by_access_token
 
 
-@require_http_methods(['GET'])
+@require_http_methods(['GET', 'POST'])
 @protected_resource_view(['openid'])
 def get_api_tokens_view(request, token, *args, **kwargs):
     """
