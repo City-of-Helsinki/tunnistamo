@@ -153,9 +153,8 @@ Obtaining the API tokens
 After the RP has authorized itself to one or more API scopes via the
 OIDC authorization request, it may fetch the API tokens from the API
 tokens endpoint using the Access Token for authorization.  This is done
-with a simple GET request with the Access Token given in the
-Authorization header (as a Bearer token) or in a query string (similarly
-to OIDC userinfo endpoint).  The API Token URL is
+with a simple POST request with the Access Token given in the
+Authorization header (as a Bearer token).  The API Token URL is
 
   https://tunnistamo.hel.fi/api-tokens/
 
