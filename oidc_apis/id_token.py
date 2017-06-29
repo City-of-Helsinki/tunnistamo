@@ -10,4 +10,5 @@ def process_id_token(payload, user, scope=None):
         scope = inspect.stack()[1][0].f_locals.get('scope', [])
 
     payload.update(get_userinfo_by_scopes(user, scope))
+    payload['preferred_username'] = user.username
     return payload
