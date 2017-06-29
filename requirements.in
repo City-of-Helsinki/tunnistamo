@@ -3,7 +3,7 @@ django-multiselectfield
 django-oauth-toolkit
 django-parler
 django-cors-headers
-django-oidc-provider
+git+git://github.com/City-of-Helsinki/django-oidc-provider.git@v0.5.0.post1+uc#egg=django-oidc-provider==0.5.0.post1+uc
 djangorestframework
 pyjwt
 django-helusers
