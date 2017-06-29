@@ -12,6 +12,9 @@ from oidc_apis.views import get_api_tokens_view
 from users.views import EmailNeededView, LoginView, LogoutView
 
 from .api import GetJWTView, UserView
+from .oidc import patch_oidc_provider_user_consent_handling
+
+patch_oidc_provider_user_consent_handling()
 
 
 def show_login(request):
