@@ -1,3 +1,4 @@
+import uuid
 from urllib.parse import urlencode
 
 from allauth.account.models import EmailAddress
@@ -47,9 +48,11 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
     def populate_user(self, request, sociallogin, data):
         user = super().populate_user(request, sociallogin, data)
 
-        if sociallogin.account.provider == 'helsinki_adfs':
+        provider = sociallogin.account.get_provider()
+        if provider.id == 'helsinki_adfs':
             user.primary_sid = data.get('primary_sid')
             user.department_name = data.get('department_name')
+            user.uuid = uuid.uuid5(provider.domain_uuid, user.primary_sid).hex
 
         if callable(getattr(user, 'set_username_from_uuid', None)):
             user.set_username_from_uuid()
