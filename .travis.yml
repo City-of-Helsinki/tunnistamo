@@ -1,0 +1,12 @@
+language: python
+python:
+  - '3.6'
+  - 'nightly'
+
+cache: pip
+
+install: 'pip install pytest-cov -r requirements.txt'
+
+script: pytest --cov=.
+
+after_success: codecov
