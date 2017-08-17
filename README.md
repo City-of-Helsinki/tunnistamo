@@ -1,4 +1,4 @@
-[![Build status](https://travis-ci.org/City-of-Helsinki/tunnistamo.svg)](https://travis-ci.org/City-of-Helsinki/tunnistamo)
+[![Build status](https://travis-ci.org/City-of-Helsinki/tunnistamo.svg?branch=master)](https://travis-ci.org/City-of-Helsinki/tunnistamo)
 [![codecov](https://codecov.io/gh/City-of-Helsinki/tunnistamo/branch/master/graph/badge.svg)](https://codecov.io/gh/City-of-Helsinki/tunnistamo)
 [![Requirements](https://requires.io/github/City-of-Helsinki/tunnistamo/requirements.svg?branch=master)](https://requires.io/github/City-of-Helsinki/tunnistamo/requirements/?branch=master)
 
