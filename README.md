@@ -41,6 +41,8 @@ modify them in the same file by adding these lines:
 ```
 DATABASES = {
     'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'custom_database',
         'USER': 'custom_user',
         'PASSWORD': 'your_password',
         'HOST': '127.0.0.1',
