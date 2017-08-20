@@ -23,14 +23,29 @@ cd tunnistamo
 
 Initiate a virtualenv and install the Python requirements:
 ```
-pyenv virtualenv tunnistamo-env
+pyenv virtualenv 3.6.2 tunnistamo-env
 pyenv local tunnistamo-env
 pip install -r requirements.txt
 ```
 
+You may choose some other Python version to install but currently Tunnistamo
+requires Python 3.
+
 Create `local_settings.py` in the repo base dir containing the following line:
 ```
 DEBUG = True
+```
+
+In case you want to modify the default database configurations, you may also
+modify them in the same file by adding these lines:
+```
+DATABASES = {
+    'default': {
+        'USER': 'custom_user',
+        'PASSWORD': 'your_password',
+        'HOST': '127.0.0.1',
+    }
+}
 ```
 
 Run migrations:
@@ -55,7 +70,7 @@ and login to http://127.0.0.1:8000/ using the admin user credentials.
 Tunnistamo uses [prequ](https://github.com/suutari/prequ) – a fork of pip-tools –
 to manage the Python dependencies.
 prequ can handle `-e` style dependencies (git URLs) in the requirements files.
- 
+
 Update the requirements with:
 ```
 pip install prequ
