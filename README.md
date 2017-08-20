@@ -66,6 +66,10 @@ python manage.py runserver
 ```
 and login to http://127.0.0.1:8000/ using the admin user credentials.
 
+To access the themed views you also need to install
+[npm](https://docs.npmjs.com/getting-started/installing-node) and run
+`npm install` at the project root.
+
 ## Developing
 
 ### Outdated Python dependencies
