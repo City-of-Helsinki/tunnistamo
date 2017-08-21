@@ -17,7 +17,13 @@ from .api import GetJWTView, UserView
 def show_login(request):
     html = "<html><body>"
     if request.user.is_authenticated:
-        html += "%s" % request.user
+        html += "<div>%s</div>" % request.user
+        if request.user.ad_groups.exists():
+            html += "<h3>AD groups</h3>"
+            html += "<ul>"
+            for group in request.user.ad_groups.all():
+                html += "<li>%s</li>" % str(group)
+            html += "</ul>"
     else:
         html += "not logged in"
     html += "</body></html>"
