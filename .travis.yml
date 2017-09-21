@@ -11,9 +11,16 @@ before_install:
 install: 'pip install -r requirements.txt -r requirements-dev.txt'
 
 script:
+  # Run the tests
   - flake8
   - isort -c
   - pytest -ra -vvv --cov=.
+  # Check requirements.txt
+  - |
+    if [ "$TRAVIS_PYTHON_VERSION" = "3.6" ]; then
+        pip install -q prequ
+        prequ check -v
+    fi
 
 addons:
   postgresql: '9.6'
