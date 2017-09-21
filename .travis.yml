@@ -7,6 +7,15 @@ cache: pip
 
 install: 'pip install pytest-cov -r requirements.txt'
 
-script: pytest --cov=.
+script:
+  # Run the tests
+  - pytest --cov=. || true  # TODO. Remove the "|| true" when there is tests
+
+  # Check requirements.txt
+  - |
+    if [ "$TRAVIS_PYTHON_VERSION" = "3.6" ]; then
+        pip install -q prequ
+        prequ check -v
+    fi
 
 after_success: codecov
