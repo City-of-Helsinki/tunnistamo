@@ -1,8 +1,7 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from oauth2_provider.models import get_application_model
-from .models import User, LoginMethod
-
+from .models import User, LoginMethod, OidcClientOptions
 
 Application = get_application_model()
 
@@ -50,5 +49,21 @@ class ApplicationAdmin(admin.ModelAdmin):
     list_filter = ('site_type',)
     model = Application
 
+
 admin.site.unregister(Application)
 admin.site.register(Application, ApplicationAdmin)
+
+
+class OidcClientOptionsAdmin(admin.ModelAdmin):
+    list_display = ('get_name', 'site_type')
+    list_filter = ('site_type',)
+    model = OidcClientOptions
+
+    def get_name(self, obj):
+        return obj.oidc_client.name
+
+    get_name.short_description = 'OIDC Client Name'
+    get_name.admin_order_field = 'oidc_client__name'
+
+
+admin.site.register(OidcClientOptions, OidcClientOptionsAdmin)

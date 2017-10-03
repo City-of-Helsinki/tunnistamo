@@ -10,8 +10,9 @@ from django.contrib.auth import logout as auth_logout
 
 from allauth.socialaccount import providers
 from oauth2_provider.models import get_application_model
+from oidc_provider.models import Client
 
-from .models import LoginMethod
+from .models import LoginMethod, OidcClientOptions
 
 
 class LoginView(TemplateView):
@@ -20,23 +21,41 @@ class LoginView(TemplateView):
     def get(self, request, *args, **kwargs):
         next_url = request.GET.get('next')
         app = None
+        oidc_client = None
+
         if next_url:
             # Determine application from the 'next' query argument.
             # FIXME: There should be a better way to get the app id.
             params = parse_qs(urlparse(next_url).query)
             client_id = params.get('client_id')
+
             if client_id and len(client_id):
                 client_id = client_id[0].strip()
+
             if client_id:
                 try:
                     app = get_application_model().objects.get(client_id=client_id)
                 except get_application_model().DoesNotExist:
                     pass
+
+                try:
+                    oidc_client = Client.objects.get(client_id=client_id)
+                except get_application_model().DoesNotExist:
+                    pass
+
             next_url = quote(next_url)
 
+        allowed_methods = None
         if app:
             allowed_methods = app.login_methods.all()
-        else:
+        elif oidc_client:
+            try:
+                client_options = OidcClientOptions.objects.get(oidc_client=oidc_client)
+                allowed_methods = client_options.login_methods.all()
+            except OidcClientOptions.DoesNotExist:
+                pass
+
+        if allowed_methods is None:
             allowed_methods = LoginMethod.objects.all()
 
         provider_map = providers.registry.provider_map
@@ -46,7 +65,10 @@ class LoginView(TemplateView):
             if m.provider_id == 'saml':
                 continue  # SAML support removed
             else:
-                provider_cls = provider_map[m.provider_id]
+                try:
+                    provider_cls = provider_map[m.provider_id]
+                except KeyError:
+                    continue
                 provider = provider_cls(request)
                 login_url = provider.get_login_url(request=self.request)
                 if next_url:
