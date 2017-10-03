@@ -1,11 +1,14 @@
 from __future__ import unicode_literals
 
 import uuid
+
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.translation import ugettext_lazy as _
 from allauth.socialaccount import providers
 from helusers.models import AbstractUser
 from oauth2_provider.models import AbstractApplication
+from oidc_provider.models import Client
 
 
 class User(AbstractUser):
@@ -42,7 +45,7 @@ class LoginMethod(models.Model):
         ordering = ('order',)
 
 
-class Application(AbstractApplication):
+class OptionsBase(models.Model):
     SITE_TYPES = (
         ('dev', 'Development'),
         ('test', 'Testing'),
@@ -54,4 +57,21 @@ class Application(AbstractApplication):
     include_ad_groups = models.BooleanField(default=False)
 
     class Meta:
+        abstract = True
+
+
+class Application(OptionsBase, AbstractApplication):
+    class Meta:
         ordering = ('site_type', 'name')
+
+
+class OidcClientOptions(OptionsBase):
+    oidc_client = models.OneToOneField(Client, related_name='+', on_delete=models.CASCADE,
+                                       verbose_name=_("OIDC Client"))
+
+    def __str__(self):
+        return 'Options for OIDC Client "{}"'.format(self.oidc_client.name)
+
+    class Meta:
+        verbose_name = _("OIDC Client Options")
+        verbose_name_plural = _("OIDC Client Options")
