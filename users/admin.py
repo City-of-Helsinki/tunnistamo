@@ -52,18 +52,3 @@ class ApplicationAdmin(admin.ModelAdmin):
 
 admin.site.unregister(Application)
 admin.site.register(Application, ApplicationAdmin)
-
-
-class OidcClientOptionsAdmin(admin.ModelAdmin):
-    list_display = ('get_name', 'site_type')
-    list_filter = ('site_type',)
-    model = OidcClientOptions
-
-    def get_name(self, obj):
-        return obj.oidc_client.name
-
-    get_name.short_description = 'OIDC Client Name'
-    get_name.admin_order_field = 'oidc_client__name'
-
-
-admin.site.register(OidcClientOptions, OidcClientOptionsAdmin)
