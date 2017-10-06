@@ -40,7 +40,7 @@ class LoginView(TemplateView):
 
                 try:
                     oidc_client = Client.objects.get(client_id=client_id)
-                except get_application_model().DoesNotExist:
+                except Client.DoesNotExist:
                     pass
 
             next_url = quote(next_url)
