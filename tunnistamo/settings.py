@@ -57,6 +57,7 @@ INSTALLED_APPS = (
     'adfs_provider',
     'hkijwt',
     'oidc_apis',
+    'suomifi_provider',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -125,7 +126,7 @@ USE_L10N = True
 USE_TZ = True
 
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/profile/'
+LOGIN_REDIRECT_URL = '/accounts/profile/'
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 AUTH_USER_MODEL = 'users.User'
