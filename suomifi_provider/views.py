@@ -5,8 +5,8 @@ from django.http import HttpResponse, HttpResponseRedirect, HttpResponseServerEr
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
 from onelogin.saml2.auth import OneLogin_Saml2_Auth
-from onelogin.saml2.settings import OneLogin_Saml2_Settings
 
+from .settings import SuomiFi_Saml2_Settings
 from suomifi_provider.provider import SuomiFiProvider
 
 
@@ -14,7 +14,7 @@ def get_saml_settings(request):
     provider = providers.registry.by_id(SuomiFiProvider.id, request)
     settings_dict = provider.get_saml_settings_dict(request)
 
-    return OneLogin_Saml2_Settings(settings=settings_dict, sp_validation_only=True)
+    return SuomiFi_Saml2_Settings(settings=settings_dict, sp_validation_only=True)
 
 
 def init_saml_auth(request):

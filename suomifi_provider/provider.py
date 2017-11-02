@@ -3,6 +3,7 @@ import collections
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.providers.base import Provider, ProviderAccount
 from django.urls import reverse
+from django.conf import settings as django_settings
 
 from suomifi_provider.models import SamlSettings
 from suomifi_provider.suomifi_uri import MAP
@@ -110,10 +111,14 @@ class SuomiFiProvider(Provider):
         except SamlSettings.DoesNotExist:
             raise RuntimeError("Saml settings for app {} do not exist. Please create it in the admin.".format(app))
 
+        languages = [i[0] for i in django_settings.LANGUAGES]
+
+        app_saml_settings.set_current_language(languages[0])
+
         acs_url = request.build_absolute_uri(reverse("suomifi_acs"))
         sls_url = request.build_absolute_uri(reverse("suomifi_sls"))
 
-        return {
+        settings_dict = {
             "sp": {
                 "entityId": app_saml_settings.sp_entity_id,
                 "assertionConsumerService": {
@@ -125,7 +130,7 @@ class SuomiFiProvider(Provider):
                     "binding": "urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect",
                 },
                 "attributeConsumingService": {
-                    "serviceName": "Tunnistamo TEST",
+                    "serviceName": app_saml_settings.service_name,
                     "requestedAttributes": [
                         {
                             "name": MAP['to']['displayName'],
@@ -213,13 +218,34 @@ class SuomiFiProvider(Provider):
                 }
             },
             "organization": {
-                "en-US": {
-                    "name": app_saml_settings.organization_name,
-                    "displayname": app_saml_settings.organization_display_name,
-                    "url": app_saml_settings.organization_url,
-                }
-            }
+                # Set below
+            },
+            # Custom SuomiFi settings
+            "service_name": {
+            },
+            "ui": {
+                "logo": app_saml_settings.ui_logo_url,
+            },
         }
+
+        for lang in languages:
+            app_saml_settings.set_current_language(lang)
+
+            settings_dict['organization'][lang] = {
+                "name": app_saml_settings.organization_name,
+                "displayname": app_saml_settings.organization_display_name,
+                "url": app_saml_settings.organization_url,
+            }
+
+            settings_dict['service_name'][lang] = app_saml_settings.service_name
+
+            settings_dict['ui'][lang] = {
+                "displayname": app_saml_settings.ui_display_name,
+                "description": app_saml_settings.ui_description,
+                "privacy_statement_url": app_saml_settings.ui_privacy_statement_url,
+            }
+
+        return settings_dict
 
 
 provider_classes = [SuomiFiProvider]

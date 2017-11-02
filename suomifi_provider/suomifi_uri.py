@@ -32,6 +32,13 @@ MAP = {
         VARMENNEPALVELUT_OID + '2002.2.27': 'TurvakieltoTieto',
         VARMENNEPALVELUT_OID + '2002.2.26': 'SuomenKansalaisuusTietokoodi',
 
+        VARMENNEPALVELUT_OID + '3002.110.1': 'verkkopankkitunnus',
+        VARMENNEPALVELUT_OID + '3002.110.2': 'varmennekortti',
+        VARMENNEPALVELUT_OID + '3002.110.3': 'mobiilivarmenne',
+        VARMENNEPALVELUT_OID + '3002.110.5': 'KatsoOTP',
+        VARMENNEPALVELUT_OID + '3002.110.6': 'KatsoPWD',
+        VARMENNEPALVELUT_OID + '3002.110.999': 'testitunnistusväline',
+
         EDUPERSON_OID + '2': 'eduPersonNickname',
         EDUPERSON_OID + '9': 'eduPersonScopedAffiliation',
         EDUPERSON_OID + '11': 'eduPersonAssurance',
@@ -137,6 +144,13 @@ MAP = {
         'VakinainenUlkomainenLahiosoiteValtiokoodi': VARMENNEPALVELUT_OID + '2002.2.15',
         'TurvakieltoTieto': VARMENNEPALVELUT_OID + '2002.2.27',
         'SuomenKansalaisuusTietokoodi': VARMENNEPALVELUT_OID + '2002.2.26',
+
+        'verkkopankkitunnus': VARMENNEPALVELUT_OID + '3002.110.1',
+        'varmennekortti': VARMENNEPALVELUT_OID + '3002.110.2',
+        'mobiilivarmenne': VARMENNEPALVELUT_OID + '3002.110.3',
+        'KatsoOTP': VARMENNEPALVELUT_OID + '3002.110.5',
+        'KatsoPWD': VARMENNEPALVELUT_OID + '3002.110.6',
+        'testitunnistusväline': VARMENNEPALVELUT_OID + '3002.110.999',
 
         'roleOccupant': X500ATTR_OID + '33',
         'gn': X500ATTR_OID + '42',
