@@ -5,7 +5,6 @@ from allauth.socialaccount.providers.base import Provider, ProviderAccount
 from django.urls import reverse
 from django.conf import settings as django_settings
 
-from suomifi_provider.models import SamlSettings
 from suomifi_provider.suomifi_uri import MAP
 
 
@@ -104,6 +103,9 @@ class SuomiFiProvider(Provider):
         return []
 
     def get_saml_settings_dict(self, request):
+        # Can't import until now because this file is imported by the provider registry before models are available
+        from suomifi_provider.models import SamlSettings
+
         app = self.get_app(request)
 
         try:
