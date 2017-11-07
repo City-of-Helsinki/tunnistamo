@@ -14,7 +14,7 @@ class SamlSettingsAdmin(TranslatableAdmin):
             'fields': ('app', 'service_name')
         }),
         (_('Contact'), {
-            'fields': ('organization_name', 'organization_display_name', 'technical_contact_name',
+            'fields': ('organization_name', 'organization_display_name', 'organization_url', 'technical_contact_name',
                        'technical_contact_email', 'support_contact_name', 'support_contact_email'),
         }),
         (_('Suomi.fi UI settings'), {
