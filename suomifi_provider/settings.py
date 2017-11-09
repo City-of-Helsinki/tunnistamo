@@ -176,11 +176,6 @@ class SuomiFi_Saml2_Settings(OneLogin_Saml2_Settings):
         metadata = self.fix_acs_service_name(metadata)
         metadata = self.add_mdui_tags(metadata)
 
-        # This is a kludge to add the xs namespace which is used in the FinnishAuthMethod AttributeValue.
-        # (lxml strips "unused" namespaces)
-        metadata = metadata.replace(rb'<md:EntityDescriptor ',
-                                    rb'<md:EntityDescriptor xmlns:xs="http://www.w3.org/2001/XMLSchema" ')
-
         # Sign metadata
         if 'signMetadata' in self.security and self.security['signMetadata'] is not False:
             if self.security['signMetadata'] is True:
@@ -236,5 +231,16 @@ class SuomiFi_Saml2_Settings(OneLogin_Saml2_Settings):
             metadata = OneLogin_Saml2_Metadata.sign_metadata(metadata, key_metadata, cert_metadata, signature_algorithm,
                                                              digest_algorithm)
 
-        return metadata
+            # OneLogin_Saml2_Utils.add_sign inserts the signature to the wrong place. Move it to the correct location.
+            elem = OneLogin_Saml2_XML.to_etree(metadata)
+            signature_node = OneLogin_Saml2_XML.query(elem, '/md:EntityDescriptor/*/ds:Signature')
+            if len(signature_node) == 1:
+                elem.insert(0, signature_node[0])
+                metadata = OneLogin_Saml2_XML.to_string(elem)
 
+        # This is a kludge to add the xs namespace which is used in the FinnishAuthMethod AttributeValue.
+        # (lxml strips "unused" namespaces)
+        metadata = metadata.replace(rb'<md:EntityDescriptor ',
+                                    rb'<md:EntityDescriptor xmlns:xs="http://www.w3.org/2001/XMLSchema" ')
+
+        return metadata
