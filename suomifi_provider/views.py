@@ -21,8 +21,9 @@ def init_saml_auth(request):
     request_data = {
         'https': 'on' if request.is_secure() else 'off',
         'http_host': request.META['HTTP_HOST'],
-        'script_name': request.META['PATH_INFO'],
-        'server_port': request.META['SERVER_PORT'],
+        'path_info': request.META['PATH_INFO'],
+        'script_name': request.META['SCRIPT_NAME'],
+        'server_port': request.get_port(),
         'get_data': request.GET.copy(),
         'post_data': request.POST.copy()
     }
