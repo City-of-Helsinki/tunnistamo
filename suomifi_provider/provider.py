@@ -52,6 +52,9 @@ class SuomiFiProvider(Provider):
         if MAP['to']['electronicIdentificationNumber'] in data:
             return get_single_value(data, MAP['to']['electronicIdentificationNumber'])
 
+        if MAP['to']['nationalIdentificationNumber'] in data:
+            return get_single_value(data, MAP['to']['nationalIdentificationNumber'])
+
         if MAP['to']['uid'] in data:
             return get_single_value(data, MAP['to']['uid'])
 
@@ -208,6 +211,7 @@ class SuomiFiProvider(Provider):
                 "wantAssertionsEncrypted": True,
                 "signatureAlgorithm": "http://www.w3.org/2001/04/xmldsig-more#rsa-sha256",
                 "digestAlgorithm": "http://www.w3.org/2000/09/xmldsig#sha1",
+                "requestedAuthnContext": False,
             },
             "contactPerson": {
                 "technical": {
