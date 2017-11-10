@@ -205,7 +205,7 @@ class SuomiFiProvider(Provider):
                 "logoutResponseSigned": True,
                 "signMetadata": True,
                 "wantMessagesSigned": True,
-                "wantAssertionsSigned": True,
+                "wantAssertionsSigned": False,
                 "wantNameId": True,
                 "wantNameIdEncrypted": False,
                 "wantAssertionsEncrypted": True,
