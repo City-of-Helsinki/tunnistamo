@@ -2,11 +2,11 @@ import re
 
 from urllib.parse import urlparse, parse_qs
 
-from django.views.generic.base import TemplateView, View
-from django.core.urlresolvers import reverse
+from allauth.socialaccount.models import SocialLogin
+from django.views.generic.base import TemplateView
 from django.utils.http import quote
 from django.shortcuts import redirect
-from django.contrib.auth import logout as auth_logout
+from django.contrib.auth import logout as auth_logout, get_user_model
 
 from allauth.socialaccount import providers
 from oauth2_provider.models import get_application_model
@@ -22,6 +22,7 @@ class LoginView(TemplateView):
         next_url = request.GET.get('next')
         app = None
         oidc_client = None
+        automatic_redirect_if_single_provider = True
 
         if next_url:
             # Determine application from the 'next' query argument.
@@ -55,6 +56,23 @@ class LoginView(TemplateView):
             except OidcClientOptions.DoesNotExist:
                 pass
 
+        self.original_sociallogin = False
+        if 'original_socialaccount_sociallogin' in request.session:
+            original_sociallogin = SocialLogin.deserialize(request.session['original_socialaccount_sociallogin'])
+            email = original_sociallogin.user.email
+
+            User = get_user_model()
+            try:
+                user = User.objects.get(email__iexact=email)
+                social_set = user.socialaccount_set.all()
+
+                existing_providers = [a.provider for a in social_set]
+                allowed_methods = LoginMethod.objects.filter(provider_id__in=existing_providers)
+                automatic_redirect_if_single_provider = False
+                self.original_sociallogin = original_sociallogin
+            except User.DoesNotExist:
+                pass
+
         if allowed_methods is None:
             allowed_methods = LoginMethod.objects.all()
 
@@ -76,7 +94,7 @@ class LoginView(TemplateView):
             m.login_url = login_url
             methods.append(m)
 
-        if len(methods) == 1:
+        if len(methods) == 1 and automatic_redirect_if_single_provider:
             return redirect(methods[0].login_url)
 
         self.login_methods = methods
@@ -85,6 +103,16 @@ class LoginView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(LoginView, self).get_context_data(**kwargs)
         context['login_methods'] = self.login_methods
+        context['original_sociallogin'] = self.original_sociallogin
+
+        if self.original_sociallogin:
+            original_provider = self.original_sociallogin.account.get_provider()
+            try:
+                original_loginmethod = LoginMethod.objects.get(provider_id=original_provider.id)
+                context['original_loginmethod_name'] = original_loginmethod.name
+            except LoginMethod.DoesNotExist:
+                context['original_loginmethod_name'] = "Unknown"
+
         return context
 
 
@@ -94,6 +122,10 @@ class LogoutView(TemplateView):
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated():
             auth_logout(self.request)
+
+        if 'original_socialaccount_sociallogin' in self.request.session:
+            del self.request.session['original_socialaccount_sociallogin']
+
         url = self.request.GET.get('next')
         if url and re.match(r'http[s]?://', url):
             return redirect(url)

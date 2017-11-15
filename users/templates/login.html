@@ -3,10 +3,21 @@
 {% block title %}Kirjaudu sisään{% endblock %}
 
 {% block content %}
+{% if not original_sociallogin %}
 <p class="doc">
   Tähän palveluun voit tunnistautua käyttämällä jotain näistä
   kirjautumistavoista.
 </p>
+{% else %}
+<p class="doc">
+    Samalla sähköpostiosoitteella on jo tehty tunnus aikaisemmin.
+</p>
+<p class="doc">
+    Kirjaudu sisään uudelleen käyttäen jotain alla olevaa kirjautumistapaa
+    jotta "{{ original_loginmethod_name }}"-kirjautumistapa voidaan liittää olemassa
+    olevaan käyttäjätunnukseen.
+</p>
+{% endif %}
 <div class="hel-login-methods">
   {% for method in login_methods %}
   <div class="login-method login-method-{{ method.provider_id }}

@@ -6,17 +6,18 @@ from allauth.account.utils import user_email
 from allauth.exceptions import ImmediateHttpResponse
 from allauth.socialaccount import app_settings
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
+from allauth.socialaccount.models import SocialLogin
 from allauth.socialaccount.signals import social_account_updated, social_account_added
 from allauth.utils import email_address_exists
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.http import HttpResponseRedirect
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.dispatch import receiver
 
 from .models import LoginMethod
 from adfs_provider.provider import ADFSProvider
-from users.models import User
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):
@@ -41,6 +42,19 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
         if sociallogin.account.provider in trusted_providers:
             if not sociallogin.is_existing:
                 link_by_trusted_email(request, sociallogin)
+
+        if sociallogin.is_existing and 'original_socialaccount_sociallogin' in request.session:
+            original_sociallogin = SocialLogin.deserialize(request.session['original_socialaccount_sociallogin'])
+
+            # Connect the two account only if the email addresses match
+            if not original_sociallogin.is_existing and sociallogin.user.email == original_sociallogin.user.email:
+                original_sociallogin.connect(request, sociallogin.user)
+
+            if 'next' in original_sociallogin.state:
+                sociallogin.state['next'] = original_sociallogin.state['next']
+
+        if 'original_socialaccount_sociallogin' in request.session:
+            del request.session['original_socialaccount_sociallogin']
 
         return super(SocialAccountAdapter, self).pre_social_login(
             request, sociallogin)
@@ -76,8 +90,10 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
 
     def is_open_for_signup(self, request, sociallogin):
         email = user_email(sociallogin.user)
-        # If we have a user with that email already, we don't allow
-        # a signup through a new provider. Revisit this in the future.
+        # If we have a user with that email already, we will save the
+        # current social login to the session, redirect user to the
+        # login and ask them to log in with a previously used login
+        # method to connect the two methods.
         if email_address_exists(email):
             User = get_user_model()
             try:
@@ -87,8 +103,14 @@ class SocialAccountAdapter(DefaultSocialAccountAdapter):
                 # allow the signup.
                 if not social_set:
                     return True
+
                 providers = [a.provider for a in social_set]
                 request.other_logins = LoginMethod.objects.filter(provider_id__in=providers)
+
+                if 'original_socialaccount_sociallogin' not in request.session:
+                    request.session['original_socialaccount_sociallogin'] = sociallogin.serialize()
+
+                    raise ImmediateHttpResponse(HttpResponseRedirect(settings.LOGIN_URL))
             except User.DoesNotExist:
                 request.other_logins = []
             return False
