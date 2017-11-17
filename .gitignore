@@ -7,3 +7,4 @@
 /static
 /oidc_provider
 .python-version
+.coverage

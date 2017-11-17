@@ -5,8 +5,11 @@ python:
 
 cache: pip
 
-install: 'pip install pytest-cov -r requirements.txt'
+install: 'pip install -r requirements.txt -r requirements-dev.txt'
 
-script: pytest --cov=.
+script:
+  - flake8
+  - isort -c
+  - pytest -ra -vvv --cov=.
 
 after_success: codecov
