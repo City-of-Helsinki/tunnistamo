@@ -1,6 +1,6 @@
+from allauth.socialaccount.models import SocialApp
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from allauth.socialaccount.models import SocialApp
 
 
 class ADFSRealm(models.Model):

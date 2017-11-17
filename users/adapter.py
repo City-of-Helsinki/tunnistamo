@@ -6,17 +6,16 @@ from allauth.account.utils import user_email
 from allauth.exceptions import ImmediateHttpResponse
 from allauth.socialaccount import app_settings
 from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
-from allauth.socialaccount.signals import social_account_updated, social_account_added
+from allauth.socialaccount.signals import social_account_added, social_account_updated
 from allauth.utils import email_address_exists
-from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.dispatch import receiver
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.dispatch import receiver
+
+from adfs_provider.provider import ADFSProvider
 
 from .models import LoginMethod
-from adfs_provider.provider import ADFSProvider
-from users.models import User
 
 
 class SocialAccountAdapter(DefaultSocialAccountAdapter):

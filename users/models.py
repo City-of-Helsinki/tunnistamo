@@ -2,10 +2,10 @@ from __future__ import unicode_literals
 
 import uuid
 
+from allauth.socialaccount import providers
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
-from allauth.socialaccount import providers
 from helusers.models import AbstractUser
 from oauth2_provider.models import AbstractApplication
 from oidc_provider.models import Client

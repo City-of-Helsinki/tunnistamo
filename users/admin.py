@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from oauth2_provider.models import get_application_model
-from .models import User, LoginMethod
+
+from .models import LoginMethod, User
 
 Application = get_application_model()
 
