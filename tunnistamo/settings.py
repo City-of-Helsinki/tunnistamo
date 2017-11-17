@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 # Quick-start development settings - unsuitable for production
@@ -284,7 +285,8 @@ if 'SECRET_KEY' not in locals():
         import random
         system_random = random.SystemRandom()
         try:
-            SECRET_KEY = ''.join([system_random.choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(64)])
+            SECRET_KEY = ''.join(
+                [system_random.choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(64)])
             with open(secret_file, 'w') as f:
                 import os
                 os.fchmod(f.fileno(), 0o0600)

@@ -1,14 +1,11 @@
 import re
-
-from urllib.parse import urlparse, parse_qs
-
-from django.views.generic.base import TemplateView, View
-from django.core.urlresolvers import reverse
-from django.utils.http import quote
-from django.shortcuts import redirect
-from django.contrib.auth import logout as auth_logout
+from urllib.parse import parse_qs, urlparse
 
 from allauth.socialaccount import providers
+from django.contrib.auth import logout as auth_logout
+from django.shortcuts import redirect
+from django.utils.http import quote
+from django.views.generic.base import TemplateView
 from oauth2_provider.models import get_application_model
 from oidc_provider.models import Client
 

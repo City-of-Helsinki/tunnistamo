@@ -1,13 +1,11 @@
 import base64
 
 import jwt
-from allauth.socialaccount.providers.oauth2.views import (
-    OAuth2Adapter, OAuth2CallbackView, OAuth2LoginView)
+from allauth.socialaccount.providers.oauth2.views import OAuth2Adapter, OAuth2CallbackView, OAuth2LoginView
 from cryptography import x509
 from cryptography.hazmat.backends import default_backend
 
-from .provider import HelsinkiADFSProvider, EspooADFSProvider
-
+from .provider import EspooADFSProvider, HelsinkiADFSProvider
 
 x509_backend = default_backend()
 
@@ -99,7 +97,46 @@ class EspooADFSOAuth2Adapter(ADFSOAuth2Adapter):
     authorize_url = 'https://fs.espoo.fi/adfs/oauth2/authorize'
     profile_url = 'https://api.hel.fi/sso/user/'
 
-    cert = ('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')
+    cert = ('MIIG/jCCBOagAwIBAgIKVXqGvQABAABhVDANBgkqhkiG9w0BAQUFADBaMRQwE'
+            'gYKCZImiZPyLGQBGRYEY2l0eTESMBAGCgmSJomT8ixkARkWAmFkMRUwEwYKCZ'
+            'ImiZPyLGQBGRYFZXNwb28xFzAVBgNVBAMTDkluZnJhIEggU3ViIENBMB4XDTE'
+            '0MDEyNDA5MzY0OFoXDTIwMDEyMzA5MzY0OFowIjEgMB4GA1UEAxMXQURGUyBT'
+            'aWduIC0gZnMuZXNwb28uZmkwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKA'
+            'oIBAQC6qNsZjYTaZISbhpwPpUNvkQ5mJrjOUw976qaDidtIyTkgsumOxbj9ZS'
+            'Hpu6o91VTZWFVAa57t1eKCf/ALKrYl3wDLVpNzawX9JrA6R9mJic1nIBr65Tb'
+            'zs13+F6L78qbphfPzJcJt9iJnjir6pV8JX0fHCbS1r6rYlFgw5JDQmqv/0USi'
+            'OvjwTBWdB+XvvoDNK5uRfVGHkxeE9eHiEdiKBj4X8A77kOYJwy/ZgluiRdjFO'
+            'Sd7Vye2DwB3J1ed709K07ollAJRFJ+/cGS0SC7+b+vK1G1dJcCrDeNQKYLnLv'
+            'MlxIlXZl1GamnTIFLBswGJvUr/P//ThVqtTFyoDAbxAgMBAAGjggL8MIIC+DA'
+            '+BgkrBgEEAYI3FQcEMTAvBicrBgEEAYI3FQiE3KFUgeH0QIS5mziD5egZh7aY'
+            'PoEbhtfpHYSAlToCAWQCAQYwEwYDVR0lBAwwCgYIKwYBBQUHAwEwDgYDVR0PA'
+            'QH/BAQDAgWgMBsGCSsGAQQBgjcVCgQOMAwwCgYIKwYBBQUHAwEwHQYDVR0OBB'
+            'YEFI4Jcou6zeov5Sx5VMaOKZYMDioNMB8GA1UdIwQYMBaAFJpD8txlNgdsefj'
+            's2N9YPIovPYwwMIIBCgYDVR0fBIIBATCB/jCB+6CB+KCB9YaBuWxkYXA6Ly8v'
+            'Q049SW5mcmElMjBIJTIwU3ViJTIwQ0EsQ049Uy1ILUNBLTAxLENOPUNEUCxDT'
+            'j1QdWJsaWMlMjBLZXklMjBTZXJ2aWNlcyxDTj1TZXJ2aWNlcyxDTj1Db25maW'
+            'd1cmF0aW9uLERDPWFkLERDPWNpdHk/Y2VydGlmaWNhdGVSZXZvY2F0aW9uTGl'
+            'zdD9iYXNlP29iamVjdENsYXNzPWNSTERpc3RyaWJ1dGlvblBvaW50hjdodHRw'
+            'Oi8vY3JsLmVzcG9vLmZpL0NlcnRFbnJvbGwvSW5mcmElMjBIJTIwU3ViJTIwQ'
+            '0EuY3JsMIIBJAYIKwYBBQUHAQEEggEWMIIBEjCBrwYIKwYBBQUHMAKGgaJsZG'
+            'FwOi8vL0NOPUluZnJhJTIwSCUyMFN1YiUyMENBLENOPUFJQSxDTj1QdWJsaWM'
+            'lMjBLZXklMjBTZXJ2aWNlcyxDTj1TZXJ2aWNlcyxDTj1Db25maWd1cmF0aW9u'
+            'LERDPWFkLERDPWNpdHk/Y0FDZXJ0aWZpY2F0ZT9iYXNlP29iamVjdENsYXNzP'
+            'WNlcnRpZmljYXRpb25BdXRob3JpdHkwXgYIKwYBBQUHMAKGUmh0dHA6Ly9jcm'
+            'wuZXNwb28uZmkvQ2VydEVucm9sbC9TLUgtQ0EtMDEuZXNwb28uYWQuY2l0eV9'
+            'JbmZyYSUyMEglMjBTdWIlMjBDQSgxKS5jcnQwDQYJKoZIhvcNAQEFBQADggIB'
+            'AEgNKxTFPB88oJ+DzkcSazOjMPi5xekmDYIDnj8Qwu/vE/5OfSFMGLvJWnIT/'
+            'IdIthrzF0YT4eIxhEXff/37BgqK+jjC0uPGcz4kiFKU2fVghFJuhHUabHTsrL'
+            'e7X9eA/IfDLnO3B/7MoF4Bo3PrCnIKWFcs+JPompGa+vRfe/Ia/J76Lukzave'
+            'xBFtDWx5euYcU8VejQ3wirut8QrS56UJxkiCT2/rIu9SKVlMF7Kbdcc4g65lk'
+            '0zu37FmtjxvQs9lGI4RfTDv19JbLGW8JGBfMlBbf1h1t1749fOwqNcRUtX9yV'
+            '6uly2BAGmqoNbiCAWT1vVpY6xjn26i65BX26YjrHCuX/l8Qnqp996wMf5tsqC'
+            'PIsV1cG3vEGdbGHzYbda4+TevHcdDjZKjtYjWt9JNoI0mGpXT98Y2ibE9eY+K'
+            'Aul2KJJSmZKUfXAC20uXYEM3Wkn8rsqxR0khY0ChZvAcKYHhyfRnv83qSDmcw'
+            'JmJStm6cD+JVaNV+vp8sLe3IIuFo1eQVAZ8AVjt0I0jmEtI56/qFkV5PCNsDh'
+            'D6uOw3RQkaHGfoFXWyiGjT3/6GTc7aGWWkkqj+tT5b/36DrOTIstquE9stcZb'
+            '7p4dHT9Rikhp+d15Mk41tO+iIAKnK71BxvuvEZTSEdM1qAIBxJXubLGkYFrDY'
+            'bcONte8CJD8/W')
 
     def clean_attributes(self, attrs_in):
         attr_map = {

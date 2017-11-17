@@ -1,13 +1,13 @@
 import logging
-import jwt
-import datetime
 
+import jwt
 from django.contrib.auth import get_user_model
-from rest_framework import permissions, serializers, generics, mixins, views
-from rest_framework.response import Response
-from rest_framework.exceptions import PermissionDenied
 from oauth2_provider.contrib.rest_framework import TokenHasReadWriteScope
 from oauth2_provider.models import get_application_model
+from rest_framework import generics, mixins, permissions, serializers, views
+from rest_framework.exceptions import PermissionDenied
+from rest_framework.response import Response
+
 from hkijwt.models import AppToAppPermission
 
 logger = logging.getLogger(__name__)
@@ -73,8 +73,7 @@ class GetJWTView(views.APIView):
             qs = get_application_model().objects.all()
             target_app = generics.get_object_or_404(qs, client_id=target_app)
             try:
-                perm = AppToAppPermission.objects.get(requester=requester_app,
-                                                      target=target_app)
+                AppToAppPermission.objects.get(requester=requester_app, target=target_app)
             except AppToAppPermission.DoesNotExist:
                 raise PermissionDenied("no permissions for app %s" % target_app)
         else:
@@ -99,7 +98,3 @@ class GetJWTView(views.APIView):
 
         ret = dict(token=encoded, expires_at=request.auth.expires)
         return Response(ret)
-
-
-#router = routers.DefaultRouter()
-#router.register(r'users', UserViewSet)

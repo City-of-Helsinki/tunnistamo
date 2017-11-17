@@ -5,6 +5,7 @@ from django.contrib.admin.sites import site as admin_site
 from parler.admin import TranslatableAdmin
 
 from users.models import OidcClientOptions
+
 from .models import Api, ApiDomain, ApiScope, ApiScopeTranslation
 
 
