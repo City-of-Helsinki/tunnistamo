@@ -8,3 +8,4 @@
 /oidc_provider
 .python-version
 .coverage
+.cache

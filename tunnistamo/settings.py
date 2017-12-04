@@ -263,6 +263,8 @@ SASS_PROCESSOR_INCLUDE_DIRS = [
 
 SASS_PRECISION = 8
 
+TEST_NON_SERIALIZED_APPS = ['adfs_provider']
+
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
 local_settings_path = os.path.join(BASE_DIR, "local_settings.py")
