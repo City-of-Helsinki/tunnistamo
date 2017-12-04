@@ -6,7 +6,6 @@ from allauth.socialaccount.models import SocialAccount, SocialLogin
 from django.contrib.auth.models import AnonymousUser
 from django.test import RequestFactory
 from django.urls import reverse
-
 from django.utils.crypto import get_random_string
 
 from users.models import User
