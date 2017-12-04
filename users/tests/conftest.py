@@ -2,7 +2,7 @@ import unittest
 
 import pytest
 from allauth.account.models import EmailAddress
-from allauth.socialaccount.models import SocialApp, SocialAccount
+from allauth.socialaccount.models import SocialAccount, SocialApp
 from django.contrib.auth import get_user_model
 from django.utils.crypto import get_random_string
 from oidc_provider.models import Client
