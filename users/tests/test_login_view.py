@@ -18,8 +18,12 @@ def test_login_view_next_url(client, assertCountEqual, loginmethod_factory, appl
     facebook_login_url = response.context['login_methods'][0].login_url
     github_login_url = response.context['login_methods'][1].login_url
 
-    assert facebook_login_url == reverse('facebook_login') + '?next=http%3A//example.com/'
-    assert github_login_url == reverse('github_login') + '?next=http%3A//example.com/'
+    assert facebook_login_url == reverse('social:begin', kwargs={
+        'backend': 'facebook'
+    }) + '?next=http%3A//example.com/'
+    assert github_login_url == reverse('social:begin', kwargs={
+        'backend': 'github'
+    }) + '?next=http%3A//example.com/'
 
 
 @pytest.mark.django_db
@@ -39,7 +43,9 @@ def test_login_view_one_loginmethod_redirect(client, loginmethod_factory):
     response = client.get('/login/')
 
     assert response.status_code == 302
-    assert response['location'] == reverse('facebook_login')
+    assert response['location'] == reverse('social:begin', kwargs={
+        'backend': 'facebook'
+    })
 
 
 @pytest.mark.django_db
@@ -53,7 +59,9 @@ def test_login_view_ignore_unknown_app(client, loginmethod_factory, application_
     response = client.get('/login/', params)
 
     assert response.status_code == 302
-    assert response['location'] == '{}?next={}'.format(reverse('facebook_login'), urlquote(params['next']))
+    assert response['location'] == '{}?next={}'.format(reverse('social:begin', kwargs={
+        'backend': 'facebook'
+    }), urlquote(params['next']))
 
 
 @pytest.mark.django_db
@@ -75,7 +83,9 @@ def test_login_view_loginmethods_per_app(client, loginmethod_factory, applicatio
     response = client.get('/login/', params)
 
     assert response.status_code == 302
-    assert response['location'] == '{}?next={}'.format(reverse('github_login'), urlquote(params['next']))
+    assert response['location'] == '{}?next={}'.format(reverse('social:begin', kwargs={
+        'backend': 'github'
+    }), urlquote(params['next']))
 
 
 @pytest.mark.django_db

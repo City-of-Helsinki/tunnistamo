@@ -2,7 +2,6 @@ from __future__ import unicode_literals
 
 import uuid
 
-from allauth.socialaccount import providers
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
 from django.utils.translation import ugettext_lazy as _
@@ -20,18 +19,17 @@ class User(AbstractUser):
         return super(User, self).save(*args, **kwargs)
 
 
-def get_login_methods():
-    yield ('saml', 'SAML')
-    provider_list = providers.registry.get_list()
-    for provider in provider_list:
-        yield (provider.id, provider.name)
+def get_provider_ids():
+    from django.conf import settings
+    from social_core.backends.utils import load_backends
+    return [(name, name) for name in load_backends(settings.AUTHENTICATION_BACKENDS).keys()]
 
 
 @python_2_unicode_compatible
 class LoginMethod(models.Model):
     provider_id = models.CharField(
         max_length=50, unique=True,
-        choices=sorted(providers.registry.as_choices()))
+        choices=sorted(get_provider_ids()))
     name = models.CharField(max_length=100)
     background_color = models.CharField(max_length=50, null=True, blank=True)
     logo_url = models.URLField(null=True, blank=True)

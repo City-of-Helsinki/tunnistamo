@@ -1,9 +1,9 @@
 import re
 from urllib.parse import parse_qs, urlparse
 
-from allauth.socialaccount import providers
 from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect
+from django.urls import reverse
 from django.utils.http import quote
 from django.views.generic.base import TemplateView
 from oauth2_provider.models import get_application_model
@@ -55,22 +55,16 @@ class LoginView(TemplateView):
         if allowed_methods is None:
             allowed_methods = LoginMethod.objects.all()
 
-        provider_map = providers.registry.provider_map
         methods = []
         for m in allowed_methods:
             assert isinstance(m, LoginMethod)
             if m.provider_id == 'saml':
                 continue  # SAML support removed
-            else:
-                try:
-                    provider_cls = provider_map[m.provider_id]
-                except KeyError:
-                    continue
-                provider = provider_cls(request)
-                login_url = provider.get_login_url(request=self.request)
-                if next_url:
-                    login_url += '?next=' + next_url
-            m.login_url = login_url
+
+            m.login_url = reverse('social:begin', kwargs={'backend': m.provider_id})
+            if next_url:
+                m.login_url += '?next=' + next_url
+
             methods.append(m)
 
         if len(methods) == 1:
@@ -106,4 +100,12 @@ class EmailNeededView(TemplateView):
         if '//' in reauth_uri:  # Prevent open redirect
             reauth_uri = ''
         context['reauth_uri'] = reauth_uri
+        return context
+
+
+class AuthenticationErrorView(TemplateView):
+    template_name = 'account/signup_closed.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         return context
