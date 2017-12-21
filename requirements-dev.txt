@@ -4,6 +4,7 @@
 #
 coverage==4.4.2
 flake8==3.5.0
+﻿httpretty==0.8.14
 isort==4.2.15
 mccabe==0.6.1
 py==1.5.2

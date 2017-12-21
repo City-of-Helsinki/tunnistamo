@@ -48,6 +48,8 @@ INSTALLED_APPS = (
     'allauth.socialaccount.providers.google',
     'allauth.socialaccount.providers.tumblr',
 
+    'social_django',
+
     'rest_framework',
     'corsheaders',
     'helsinki_theme',
@@ -73,6 +75,11 @@ MIDDLEWARE_CLASSES = (
 )
 
 AUTHENTICATION_BACKENDS = (
+    'adfs_backend.helsinki.HelsinkiADFS',
+    'adfs_backend.espoo.EspooADFS',
+    'social_core.backends.facebook.FacebookOAuth2',
+    'tunnistamo.backends.GoogleOAuth2CustomName',
+    'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
 )
@@ -90,6 +97,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -264,6 +273,88 @@ SASS_PROCESSOR_INCLUDE_DIRS = [
 SASS_PRECISION = 8
 
 TEST_NON_SERIALIZED_APPS = ['adfs_provider']
+
+# Social Auth
+SOCIAL_AUTH_PIPELINE = (
+    # Get the information we can about the user and return it in a simple
+    # format to create the user instance later. On some cases the details are
+    # already part of the auth response from the provider, but sometimes this
+    # could hit a provider API.
+    'social_core.pipeline.social_auth.social_details',
+
+    # Get the social uid from whichever service we're authing thru. The uid is
+    # the unique identifier of the given user in the provider.
+    'social_core.pipeline.social_auth.social_uid',
+
+    # Verifies that the current auth process is valid within the current
+    # project, this is where emails and domains whitelists are applied (if
+    # defined).
+    'social_core.pipeline.social_auth.auth_allowed',
+
+    # Checks if the current social-account is already associated in the site.
+    'social_core.pipeline.social_auth.social_user',
+
+    # Add `new_uuid` argument to the pipeline.
+    'users.pipeline.get_user_uuid',
+    # Sets the `username` argument.
+    'users.pipeline.get_username',
+    # Enforce email address.
+    'users.pipeline.require_email',
+    # Deny duplicate email.
+    'users.pipeline.deny_duplicate_email',
+
+    # Make up a username for this person, appends a random string at the end if
+    # there's any collision.
+    # 'social_core.pipeline.user.get_username',
+
+    # Send a validation email to the user to verify its email address.
+    # 'social_core.pipeline.mail.mail_validation',
+
+    # Associates the current social details with another user account with
+    # a similar email address.
+    # 'social_core.pipeline.social_auth.associate_by_email',
+
+    # Create a user account if we haven't found one yet.
+    'social_core.pipeline.user.create_user',
+
+    # Create the record that associated the social account with this user.
+    'social_core.pipeline.social_auth.associate_user',
+
+    # Populate the extra_data field in the social record with the values
+    # specified by settings (and the default ones like access_token, etc).
+    'social_core.pipeline.social_auth.load_extra_data',
+
+    # Update the user record with any changed info from the auth service.
+    'social_core.pipeline.user.user_details',
+
+    # Update AD groups
+    'users.pipeline.update_ad_groups',
+)
+
+SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['email', 'first_name', 'last_name']
+
+SOCIAL_AUTH_FACEBOOK_KEY = ''
+SOCIAL_AUTH_FACEBOOK_SECRET = ''
+SOCIAL_AUTH_FACEBOOK_SCOPE = ['email', 'public_profile']
+# Request that Facebook includes email address in the returned details
+SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
+    'fields': 'id,name,email',
+}
+# Allow setting the auth_type in GET parameters
+SOCIAL_AUTH_FACEBOOK_AUTH_EXTRA_ARGUMENTS = {'auth_type': ''}
+
+SOCIAL_AUTH_GITHUB_KEY = ''
+SOCIAL_AUTH_GITHUB_SECRET = ''
+
+SOCIAL_AUTH_GOOGLE_KEY = ''
+SOCIAL_AUTH_GOOGLE_SECRET = ''
+SOCIAL_AUTH_GOOGLE_SCOPE = ['email']
+
+SOCIAL_AUTH_HELSINKI_ADFS_KEY = ''
+SOCIAL_AUTH_HELSINKI_ADFS_SECRET = None
+
+SOCIAL_AUTH_ESPOO_ADFS_KEY = ''
+SOCIAL_AUTH_ESPOO_ADFS_SECRET = None
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
