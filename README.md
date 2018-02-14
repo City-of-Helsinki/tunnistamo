@@ -74,6 +74,30 @@ To access the themed views you also need to install
 [npm](https://docs.npmjs.com/getting-started/installing-node) and run
 `npm install` at the project root.
 
+## Production
+
+### Respa Exchange sync
+
+Respa supports synchronizing reservations with Exchange resource mailboxes (calendars). You can run the sync either manually through `manage.py respa_exchange_download`, or you can set up a listener daemon with `manage.py respa_exchange_listen_notifications`.
+
+If you're using UWSGI, you can set up the listener as an attached daemon:
+
+```yaml
+uwsgi:
+  attach-daemon2: cmd=/home/respa/run-exchange-sync.sh,pidfile=/home/respa/exchange_sync.pid,reloadsignal=15,touch=/home/respa/service_state/touch_to_reload
+```
+
+The helper script activates a virtualenv and starts the listener daemon:
+
+```bash
+#!/bin/sh
+
+. $HOME/venv/bin/activate
+
+cd $HOME/virkarespa
+./manage.py respa_exchange_listen_notifications --log-file=$HOME/logs/exchange_sync.log --pid-file=$HOME/exchange_sync.pid --daemonize
+```
+
 ## Developing
 
 ### Outdated Python dependencies
