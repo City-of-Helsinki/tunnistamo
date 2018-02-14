@@ -60,7 +60,7 @@ providers.registry.register(HelsinkiADFSProvider)
 class EspooADFSProvider(ADFSProvider):
     id = 'espoo_adfs'
     name = 'Espoo ADFS'
-    resource = 'https://varaamo.hel.fi'
+    resource = 'https://varaamo.hel.fi/tuotanto_new'
     domain_uuid = uuid.UUID('5b2401e0-7bbc-485b-8502-18920813a7d0')
 
 
