@@ -62,3 +62,25 @@ $fa-font-path: "../fonts/font-awesome";
   border-top: 1px solid $theme-primary-dark;
   padding-top: 1em;
 }
+
+// create bootstrap-social styles for service helsinki_adfs
+.btn-helsinki_adfs {
+  @include btn-social($hel-bus);
+}
+
+.fa-helsinki_adfs {
+  @include helsinki-logo($white);
+  background-position: center;
+  background-size: 85%;
+}
+
+// create bootstrap-social styles for service btn-eduhelfi
+.btn-eduhelfi {
+  @include btn-social($hel-tram);
+}
+
+.fa-eduhelfi {
+  @include helsinki-logo($white);
+  background-position: center;
+  background-size: 85%;
+}
