@@ -6,7 +6,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from helusers.utils import uuid_to_username
 
-from adfs_backend.base import BaseADFS
+from auth_backends.adfs.base import BaseADFS
 from users.models import LoginMethod
 from users.views import AuthenticationErrorView
 
@@ -25,7 +25,6 @@ def get_user_uuid(details, backend, response, user=None, *args, **kwargs):
         return {
             'new_uuid': user.uuid,
         }
-
     if callable(getattr(backend, 'get_user_uuid', None)):
         new_uuid = backend.get_user_uuid(details, response)
     else:

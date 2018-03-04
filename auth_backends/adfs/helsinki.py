@@ -1,6 +1,6 @@
 import uuid
 
-from adfs_backend.base import BaseADFS
+from auth_backends.adfs.base import BaseADFS
 
 
 class HelsinkiADFS(BaseADFS):

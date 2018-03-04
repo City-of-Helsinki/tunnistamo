@@ -9,19 +9,23 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         self.stdout.write(self.style.SUCCESS('Going through all SocialAccount objects...'))
-        for sa in SocialAccount.objects.all():
-            provider_id = sa.provider
 
-            try:
-                UserSocialAuth.objects.create(
-                    user=sa.user,
-                    provider=provider_id,
-                    uid=sa.uid,
-                    extra_data=sa.extra_data,
-                )
-                self.stdout.write(self.style.SUCCESS('Added. (provider: {}, uid: {})'.format(provider_id, sa.uid)))
-            except IntegrityError:
-                self.stdout.write(self.style.WARNING('UserSocialAuth already exists. (provider: {}, uid: {})'.format(
-                    provider_id, sa.uid)))
+        # Retrieve existing objects
+        providers = {}
+        for usa in UserSocialAuth.objects.all():
+            provider = providers.setdefault(usa.provider, {})
+            provider[usa.user_id] = usa
+
+        for sa in SocialAccount.objects.all():
+            provider = providers.setdefault(sa.provider, {})
+            if sa.user_id in provider:
+                continue
+            provider[sa.user_id] = UserSocialAuth.objects.create(
+                user=sa.user,
+                provider=sa.provider,
+                uid=sa.uid,
+                extra_data=sa.extra_data,
+            )
+            self.stdout.write(self.style.SUCCESS('Added. (provider: {}, uid: {})'.format(sa.provider, sa.uid)))
 
         self.stdout.write(self.style.SUCCESS('Done.'))

@@ -7,7 +7,7 @@ from django.urls import reverse
 from freezegun import freeze_time
 from jwt import DecodeError
 
-from adfs_backend.helsinki import HelsinkiADFS
+from auth_backends.adfs.helsinki import HelsinkiADFS
 
 
 ACCESS_TOKEN = ("""

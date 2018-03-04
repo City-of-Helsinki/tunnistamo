@@ -63,7 +63,7 @@ INSTALLED_APPS = (
     'oidc_apis',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -75,10 +75,10 @@ MIDDLEWARE_CLASSES = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'adfs_backend.helsinki.HelsinkiADFS',
-    'adfs_backend.espoo.EspooADFS',
+    'auth_backends.adfs.helsinki.HelsinkiADFS',
+    'auth_backends.adfs.espoo.EspooADFS',
+    'auth_backends.google.GoogleOAuth2CustomName',
     'social_core.backends.facebook.FacebookOAuth2',
-    'tunnistamo.backends.GoogleOAuth2CustomName',
     'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'allauth.account.auth_backends.AuthenticationBackend',
@@ -356,6 +356,7 @@ SOCIAL_AUTH_HELSINKI_ADFS_SECRET = None
 
 SOCIAL_AUTH_ESPOO_ADFS_KEY = ''
 SOCIAL_AUTH_ESPOO_ADFS_SECRET = None
+
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
