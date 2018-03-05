@@ -1,0 +1,79 @@
+@startuml
+'skinparam handwritten true
+skinparam sequence {
+    ParticipantPadding 20
+    BoxPadding 20
+    ParticipantBackgroundColor #9fc9eb
+    ParticipantBorderColor #9fc9eb
+    ActorBorderColor #f5a3c7
+    ActorBackgroundColor #f5a3c7
+    ArrowColor #bd2719
+}
+skinparam {
+    NoteBackgroundColor #ffe977
+    NoteBorderColor #ffe977
+}
+
+hide footbox
+
+actor User
+participant App
+participant Tunnistamo
+participant "Self-check\nstation" as SC
+participant "Automated\ncirculation\nsystem" as ACS
+
+autonumber "<b>[000]"
+
+== Login ==
+App ->> Tunnistamo: Login
+activate Tunnistamo
+note over Tunnistamo: Authenticate user
+Tunnistamo ->> App: Access token
+deactivate Tunnistamo
+
+note over App: Generate a new EC key pair
+App ->> Tunnistamo: Register new device
+activate Tunnistamo
+Tunnistamo ->> App: OK\n(+ secret key)
+deactivate Tunnistamo
+
+autonumber 100 "<b>[000]"
+== Register library card ==
+User ->> App: Input library card\nnumber + PIN
+App ->> Tunnistamo: Create new identity
+activate Tunnistamo
+Tunnistamo ->> ACS: Validate patron 
+deactivate Tunnistamo
+activate ACS
+note over ACS: Check number + PIN
+ACS ->> Tunnistamo: OK
+deactivate ACS
+activate Tunnistamo
+Tunnistamo ->> Tunnistamo: Save identity\n(PIN not saved)
+Tunnistamo ->> App: OK
+deactivate Tunnistamo
+
+autonumber 200 "<b>[000]"
+== Check out items ==
+note over User: Place phone on\nNFC surface
+SC ->> App: SELECT AID
+App ->> SC: OK
+SC ->> App: INTERNAL\nAUTHENTICATE
+note over App: Generate JWT\n(encrypted and signed)
+App ->> SC: JWT
+SC ->> Tunnistamo: JWT
+note over Tunnistamo: Validate JWT
+Tunnistamo ->> SC: OK\n(+ library card number + nonce)
+SC ->> App: EXTERNAL AUTHENTICATE\n(nonce)
+note over App: Validate nonce
+App ->> SC: OK\n(+ library card PIN)
+note over User: Removes phone from\nNFC surface
+
+group SIP2
+  SC ->> ACS
+  ACS ->> SC
+  SC ->> ACS
+  ACS ->> SC
+end
+
+@enduml
