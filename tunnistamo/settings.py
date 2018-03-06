@@ -61,6 +61,7 @@ INSTALLED_APPS = (
     'adfs_provider',
     'hkijwt',
     'oidc_apis',
+    'devices',
 )
 
 MIDDLEWARE = (
