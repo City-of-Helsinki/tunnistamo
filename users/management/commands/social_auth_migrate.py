@@ -1,4 +1,4 @@
-from allauth.socialaccount.models import SocialAccount
+from allauth.socialaccount.models import SocialAccount, SocialApp
 from django.core.management.base import BaseCommand
 from django.db import IntegrityError
 from social_django.models import UserSocialAuth
@@ -7,9 +7,14 @@ from social_django.models import UserSocialAuth
 class Command(BaseCommand):
     help = 'Migrate allauth social logins to social auth'
 
-    def handle(self, *args, **options):
-        self.stdout.write(self.style.SUCCESS('Going through all SocialAccount objects...'))
+    def add_arguments(self, parser):
+        parser.add_argument('--apps', action='store_true', dest='apps',
+                            help='Print social app keys and secrets')
+        parser.add_argument('--accounts', action='store_true', dest='accounts',
+                            help='Migrate accounts')
 
+    def migrate_accounts(self):
+        self.stdout.write(self.style.SUCCESS('Going through all SocialAccount objects...'))
         # Retrieve existing objects
         providers = {}
         for usa in UserSocialAuth.objects.all():
@@ -29,3 +34,16 @@ class Command(BaseCommand):
             self.stdout.write(self.style.SUCCESS('Added. (provider: {}, uid: {})'.format(sa.provider, sa.uid)))
 
         self.stdout.write(self.style.SUCCESS('Done.'))
+
+    def migrate_apps(self):
+        for app in SocialApp.objects.all():
+            app_id = app.provider.upper()
+            print("SOCIAL_AUTH_%s_KEY = '%s'" % (app_id, app.client_id))
+            print("SOCIAL_AUTH_%s_SECRET = '%s'" % (app_id, app.secret))
+            print()
+
+    def handle(self, *args, **options):
+        if options['apps']:
+            self.migrate_apps()
+        if options['accounts']:
+            self.migrate_accounts()
