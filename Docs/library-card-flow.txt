@@ -32,15 +32,15 @@ Tunnistamo ->> App: Access token
 deactivate Tunnistamo
 
 note over App: Generate a new EC key pair
-App ->> Tunnistamo: Register new device\nPOST /v1/user_device/
+App ->> Tunnistamo: Register new device\n""POST /v1/user_device/""
 activate Tunnistamo
-Tunnistamo ->> App: OK\n(+ secret key)
+Tunnistamo ->> App: OK\n//secret key + device ID//
 deactivate Tunnistamo
 
 autonumber 100 "<b>[000]"
 == Register library card ==
 User ->> App: Input library card\nnumber + PIN
-App ->> Tunnistamo: Create new identity\nPOST /v1/user_identity/
+App ->> Tunnistamo: Create new identity\n""POST /v1/user_identity/""
 activate Tunnistamo
 Tunnistamo ->> ACS: Validate patron 
 deactivate Tunnistamo
@@ -56,24 +56,29 @@ deactivate Tunnistamo
 autonumber 200 "<b>[000]"
 == Check out items ==
 note over User: Place phone on\nNFC surface
-SC ->> App: SELECT AID
+SC ->> App: ""SELECT AID""
 App ->> SC: OK
-SC ->> App: EXTERNAL\nAUTHENTICATE\n+ interface device client ID
+SC ->> App: ""EXTERNAL AUTHENTICATE""\n//interface device client ID//
 App ->> SC: OK
-SC ->> App: INTERNAL\nAUTHENTICATE
+SC ->> App: ""INTERNAL AUTHENTICATE""
 note over App: Generate JWT\n(encrypted and signed)
-App ->> SC: JWT
+App ->> SC: Token (first 256 bytes)
+SC ->> App: ""GET RESPONSE""
+App ->> SC: Token (next 256 bytes...)
 
-SC ->> Tunnistamo: Get user identity\n(+ JWT + interface device secret)
+SC ->> Tunnistamo: Get user identity\n""GET /v1/user_identity/""\n//JWT + interface device secret//
 note over Tunnistamo: Validate JWT + interface device secret
 Tunnistamo ->> SC: OK\n(+ library card number)
 
-'optional
-SC ->> App: EXTERNAL AUTHENTICATE\n(nonce)
-note over App: Validate nonce
-App ->> SC: OK\n(+ library card PIN)
+group optional (if PIN needed)
+  SC ->> App: ""EXTERNAL AUTHENTICATE""\n//nonce//
+  note over App: Validate nonce
+  App ->> SC: OK\n//library card PIN//
+end
+
 note over User: Removes phone from\nNFC surface
 
+autonumber stop
 group SIP2
   SC ->> ACS
   ACS ->> SC
