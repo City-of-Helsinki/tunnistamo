@@ -7,6 +7,12 @@ cache: pip
 
 install: 'pip install -r requirements.txt -r requirements-dev.txt'
 
+addons:
+  apt:
+    packages:
+      - libxmlsec1-dev
+      - pkg-config
+
 script:
   - flake8
   - isort -c
