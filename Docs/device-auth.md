@@ -37,7 +37,7 @@ When Tunnistamo receives the request, it will generate a shared secret that is r
 
 ```json
 {
-    "identifier": "e631942a-79cc-415f-af25-37e0a7c62112",
+    "id": "e631942a-79cc-415f-af25-37e0a7c62112",
     "user": "2cbbac99-ce5f-411b-b928-1efc4ca4b877",
     "secret_key": {
         "k": "QVCQYbkffUie9-bX457MoMyKD2gpca18czbT51_V5cI",
