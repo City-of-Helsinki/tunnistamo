@@ -6,7 +6,9 @@ from django.contrib import admin
 from django.contrib.staticfiles import views as static_views
 from django.http import HttpResponse
 from django.views.defaults import permission_denied
+from rest_framework.routers import SimpleRouter
 
+from identities.api import UserIdentityViewSet
 from oidc_apis.views import get_api_tokens_view
 from tunnistamo import social_auth_urls
 from users.views import EmailNeededView, LoginView, LogoutView
@@ -30,6 +32,10 @@ def show_login(request):
     return HttpResponse(html)
 
 
+router = SimpleRouter()
+router.register('user_identity', UserIdentityViewSet)
+
+
 urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api-tokens/?$', get_api_tokens_view),
@@ -46,6 +52,7 @@ urlpatterns = [
     url(r'^login/$', LoginView.as_view()),
     url(r'^logout/$', LogoutView.as_view()),
     url(r'^email-needed/$', EmailNeededView.as_view(), name='email_needed'),
+    url(r'^v1/', include(router.urls, namespace='v1')),
 ]
 
 if settings.DEBUG:

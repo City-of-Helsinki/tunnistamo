@@ -20,3 +20,4 @@ django-compressor
 django-sass-processor
 social-auth-core[openidconnect,saml]
 social-auth-app-django
+requests
