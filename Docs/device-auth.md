@@ -144,7 +144,7 @@ The token can be used to get user identity information. The interface device mus
 GET /v1/user_identity/
 
 Authorization: Bearer eyJhbGciOiJBMjU2S1ciLCJ[...]
-X-Client-Secret: <interface device client secret>
+X-Interface-Device-Secret: <interface device client secret>
 X-Interface-Device-ID: <proprietary interface device ID>
 ```
 

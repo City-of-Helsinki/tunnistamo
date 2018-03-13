@@ -1,5 +1,7 @@
+import json
 import logging
 
+from jwcrypto import jwk
 from rest_framework import serializers
 from rest_framework.exceptions import PermissionDenied
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin
@@ -13,14 +15,15 @@ from .models import UserDevice
 logger = logging.getLogger(__name__)
 
 
+class DeviceScopeAuthentication(OidcTokenAuthentication):
+    scopes_needed = ['devices']
+
+
 def generate_secret_key():
-    # TODO
-    return {
-        "k": "QVCQYbkffUie9-bX457MoMyKD2gpca18czbT51_V5cI",
-        "use": "enc",
-        "kty": "oct",
-        "alg": "HS256"
-    }
+    key = jwk.JWK()
+    # Generate 256-bit AES key for encryption
+    key = key.generate(kty='oct', alg='A256KW', use='enc')
+    return json.loads(key.export())
 
 
 class PublicKeySerializer(serializers.Serializer):
@@ -45,8 +48,11 @@ class UserDeviceSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserDevice
-        fields = ('id', 'user', 'public_key', 'secret_key', 'app_version', 'os', 'os_version', 'device_model')
-        read_only_fields = ('user', 'secret_key')
+        fields = (
+            'id', 'user', 'public_key', 'secret_key', 'app_version',
+            'os', 'os_version', 'device_model', 'auth_counter'
+        )
+        read_only_fields = ('user', 'secret_key', 'auth_counter')
 
     def create(self, validated_data):
         validated_data['secret_key'] = generate_secret_key()
@@ -56,7 +62,7 @@ class UserDeviceSerializer(serializers.ModelSerializer):
 class UserDeviceViewSet(CreateModelMixin, DestroyModelMixin, GenericViewSet):
     queryset = UserDevice.objects.all()
     serializer_class = UserDeviceSerializer
-    authentication_classes = (OidcTokenAuthentication,)
+    authentication_classes = (DeviceScopeAuthentication,)
     permission_classes = (IsAuthenticated,)
 
     def perform_create(self, serializer):

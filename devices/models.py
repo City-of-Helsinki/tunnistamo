@@ -22,10 +22,20 @@ class UserDevice(models.Model):
     os_version = models.CharField(max_length=50, verbose_name=_('OS version'))
     device_model = models.CharField(max_length=50, verbose_name=_('device model'), blank=True)
     last_used_at = models.DateTimeField(verbose_name=_('last used at'), default=now, editable=False)
+    auth_counter = models.PositiveIntegerField(default=0)
 
     class Meta:
         verbose_name = _('user device')
         verbose_name_plural = _('user devices')
 
     def __str__(self):
-        return '{} {}'.format(self.user, self.identifier)
+        return '{} ({} {} for user {})'.format(self.id, self.os, self.os_version, self.user)
+
+
+class InterfaceDevice(models.Model):
+    id = models.UUIDField(default=uuid.uuid4, primary_key=True)
+    secret_key = models.CharField(max_length=50, verbose_name=_('secret key'))
+    scopes = models.CharField(max_length=200, verbose_name=_('allowed OAuth scopes'))
+
+    def __str__(self):
+        return self.id

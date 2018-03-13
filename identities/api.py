@@ -4,10 +4,10 @@ from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from rest_framework.exceptions import APIException, PermissionDenied
 from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModelMixin
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, BasePermission
 from rest_framework.viewsets import GenericViewSet
 
-from tunnistamo.api_common import OidcTokenAuthentication
+from tunnistamo.api_common import OidcTokenAuthentication, DeviceGeneratedJWTAuthentication
 
 from .helmet_requests import (
     HelmetConnectionException, HelmetGeneralException, HelmetImproperlyConfiguredException, validate_patron
@@ -53,6 +53,10 @@ def validate_credentials_helmet(identifier, secret):
         })
 
 
+class IdentityScopeAuthentication(OidcTokenAuthentication):
+    scopes_needed = ['external_identity']
+
+
 class UserIdentitySerializer(serializers.ModelSerializer):
     secret = serializers.CharField(write_only=True)
 
@@ -72,7 +76,7 @@ class UserIdentitySerializer(serializers.ModelSerializer):
 class UserIdentityViewSet(ListModelMixin, CreateModelMixin, DestroyModelMixin, GenericViewSet):
     queryset = UserIdentity.objects.all()
     serializer_class = UserIdentitySerializer
-    authentication_classes = (OidcTokenAuthentication,)
+    authentication_classes = (OidcTokenAuthentication, DeviceGeneratedJWTAuthentication)
     permission_classes = (IsAuthenticated,)
 
     def get_queryset(self):
