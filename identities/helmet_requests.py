@@ -105,5 +105,5 @@ def _create_api_url(endpoint):
 def _get_setting(setting_name):
     value = getattr(settings, setting_name, None)
     if value is None:
-        raise HelmetImproperlyConfiguredException('Setting {} not set.')
+        raise HelmetImproperlyConfiguredException('Setting {} not set.'.format(setting_name))
     return value
