@@ -225,7 +225,8 @@ OAUTH2_PROVIDER = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
-    )
+    ),
+    'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 CSRF_COOKIE_NAME = 'sso-csrftoken'
 SESSION_COOKIE_NAME = 'sso-sessionid'
