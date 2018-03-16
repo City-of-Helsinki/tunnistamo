@@ -4,3 +4,4 @@ pytest
 pytest-cov
 pytest-django
 httpretty
+factory_boy
