@@ -5,12 +5,14 @@ import pytz
 
 from django.contrib.auth import get_user_model
 from django.conf import settings
+from django.core.exceptions import ImproperlyConfigured
 from jwcrypto import jwk, jwe, jwt
 from oidc_provider.lib.errors import BearerTokenError
 from oidc_provider.lib.utils.oauth2 import extract_access_token
 from oidc_provider.models import Token
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
+from rest_framework.permissions import BasePermission, SAFE_METHODS
 
 from devices.models import UserDevice, InterfaceDevice
 
@@ -18,6 +20,42 @@ from devices.models import UserDevice, InterfaceDevice
 User = get_user_model()
 logger = logging.getLogger(__name__)
 local_tz = pytz.timezone(settings.TIME_ZONE)
+
+
+def parse_scope(scope):
+    # Parses scope that are of form <perm>:<domain>:<specifier>.
+    # <perm> and <specifier> are optional. The supported perms are 'read' and 'write'.
+    # Default perm is 'read-write'.
+    parts = scope.split(':')
+    part = parts.pop(0)
+    if part in ('read', 'write') and len(parts):
+        perm = part
+        part = parts.pop(0)
+    else:
+        perm = 'read-write'
+    domain = part
+
+    if len(parts):
+        specifier = ':'.join(parts)
+    else:
+        specifier = None
+
+    return (perm, domain, specifier)
+
+
+def make_scope_domain_map(scopes):
+    domains = {}
+    for scope in scopes:
+        perm, domain, specifier = parse_scope(scope)
+        domains.setdefault(domain, set()).add((perm, specifier))
+    return domains
+
+
+class TokenAuth:
+    def __init__(self, scopes):
+        assert isinstance(scopes, (list, tuple))
+        self.scopes = scopes
+        self.scope_domains = make_scope_domain_map(scopes)
 
 
 class OidcTokenAuthentication(BaseAuthentication):
@@ -37,13 +75,12 @@ class OidcTokenAuthentication(BaseAuthentication):
                 logger.warning('[OidcToken] Token has expired: %s', access_token)
                 raise BearerTokenError('invalid_token')
 
-            if not set(self.scopes_needed).issubset(set(token.scope)):
-                logger.warning('[OidcToken] Needs the following scopes: %s' % ' '.join(self.scopes_needed))
-                raise BearerTokenError('insufficient_scope')
         except BearerTokenError as error:
             raise AuthenticationFailed(error.description)
 
-        return (token.user, token)
+        auth = TokenAuth(token.scope)
+
+        return (token.user, auth)
 
     def authenticate_header(self, request):
         return "Bearer"
@@ -103,7 +140,42 @@ class DeviceGeneratedJWTAuthentication(BaseAuthentication):
         if interface_secret != interface_device.secret_key:
             raise AuthenticationFailed("Incorrect interface device secret in X-Interface-Device-Secret HTTP header")
 
-        return (device.user, interface_device)
+        auth = TokenAuth()
+        auth.scopes = set(interface_device.scopes.split())
+
+        return (device.user, auth)
 
     def authenticate_header(self, request):
         return "Bearer"
+
+
+class ScopePermission(BasePermission):
+    def has_permission(self, request, view):
+        # If not authenticating through our tokens, do not block permission
+        if not isinstance(request.auth, TokenAuth):
+            return True
+
+        required_scopes = getattr(view, 'required_scopes', None)
+        if not isinstance(required_scopes, (list, tuple)):
+            raise ImproperlyConfigured("View %s doesn't define 'required_scopes'" % view)
+
+        token_domains = request.auth.scope_domains
+        required_domains = make_scope_domain_map(required_scopes)
+
+        if request.method in SAFE_METHODS:
+            request_perm = 'read'
+        else:
+            request_perm = 'write'
+
+        for domain, perms in required_domains.items():
+            token_perms = token_domains.get(domain, set())
+            for perm, specifier in token_perms:
+                if request_perm in perm:
+                    break
+            else:
+                logger.warn("[ScopePermission] domain %s not found in token scopes (%s)" % (
+                    domain, request.auth.scopes
+                ))
+                return False
+
+        return True
