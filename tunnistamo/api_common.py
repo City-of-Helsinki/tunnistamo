@@ -86,7 +86,7 @@ class OidcTokenAuthentication(BaseAuthentication):
 
 
 class DeviceGeneratedJWTAuthentication(BaseAuthentication):
-    def authenticate(self, request):
+    def authenticate(self, request):  # noqa  (too complex)
         token_value = extract_access_token(request)
         if not token_value:
             return None

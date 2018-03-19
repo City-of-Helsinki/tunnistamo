@@ -15,7 +15,7 @@ from .models import LoginMethod, OidcClientOptions
 class LoginView(TemplateView):
     template_name = "login.html"
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):  # noqa  (too complex)
         next_url = request.GET.get('next')
         app = None
         oidc_client = None
