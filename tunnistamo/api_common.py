@@ -53,7 +53,7 @@ def make_scope_domain_map(scopes):
 
 class TokenAuth:
     def __init__(self, scopes):
-        assert isinstance(scopes, (list, tuple))
+        assert isinstance(scopes, (list, tuple, set))
         self.scopes = scopes
         self.scope_domains = make_scope_domain_map(scopes)
 
@@ -140,8 +140,7 @@ class DeviceGeneratedJWTAuthentication(BaseAuthentication):
         if interface_secret != interface_device.secret_key:
             raise AuthenticationFailed("Incorrect interface device secret in X-Interface-Device-Secret HTTP header")
 
-        auth = TokenAuth()
-        auth.scopes = set(interface_device.scopes.split())
+        auth = TokenAuth(set(interface_device.scopes.split()))
 
         return (device.user, auth)
 
