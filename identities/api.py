@@ -7,7 +7,7 @@ from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModel
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
 
-from tunnistamo.api_common import OidcTokenAuthentication, DeviceGeneratedJWTAuthentication, ScopePermission
+from tunnistamo.api_common import DeviceGeneratedJWTAuthentication, OidcTokenAuthentication, ScopePermission
 
 from .helmet_requests import (
     HelmetConnectionException, HelmetGeneralException, HelmetImproperlyConfiguredException, validate_patron
