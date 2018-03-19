@@ -9,7 +9,6 @@ from jwt import DecodeError
 
 from auth_backends.adfs.helsinki import HelsinkiADFS
 
-
 ACCESS_TOKEN = ("""
 eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6InpmU1lDZThYTnpNY
 kJLTmxvLWFUYmdDOUo1cyJ9.eyJhdWQiOiJodHRwczovL2FwaS5oZWwuZmkvc

@@ -1,21 +1,20 @@
 import datetime
-import logging
 import json
-import pytz
+import logging
 
-from django.contrib.auth import get_user_model
+import pytz
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.core.exceptions import ImproperlyConfigured
-from jwcrypto import jwk, jwe, jwt
+from jwcrypto import jwe, jwk, jwt
 from oidc_provider.lib.errors import BearerTokenError
 from oidc_provider.lib.utils.oauth2 import extract_access_token
 from oidc_provider.models import Token
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
-from rest_framework.permissions import BasePermission, SAFE_METHODS
+from rest_framework.permissions import SAFE_METHODS, BasePermission
 
-from devices.models import UserDevice, InterfaceDevice
-
+from devices.models import InterfaceDevice, UserDevice
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
