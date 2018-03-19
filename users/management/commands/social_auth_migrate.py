@@ -1,6 +1,5 @@
 from allauth.socialaccount.models import SocialAccount, SocialApp
 from django.core.management.base import BaseCommand
-from django.db import IntegrityError
 from social_django.models import UserSocialAuth
 
 
