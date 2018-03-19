@@ -8,15 +8,11 @@ from rest_framework.mixins import CreateModelMixin, DestroyModelMixin
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
 
-from tunnistamo.api_common import OidcTokenAuthentication
+from tunnistamo.api_common import OidcTokenAuthentication, ScopePermission
 
 from .models import UserDevice
 
 logger = logging.getLogger(__name__)
-
-
-class DeviceScopeAuthentication(OidcTokenAuthentication):
-    scopes_needed = ['devices']
 
 
 def generate_secret_key():
@@ -36,10 +32,6 @@ class PublicKeySerializer(serializers.Serializer):
 
     def to_representation(self, instance):
         return instance
-
-    def validate(self, data):
-        # TODO
-        return data
 
 
 class UserDeviceSerializer(serializers.ModelSerializer):
@@ -62,8 +54,9 @@ class UserDeviceSerializer(serializers.ModelSerializer):
 class UserDeviceViewSet(CreateModelMixin, DestroyModelMixin, GenericViewSet):
     queryset = UserDevice.objects.all()
     serializer_class = UserDeviceSerializer
-    authentication_classes = (DeviceScopeAuthentication,)
-    permission_classes = (IsAuthenticated,)
+    authentication_classes = (OidcTokenAuthentication,)
+    permission_classes = (IsAuthenticated, ScopePermission)
+    required_scopes = ('devices',)
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
