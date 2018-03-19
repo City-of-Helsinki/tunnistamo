@@ -18,4 +18,7 @@ script:
   - isort -c
   - pytest -ra -vvv --cov=.
 
+addons:
+  postgresql: '9.6'
+
 after_success: codecov
