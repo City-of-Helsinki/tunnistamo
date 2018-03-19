@@ -38,11 +38,23 @@ class GithubUsernameScopeClaims(ScopeClaims):
         }
 
 
+class DevicesScopeClaims(ScopeClaims):
+    info_devices = (
+        _('Devices'), _('Permission to link devices to your user account identities.'))
+
+
+class IdentitiesScopeClaims(ScopeClaims):
+    info_identities = (
+        _('Identities'), _('Access to cards and other identity information.'))
+
+
 class CombinedScopeClaims(ScopeClaims):
     combined_scope_claims = [
         StandardScopeClaims,
         GithubUsernameScopeClaims,
         ApiScopeClaims,
+        DevicesScopeClaims,
+        IdentitiesScopeClaims,
     ]
 
     @classmethod
