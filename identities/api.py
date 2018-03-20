@@ -72,7 +72,7 @@ class UserIdentitySerializer(serializers.ModelSerializer):
 class UserIdentityViewSet(ListModelMixin, CreateModelMixin, DestroyModelMixin, GenericViewSet):
     queryset = UserIdentity.objects.all()
     serializer_class = UserIdentitySerializer
-    authentication_classes = (OidcTokenAuthentication, DeviceGeneratedJWTAuthentication)
+    authentication_classes = (DeviceGeneratedJWTAuthentication, OidcTokenAuthentication)
     permission_classes = (IsAuthenticated, ScopePermission)
     required_scopes = ('identities',)
 
