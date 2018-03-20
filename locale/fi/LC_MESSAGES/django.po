@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-19 20:55+0000\n"
+"POT-Creation-Date: 2018-03-20 21:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,7 +26,7 @@ msgstr ""
 msgid "Department name"
 msgstr ""
 
-#: adfs_provider/models.py:20
+#: adfs_provider/models.py:20 oidc_apis/scopes.py:57
 msgid "Email"
 msgstr "Sähköposti"
 
@@ -229,7 +229,7 @@ msgstr ""
 
 #: oidc_apis/scopes.py:28
 msgid "Access to your GitHub username."
-msgstr ""
+msgstr "Lupa lukea GitHub-käyttäjätunnus."
 
 #: oidc_apis/scopes.py:43
 msgid "Devices"
@@ -246,6 +246,42 @@ msgstr "Identiteetit"
 #: oidc_apis/scopes.py:48
 msgid "Access to cards and other identity information."
 msgstr "Lupa lukea korttitietoja ja lisätä kortteja käyttäjätilillesi"
+
+#: oidc_apis/scopes.py:53
+msgid "Basic profile"
+msgstr "Perustiedot"
+
+#: oidc_apis/scopes.py:54
+msgid ""
+"Access to your basic information. Includes names, gender, birthdate and "
+"other information."
+msgstr ""
+"Lupa lukea perustiedot, jotka sisältävät muun muassa nimen, sukupuolen ja "
+"syntymäajan."
+
+#: oidc_apis/scopes.py:58
+msgid "Access to your email address."
+msgstr "Lupa lukea sähköpostiosoite."
+
+#: oidc_apis/scopes.py:61
+msgid "Phone number"
+msgstr "Puhelinnumero"
+
+#: oidc_apis/scopes.py:62
+msgid "Access to your phone number."
+msgstr "Lupa lukea puhelinnumero."
+
+#: oidc_apis/scopes.py:65
+msgid "Address information"
+msgstr "Osoitetiedot"
+
+#: oidc_apis/scopes.py:66
+msgid ""
+"Access to your address. Includes country, locality, street and other "
+"information."
+msgstr ""
+"Lupa lukea osoitetiedot, jotka sisältävät muun muassa valtion, paikkakunnan "
+"ja katuosoitteen."
 
 #: users/apps.py:7
 msgid "Users"
