@@ -50,6 +50,33 @@ def make_scope_domain_map(scopes):
     return domains
 
 
+def get_scope_specifiers(request, domain, perm):
+    """
+    Return restricting scope specifiers for a domain and a permission.
+
+    Examples with perm "read" and domain "domain":
+
+    scopes "read:domain:helmet read:domain:foo read:other_domain:bar write:domain:baz" -> {'helmet', 'foo'}
+    scopes "read:domain" -> {}
+    scopes "read:domain:helmet read:domain" -> {} (a missing specifier overrides)
+
+    If the given perm isn't allowed at all for the domain, None is returned:
+
+    perm "read" "domain": "domain" scopes: "read:wrong_domain:helmet" -> None
+    perm "write" "domain": "domain" scopes: "read:domain:helmet" -> None
+    """
+    if not isinstance(request.auth, TokenAuth):
+        return set()
+
+    scope_domains = request.auth.scope_domains
+    specifiers = {s[1] for s in scope_domains.get(domain, []) if perm in s[0]}
+
+    if not specifiers:
+        return None
+
+    return specifiers if None not in specifiers else set()
+
+
 class TokenAuth:
     def __init__(self, scopes):
         assert isinstance(scopes, (list, tuple, set))

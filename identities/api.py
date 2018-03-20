@@ -7,7 +7,9 @@ from rest_framework.mixins import CreateModelMixin, DestroyModelMixin, ListModel
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import GenericViewSet
 
-from tunnistamo.api_common import DeviceGeneratedJWTAuthentication, OidcTokenAuthentication, ScopePermission
+from tunnistamo.api_common import (
+    DeviceGeneratedJWTAuthentication, OidcTokenAuthentication, ScopePermission, get_scope_specifiers
+)
 
 from .helmet_requests import (
     HelmetConnectionException, HelmetGeneralException, HelmetImproperlyConfiguredException, validate_patron
@@ -77,11 +79,23 @@ class UserIdentityViewSet(ListModelMixin, CreateModelMixin, DestroyModelMixin, G
     required_scopes = ('identities',)
 
     def get_queryset(self):
-        return self.queryset.filter(user=self.request.user)
+        qs = self.queryset.filter(user=self.request.user)
+        scope_specifiers = self.get_read_scope_specifiers()
+
+        if scope_specifiers is None:
+            return qs.none()
+        elif scope_specifiers:
+            qs = qs.filter(service__in=scope_specifiers)
+
+        return qs
 
     def perform_create(self, serializer):
         data = serializer.validated_data
         secret = data.pop('secret')
+
+        scope_specifiers = self.get_write_scope_specifiers()
+        if scope_specifiers and data['service'] not in scope_specifiers:
+            raise PermissionDenied()
 
         validate_credentials_helmet(data['identifier'], secret)
 
@@ -90,4 +104,15 @@ class UserIdentityViewSet(ListModelMixin, CreateModelMixin, DestroyModelMixin, G
     def perform_destroy(self, instance):
         if instance.user != self.request.user:
             raise PermissionDenied()
+
+        scope_specifiers = self.get_write_scope_specifiers()
+        if scope_specifiers and instance.service not in scope_specifiers:
+            raise PermissionDenied()
+
         instance.delete()
+
+    def get_read_scope_specifiers(self):
+        return get_scope_specifiers(self.request, 'identities', 'read')
+
+    def get_write_scope_specifiers(self):
+        return get_scope_specifiers(self.request, 'identities', 'write')

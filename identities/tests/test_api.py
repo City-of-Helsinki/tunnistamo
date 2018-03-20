@@ -280,11 +280,83 @@ def test_delete_user_identity_wrong_user(user_api_client):
 
 
 @pytest.mark.django_db
-def test_delete_user_identity_interface_device(interface_device_api_client):
+def test_delete_user_identity_interface_device_with_write_scope(interface_device_api_client):
     user_identity = UserIdentityFactory(user=interface_device_api_client.user)
     url = get_user_identity_detail_url(user_identity)
 
-    response = interface_device_api_client.delete(url)
-    assert response.status_code == 403
+    interface_device_api_client.interface_device.scopes = 'read:identities:helmet write:identities:helmet'
+    interface_device_api_client.interface_device.save(update_fields=('scopes',))
 
-    assert UserIdentity.objects.count() == 1
+    response = interface_device_api_client.delete(url)
+    assert response.status_code == 204
+
+    assert UserIdentity.objects.count() == 0
+
+
+@pytest.mark.parametrize('scopes, expected_status_code', (
+    ('identities', 201),
+    ('read:identities', 403),
+    ('read:identities:helmet', 403),
+    ('read:identities:helmet write:identities', 201),
+    ('read:identities:helmet write:identities:helmet', 201),
+    ('read:identities:helmet write:identities:foo', 403),
+    ('write:identities:foo', 403),
+))
+@pytest.mark.django_db
+@mock.patch('identities.api.validate_patron', return_value=True)
+def test_post_user_identity_interface_device_with_scope_specifier(validate_patron, interface_device_api_client, scopes,
+                                                                  post_data, expected_status_code):
+    interface_device_api_client.interface_device.scopes = scopes
+    interface_device_api_client.interface_device.save(update_fields=('scopes',))
+
+    response = interface_device_api_client.post(list_url, post_data)
+    assert response.status_code == expected_status_code
+
+
+@pytest.mark.parametrize('scopes, expected_status_code', (
+    ('identities', 204),
+    ('read:identities', 403),
+    ('read:identities:helmet', 403),
+    ('read:identities:helmet write:identities', 204),
+    ('read:identities:helmet write:identities:helmet', 204),
+    ('read:identities:helmet write:identities:foo', 403),
+    ('write:identities:foo', 404),
+))
+@pytest.mark.django_db
+def test_delete_user_identity_interface_device_with_scope_specifier(interface_device_api_client, scopes,
+                                                                    expected_status_code):
+    user_identity = UserIdentityFactory(user=interface_device_api_client.user)
+    url = get_user_identity_detail_url(user_identity)
+
+    interface_device_api_client.interface_device.scopes = scopes
+    interface_device_api_client.interface_device.save(update_fields=('scopes',))
+
+    response = interface_device_api_client.delete(url)
+    assert response.status_code == expected_status_code
+
+
+@pytest.mark.parametrize('scopes, expected_num_of_results', (
+        ('identities', 2),
+        ('read:identities:helmet', 1),
+        ('read:identities', 2),
+        ('read:identities:helmet read:identities', 2),
+        ('write:identities:helmet', None),
+        ('write:identities', None),
+        ('write:identities:helmet read:identities:barservice', 0),
+))
+@pytest.mark.django_db
+def test_get_list_interface_device_with_scope_specifier(interface_device_api_client, scopes, expected_num_of_results):
+    user = interface_device_api_client.user
+    UserIdentityFactory(user=user, service=UserIdentity.SERVICE_HELMET)
+    UserIdentityFactory(user=user, service='fooservice')
+
+    interface_device_api_client.interface_device.scopes = scopes
+    interface_device_api_client.interface_device.save(update_fields=('scopes',))
+
+    response = interface_device_api_client.get(list_url)
+
+    if expected_num_of_results is not None:
+        assert response.status_code == 200
+        assert len(response.data) == expected_num_of_results
+    else:
+        assert response.status_code == 403
