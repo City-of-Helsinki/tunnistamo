@@ -79,6 +79,13 @@ class UserIdentityViewSet(ListModelMixin, CreateModelMixin, DestroyModelMixin, G
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
 
+    def list(self, request, *args, **kwargs):
+        response = super(UserIdentityViewSet, self).list(request, *args, **kwargs)
+        nonce = getattr(request.auth, 'nonce')
+        if nonce is not None:
+            response['X-Nonce'] = nonce
+        return response
+
     def perform_create(self, serializer):
         data = serializer.validated_data
         secret = data.pop('secret')

@@ -80,13 +80,14 @@ def interface_device_api_client(user):
     interface_device = InterfaceDeviceFactory(secret_key=str(uuid.uuid4()), scopes='read:identities:helmet')
 
     header = {'alg': 'A256KW', 'enc': 'A128CBC-HS256', 'iss': str(user_device.id)}
+    nonce = int(random.random()*1000000000000000)
     payload = {
         'iss': str(user_device.id),
         'cnt': user_device.auth_counter + 1,
         'azp': str(interface_device.id),
         'sub': str(user.uuid),
         'iat': int(time.time()),
-        'nonce': int(random.random()*1000000000000000),
+        'nonce': nonce,
     }
 
     token = create_jwe(header, payload, sign_key, enc_key)
@@ -97,6 +98,7 @@ def interface_device_api_client(user):
     api_client.interface_device = interface_device
     api_client.token = token
     api_client.user = user_device.user
+    api_client.nonce = str(nonce)
 
     return api_client
 
@@ -156,9 +158,12 @@ def test_interface_device_authentication(interface_device_api_client):
     user_device = interface_device_api_client.user_device
     old_last_used_at = user_device.last_used_at
     old_auth_counter = user_device.auth_counter
+    nonce = interface_device_api_client.nonce
 
     response = interface_device_api_client.get(list_url)
     assert response.status_code == 200
+    assert response
+    assert response['X-Nonce'] == nonce
 
     user_device.refresh_from_db()
     assert user_device.last_used_at > old_last_used_at
