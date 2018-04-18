@@ -167,7 +167,7 @@ EXTERNAL AUTHENTICATE:
 `00 b2 01 02 xx yy yy yy [...]`
 
 In the EXTERNAL AUTHENTICATE command, yy stands for the nonce retrieved in the previous step, as an ASCII-encoded string. xx stands for the length of the ASCII-encoded nonce.
-If the nonce is correct, the user's PIN is returned in the response payload.
+If the nonce is correct, the user's PIN is returned in the response payload, also as an ASCII-encoded string.
 
 
 #### Errors
