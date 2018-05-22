@@ -4,13 +4,11 @@ python:
 
 cache: pip
 
-install: 'pip install -r requirements.txt -r requirements-dev.txt'
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y libxmlsec1-dev pkg-config
 
-addons:
-  apt:
-    packages:
-      - libxmlsec1-dev
-      - pkg-config
+install: 'pip install -r requirements.txt -r requirements-dev.txt'
 
 script:
   - flake8
