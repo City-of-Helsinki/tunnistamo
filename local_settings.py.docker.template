@@ -1,0 +1,11 @@
+DEBUG = True
+
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'tunnistamo',
+        'USER': 'tunnistamo',
+        'PASSWORD': 'tunnistamo',
+        'HOST': 'tunnistamo-db',
+    }
+}
