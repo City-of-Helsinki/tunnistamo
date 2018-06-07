@@ -55,7 +55,7 @@ class Migration(migrations.Migration):
                 ('client_secret', models.CharField(default=oauth2_provider.generators.generate_client_secret, max_length=255, db_index=True, blank=True)),
                 ('name', models.CharField(max_length=255, blank=True)),
                 ('skip_authorization', models.BooleanField(default=False)),
-                ('user', models.ForeignKey(related_name='users_application', to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(related_name='users_application', to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,

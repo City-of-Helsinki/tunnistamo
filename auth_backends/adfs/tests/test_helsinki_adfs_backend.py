@@ -70,7 +70,7 @@ def test_login_and_ad_groups(client, httpretty):
     assert response.url == settings.LOGIN_REDIRECT_URL
 
     user = response.wsgi_request.user
-    assert user.is_authenticated()
+    assert user.is_authenticated
     assert user.username == 'u-uhlkehstufoijp25jqwj6ee534'
 
     users_ad_group_names = set([x.name for x in user.ad_groups.all()])

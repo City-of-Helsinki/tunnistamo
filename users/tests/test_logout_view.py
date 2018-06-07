@@ -11,14 +11,14 @@ def test_logout(client, user_factory):
     client.login(username=user.username, password=password)
 
     user = auth.get_user(client)
-    assert user.is_authenticated()
+    assert user.is_authenticated
 
     response = client.get('/logout/')
 
     assert response.status_code == 200
 
     user = auth.get_user(client)
-    assert not user.is_authenticated()
+    assert not user.is_authenticated
 
 
 @pytest.mark.parametrize('next, expected', (

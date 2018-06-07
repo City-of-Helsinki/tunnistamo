@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
             name='AppToAppPermission',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('requester', models.ForeignKey(related_name='+', to=settings.OAUTH2_PROVIDER_APPLICATION_MODEL)),
-                ('target', models.ForeignKey(related_name='+', to=settings.OAUTH2_PROVIDER_APPLICATION_MODEL)),
+                ('requester', models.ForeignKey(related_name='+', to=settings.OAUTH2_PROVIDER_APPLICATION_MODEL, on_delete=models.CASCADE)),
+                ('target', models.ForeignKey(related_name='+', to=settings.OAUTH2_PROVIDER_APPLICATION_MODEL, on_delete=models.CASCADE)),
             ],
         ),
     ]

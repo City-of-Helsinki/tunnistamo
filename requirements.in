@@ -1,4 +1,4 @@
-django<2.0
+django
 django-multiselectfield
 django-oauth-toolkit
 django-parler

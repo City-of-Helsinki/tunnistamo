@@ -83,7 +83,7 @@ class LogoutView(TemplateView):
     template_name = 'logout_done.html'
 
     def get(self, *args, **kwargs):
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             auth_logout(self.request)
         url = self.request.GET.get('next')
         if url and re.match(r'http[s]?://', url):

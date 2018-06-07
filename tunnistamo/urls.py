@@ -1,7 +1,8 @@
 import oauth2_provider.urls
 import oidc_provider.urls
 from django.conf import settings
-from django.conf.urls import include, url
+from django.conf.urls.static import static
+from django.urls import include, path, re_path
 from django.contrib import admin
 from django.contrib.staticfiles import views as static_views
 from django.http import HttpResponse
@@ -39,23 +40,23 @@ router.register('user_device', UserDeviceViewSet)
 
 
 urlpatterns = [
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^api-tokens/?$', get_api_tokens_view),
-    url(r'^accounts/profile/', show_login),
-    url(r'^accounts/login/$', LoginView.as_view()),
-    url(r'^accounts/logout/$', LogoutView.as_view()),
-    url(r'^accounts/', include(social_auth_urls, namespace='social')),
-    url(r'^oauth2/applications/', permission_denied),
-    url(r'^oauth2/', include(oauth2_provider.urls, namespace='oauth2_provider')),
-    url(r'^openid/', include(oidc_provider.urls, namespace='oidc_provider')),
-    url(r'^user/(?P<username>[\w.@+-]+)/?$', UserView.as_view()),
-    url(r'^user/$', UserView.as_view()),
-    url(r'^jwt-token/$', GetJWTView.as_view()),
-    url(r'^login/$', LoginView.as_view()),
-    url(r'^logout/$', LogoutView.as_view()),
-    url(r'^email-needed/$', EmailNeededView.as_view(), name='email_needed'),
-    url(r'^v1/', include(router.urls, namespace='v1')),
+    path('admin/', admin.site.urls),
+    path('api-tokens/', get_api_tokens_view),
+    path('accounts/profile/', show_login),
+    path('accounts/login/', LoginView.as_view()),
+    path('accounts/logout/', LogoutView.as_view()),
+    path('accounts/', include(social_auth_urls, namespace='social')),
+    path('oauth2/applications/', permission_denied),
+    path('oauth2/', include(oauth2_provider.urls, namespace='oauth2_provider')),
+    path('openid/', include(oidc_provider.urls, namespace='oidc_provider')),
+    re_path(r'^user/(?P<username>[\w.@+-]+)/?$', UserView.as_view()),
+    path('user/', UserView.as_view()),
+    path('jwt-token/', GetJWTView.as_view()),
+    path('login/', LoginView.as_view()),
+    path('logout/', LogoutView.as_view()),
+    path('email-needed/', EmailNeededView.as_view(), name='email_needed'),
+    path('v1/', include((router.urls, 'v1'))),
 ]
 
 if settings.DEBUG:
-    urlpatterns += [url(r'^static/(?P<path>.*)$', static_views.serve)]
+    static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
