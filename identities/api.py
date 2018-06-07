@@ -72,12 +72,19 @@ class UserIdentitySerializer(serializers.ModelSerializer):
 class UserIdentityViewSet(ListModelMixin, CreateModelMixin, DestroyModelMixin, GenericViewSet):
     queryset = UserIdentity.objects.all()
     serializer_class = UserIdentitySerializer
-    authentication_classes = (OidcTokenAuthentication, DeviceGeneratedJWTAuthentication)
+    authentication_classes = (DeviceGeneratedJWTAuthentication, OidcTokenAuthentication)
     permission_classes = (IsAuthenticated, ScopePermission)
     required_scopes = ('identities',)
 
     def get_queryset(self):
         return self.queryset.filter(user=self.request.user)
+
+    def list(self, request, *args, **kwargs):
+        response = super(UserIdentityViewSet, self).list(request, *args, **kwargs)
+        nonce = getattr(request.auth, 'nonce')
+        if nonce is not None:
+            response['X-Nonce'] = nonce
+        return response
 
     def perform_create(self, serializer):
         data = serializer.validated_data

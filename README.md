@@ -4,7 +4,28 @@
 
 # Tunnistamo
 
-## Prerequisites
+## Set up with Docker
+
+1. Create a `local_settings.py` file in the project folder:
+   * use the `local_settings.py.docker.template`
+   * set `DEBUG` the way you need it
+
+2. Run `docker-compose up`
+
+3. Run migrations if needed:
+   * `docker exec tunnistamo-backend python manage.py migrate`
+
+4. Create superuser if needed:
+   * `docker exec -it tunnistamo-backend python manage.py createsuperuser`
+   
+5. Run the server:
+   * `docker exec tunnistamo-backend python manage.py runserver 0:8000`
+   
+The project is now running at [localhost:8000](http://localhost:8000)
+
+## Set up w/o Docker
+
+### Prerequisites
 
 Tunnistamo runs on postresql. Install the server on Debian based systems with:
 ```
@@ -18,7 +39,7 @@ createdb -O <your username> tunnistamo
 ```
 
 
-## Installing
+### Installing
 Clone the repo:
 ```
 git clone https://github.com/City-of-Helsinki/tunnistamo.git

@@ -1,0 +1,29 @@
+version: '3'
+services:
+    postgres:
+        image: postgres:9.6
+        environment:
+            POSTGRES_USER: tunnistamo
+            POSTGRES_PASSWORD: tunnistamo
+            POSTGRES_DB: tunnistamo
+        ports:
+            - 5432:5432
+        volumes:
+            - postgres-data-volume:/var/lib/postgresql/data
+        container_name: tunnistamo-db
+
+    django:
+        build: .
+        command: bash -c 'tail -f /dev/null'
+        volumes:
+            - .:/code
+            - django-media-volume:/var/media/
+        ports:
+            - "8000:8000"
+        depends_on:
+            - postgres
+        container_name: tunnistamo-backend
+
+volumes:
+        postgres-data-volume:
+        django-media-volume:

@@ -51,10 +51,11 @@ def make_scope_domain_map(scopes):
 
 
 class TokenAuth:
-    def __init__(self, scopes):
+    def __init__(self, scopes, nonce=None):
         assert isinstance(scopes, (list, tuple, set))
         self.scopes = scopes
         self.scope_domains = make_scope_domain_map(scopes)
+        self.nonce = nonce
 
 
 class OidcTokenAuthentication(BaseAuthentication):
@@ -139,7 +140,8 @@ class DeviceGeneratedJWTAuthentication(BaseAuthentication):
         if interface_secret != interface_device.secret_key:
             raise AuthenticationFailed("Incorrect interface device secret in X-Interface-Device-Secret HTTP header")
 
-        auth = TokenAuth(set(interface_device.scopes.split()))
+        nonce = claims.get('nonce', None)
+        auth = TokenAuth(set(interface_device.scopes.split()), nonce=nonce)
 
         return (device.user, auth)
 
