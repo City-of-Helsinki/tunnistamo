@@ -1,57 +1,70 @@
 import re
+from urllib.parse import parse_qs, urlparse
 
-from urllib.parse import urlparse, parse_qs
-
-from django.views.generic.base import TemplateView, View
-from django.core.urlresolvers import reverse
-from django.utils.http import quote
-from django.shortcuts import redirect
 from django.contrib.auth import logout as auth_logout
-
-from allauth.socialaccount import providers
+from django.shortcuts import redirect
+from django.urls import reverse
+from django.utils.http import quote
+from django.views.generic.base import TemplateView
 from oauth2_provider.models import get_application_model
+from oidc_provider.models import Client
 
-from .models import LoginMethod
+from .models import LoginMethod, OidcClientOptions
 
 
 class LoginView(TemplateView):
     template_name = "login.html"
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request, *args, **kwargs):  # noqa  (too complex)
         next_url = request.GET.get('next')
         app = None
+        oidc_client = None
+
         if next_url:
             # Determine application from the 'next' query argument.
             # FIXME: There should be a better way to get the app id.
             params = parse_qs(urlparse(next_url).query)
             client_id = params.get('client_id')
+
             if client_id and len(client_id):
                 client_id = client_id[0].strip()
+
             if client_id:
                 try:
                     app = get_application_model().objects.get(client_id=client_id)
                 except get_application_model().DoesNotExist:
                     pass
+
+                try:
+                    oidc_client = Client.objects.get(client_id=client_id)
+                except Client.DoesNotExist:
+                    pass
+
             next_url = quote(next_url)
 
+        allowed_methods = None
         if app:
             allowed_methods = app.login_methods.all()
-        else:
+        elif oidc_client:
+            try:
+                client_options = OidcClientOptions.objects.get(oidc_client=oidc_client)
+                allowed_methods = client_options.login_methods.all()
+            except OidcClientOptions.DoesNotExist:
+                pass
+
+        if allowed_methods is None:
             allowed_methods = LoginMethod.objects.all()
 
-        provider_map = providers.registry.provider_map
         methods = []
         for m in allowed_methods:
             assert isinstance(m, LoginMethod)
             if m.provider_id == 'saml':
                 continue  # SAML support removed
-            else:
-                provider_cls = provider_map[m.provider_id]
-                provider = provider_cls(request)
-                login_url = provider.get_login_url(request=self.request)
-                if next_url:
-                    login_url += '?next=' + next_url
-            m.login_url = login_url
+
+            m.login_url = reverse('social:begin', kwargs={'backend': m.provider_id})
+            if next_url:
+                m.login_url += '?next=' + next_url
+
             methods.append(m)
 
         if len(methods) == 1:
@@ -87,4 +100,12 @@ class EmailNeededView(TemplateView):
         if '//' in reauth_uri:  # Prevent open redirect
             reauth_uri = ''
         context['reauth_uri'] = reauth_uri
+        return context
+
+
+class AuthenticationErrorView(TemplateView):
+    template_name = 'account/signup_closed.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
         return context

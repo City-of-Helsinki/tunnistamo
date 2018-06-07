@@ -1,7 +1,7 @@
 from allauth.socialaccount import providers
+from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 from allauth.socialaccount.providers.base import ProviderAccount
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
-from allauth.socialaccount.adapter import DefaultSocialAccountAdapter
 
 
 class YleTunnusAccount(ProviderAccount):

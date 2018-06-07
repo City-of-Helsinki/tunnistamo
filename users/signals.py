@@ -1,5 +1,5 @@
-from django.dispatch import receiver
 from allauth.account.signals import user_logged_in as allauth_user_logged_in
+from django.dispatch import receiver
 from django.utils import timezone
 
 

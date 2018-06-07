@@ -4,6 +4,8 @@ from django.contrib import admin
 from django.contrib.admin.sites import site as admin_site
 from parler.admin import TranslatableAdmin
 
+from users.models import OidcClientOptions
+
 from .models import Api, ApiDomain, ApiScope, ApiScopeTranslation
 
 
@@ -66,9 +68,14 @@ class OidcClientForm(oidc_provider.admin.ClientForm):
         return self.cleaned_data['client_id']
 
 
+class OidcClientOptionsInlineAdmin(admin.StackedInline):
+    model = OidcClientOptions
+
+
 admin_site.unregister(oidc_provider.models.Client)
 
 
 @admin.register(oidc_provider.models.Client)
 class ClientAdmin(oidc_provider.admin.ClientAdmin):
     form = OidcClientForm
+    inlines = [OidcClientOptionsInlineAdmin]

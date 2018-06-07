@@ -1,0 +1,8 @@
+flake8
+isort
+pytest
+pytest-cov
+pytest-django
+httpretty
+factory_boy
+freezegun

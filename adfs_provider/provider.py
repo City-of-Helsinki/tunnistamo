@@ -1,9 +1,9 @@
 import uuid
 
+from allauth.account.models import EmailAddress
 from allauth.socialaccount import providers
 from allauth.socialaccount.providers.base import ProviderAccount
 from allauth.socialaccount.providers.oauth2.provider import OAuth2Provider
-from allauth.account.models import EmailAddress
 
 
 class ADFSAccount(ProviderAccount):
@@ -60,7 +60,7 @@ providers.registry.register(HelsinkiADFSProvider)
 class EspooADFSProvider(ADFSProvider):
     id = 'espoo_adfs'
     name = 'Espoo ADFS'
-    resource = 'https://varaamo.hel.fi'
+    resource = 'https://varaamo.hel.fi/tuotanto_new'
     domain_uuid = uuid.UUID('5b2401e0-7bbc-485b-8502-18920813a7d0')
 
 

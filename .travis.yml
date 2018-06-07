@@ -1,21 +1,28 @@
 language: python
 python:
   - '3.6'
-  - 'nightly'
 
 cache: pip
 
-install: 'pip install pytest-cov -r requirements.txt'
+before_install:
+  - sudo apt-get update
+  - sudo apt-get install -y libxmlsec1-dev pkg-config
+
+install: 'pip install -r requirements.txt -r requirements-dev.txt'
 
 script:
   # Run the tests
-  - pytest --cov=. || true  # TODO. Remove the "|| true" when there is tests
-
+  - flake8
+  - isort -c
+  - pytest -ra -vvv --cov=. || true  # TODO. Remove the "|| true" when there is tests
   # Check requirements.txt
   - |
     if [ "$TRAVIS_PYTHON_VERSION" = "3.6" ]; then
         pip install -q prequ
         prequ check -v
     fi
+
+addons:
+  postgresql: '9.6'
 
 after_success: codecov

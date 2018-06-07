@@ -1,11 +1,13 @@
 from __future__ import unicode_literals
 
 import uuid
+
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
-from allauth.socialaccount import providers
+from django.utils.translation import ugettext_lazy as _
 from helusers.models import AbstractUser
 from oauth2_provider.models import AbstractApplication
+from oidc_provider.models import Client
 
 
 class User(AbstractUser):
@@ -17,18 +19,17 @@ class User(AbstractUser):
         return super(User, self).save(*args, **kwargs)
 
 
-def get_login_methods():
-    yield ('saml', 'SAML')
-    provider_list = providers.registry.get_list()
-    for provider in provider_list:
-        yield (provider.id, provider.name)
+def get_provider_ids():
+    from django.conf import settings
+    from social_core.backends.utils import load_backends
+    return [(name, name) for name in load_backends(settings.AUTHENTICATION_BACKENDS).keys()]
 
 
 @python_2_unicode_compatible
 class LoginMethod(models.Model):
     provider_id = models.CharField(
         max_length=50, unique=True,
-        choices=sorted(providers.registry.as_choices()))
+        choices=sorted(get_provider_ids()))
     name = models.CharField(max_length=100)
     background_color = models.CharField(max_length=50, null=True, blank=True)
     logo_url = models.URLField(null=True, blank=True)
@@ -42,7 +43,7 @@ class LoginMethod(models.Model):
         ordering = ('order',)
 
 
-class Application(AbstractApplication):
+class OptionsBase(models.Model):
     SITE_TYPES = (
         ('dev', 'Development'),
         ('test', 'Testing'),
@@ -54,4 +55,21 @@ class Application(AbstractApplication):
     include_ad_groups = models.BooleanField(default=False)
 
     class Meta:
+        abstract = True
+
+
+class Application(OptionsBase, AbstractApplication):
+    class Meta:
         ordering = ('site_type', 'name')
+
+
+class OidcClientOptions(OptionsBase):
+    oidc_client = models.OneToOneField(Client, related_name='+', on_delete=models.CASCADE,
+                                       verbose_name=_("OIDC Client"))
+
+    def __str__(self):
+        return 'Options for OIDC Client "{}"'.format(self.oidc_client.name)
+
+    class Meta:
+        verbose_name = _("OIDC Client Options")
+        verbose_name_plural = _("OIDC Client Options")

@@ -1,6 +1,6 @@
-import hashlib
-import uuid
 import logging
+import uuid
+
 from djangosaml2.backends import Saml2Backend
 
 logger = logging.getLogger(__name__)

@@ -47,24 +47,32 @@ deactivate ADFS
 |||
 Browser ->> Tunnistamo: Pass //ADFS Token//
 Note over Tunnistamo: Validate //ADFS Token//
-Note over Tunnistamo: Generate //ID Token// for UI and\n//Access Tokens// for Service APIs
+Note over Tunnistamo: Generate //ID Token// and //Access token// for UI
 Tunnistamo ->> Browser: Redirect to **UI/callback**
 deactivate Tunnistamo
 |||
-Browser ->> UI: Pass //ID Token// and //Access Tokens//
+Browser ->> UI: Pass //ID Token// and //Access Token//
 activate UI
-Note over UI: Validate //ID Token//
+Note over UI: Validate //ID Token// with Tunnistamo public key
+|||
+UI ->> Tunnistamo: Request //API Tokens//
+activate Tunnistamo
+Note over Tunnistamo: Generate //API Tokens//
+Tunnistamo ->> UI: Pass //API Tokens//
+deactivate Tunnistamo
 |||
 UI ->> Browser: Make request to Service 1
+Browser ->> API1: Make authenticated API request using //API Token 1//
 activate API1
-Browser ->> API1: Make authenticated API request using //Access Token 1//
+Note over API1: Validate //API Token// with Tunnistamo public key
 API1 ->> Browser: API reply
 deactivate API1
 Browser ->> UI: Pass reply
 |||
 UI ->> Browser: Make request to Service 2
+Browser ->> API2: Make authenticated API request using //API Token 2//
 activate API2
-Browser ->> API2: Make authenticated API request using //Access Token 2//
+Note over API2: Validate //API Token// with Tunnistamo public key
 API2 ->> Browser: API reply
 deactivate API2
 Browser ->> UI: Pass reply
