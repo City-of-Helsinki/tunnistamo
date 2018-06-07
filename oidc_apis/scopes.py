@@ -38,11 +38,42 @@ class GithubUsernameScopeClaims(ScopeClaims):
         }
 
 
+class DevicesScopeClaims(ScopeClaims):
+    info_devices = (
+        _('Devices'), _('Permission to link devices to your user account identities.'))
+
+
+class IdentitiesScopeClaims(ScopeClaims):
+    info_identities = (
+        _('Identities'), _('Access to cards and other identity information.'))
+
+
+class CustomInfoTextStandardScopeClaims(StandardScopeClaims):
+    info_profile = (
+        _('Basic profile'),
+        _('Access to your basic information. Includes names, gender, birthdate and other information.'),
+    )
+    info_email = (
+        _('Email'),
+        _('Access to your email address.'),
+    )
+    info_phone = (
+        _('Phone number'),
+        _('Access to your phone number.'),
+    )
+    info_address = (
+        _('Address information'),
+        _('Access to your address. Includes country, locality, street and other information.'),
+    )
+
+
 class CombinedScopeClaims(ScopeClaims):
     combined_scope_claims = [
-        StandardScopeClaims,
+        CustomInfoTextStandardScopeClaims,
         GithubUsernameScopeClaims,
         ApiScopeClaims,
+        DevicesScopeClaims,
+        IdentitiesScopeClaims,
     ]
 
     @classmethod
