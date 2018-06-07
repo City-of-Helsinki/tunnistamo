@@ -2,10 +2,9 @@ import oauth2_provider.urls
 import oidc_provider.urls
 from django.conf import settings
 from django.conf.urls.static import static
-from django.urls import include, path, re_path
 from django.contrib import admin
-from django.contrib.staticfiles import views as static_views
 from django.http import HttpResponse
+from django.urls import include, path, re_path
 from django.views.defaults import permission_denied
 from rest_framework.routers import SimpleRouter
 
