@@ -16,12 +16,6 @@ script:
   - flake8
   - isort -c
   - pytest -ra -vvv --cov=.
-  # Check requirements.txt
-  - |
-    if [ "$TRAVIS_PYTHON_VERSION" = "3.6" ]; then
-        pip install -q prequ
-        prequ check -v
-    fi
 
 addons:
   postgresql: '9.6'
