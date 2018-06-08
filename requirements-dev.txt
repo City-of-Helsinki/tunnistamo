@@ -23,3 +23,6 @@ pytest-django==3.2.1
 python-dateutil==2.7.3
 six==1.11.0
 text-unidecode==1.2
+
+# The following packages are considered to be unsafe in a requirements file:
+# setuptools
