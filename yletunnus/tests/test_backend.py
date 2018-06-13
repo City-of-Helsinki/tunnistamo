@@ -12,7 +12,7 @@ from social_core.tests.backends.oauth import OAuth2Test
 
 
 class YleTunnusOAuth2Test(OAuth2Test):
-    client_key = 'a-key'
+    client_key = 'a-client-id'
     client_secret = 'a-secret-key'
 
     backend_path = 'yletunnus.backends.YleTunnusOAuth2'
@@ -69,8 +69,8 @@ class YleTunnusOAuth2Test(OAuth2Test):
             timegm(issue_datetime.utctimetuple())
         )
 
-        key = SYMKey(key=self.client_key, alg='HS512')
-        body['access_token'] = JWS(id_token, jwk=key, alg='HS512').sign_compact()
+        key = SYMKey(key=self.client_secret, alg='HS256')
+        body['access_token'] = JWS(id_token, jwk=key, alg='HS256').sign_compact()
         if tamper_message:
             header, msg, sig = body['id_token'].split('.')
             id_token['sub'] = '1235'

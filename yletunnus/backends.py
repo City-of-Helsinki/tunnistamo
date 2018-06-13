@@ -31,5 +31,8 @@ class YleTunnusOAuth2(BaseOAuth2):
         }
 
     def user_data(self, access_token, *args, **kwargs):
-        data = jwt.decode(access_token, secret=self.setting('SECRET'), verify=False)
+        data = jwt.decode(
+            access_token, key=self.setting('SECRET'), algorithms=('HS256', 'HS512'),
+            verify=True, issuer='https://auth.api.yle.fi', audience=self.setting('KEY')
+        )
         return data
