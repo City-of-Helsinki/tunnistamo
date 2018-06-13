@@ -79,6 +79,7 @@ AUTHENTICATION_BACKENDS = (
     'auth_backends.adfs.helsinki.HelsinkiADFS',
     'auth_backends.adfs.espoo.EspooADFS',
     'auth_backends.google.GoogleOAuth2CustomName',
+    'yletunnus.backends.YleTunnusOAuth2',
     'social_core.backends.facebook.FacebookOAuth2',
     'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
