@@ -42,7 +42,7 @@ def generate_api_token(api_scopes, token, request=None):
     req_scopes = api.required_scopes
 
     id_token = create_id_token(
-        token.user, aud=audience, request=request, scope=req_scopes)
+        token, token.user, aud=audience, request=request, scope=req_scopes)
 
     payload = {}
     payload.update(id_token)
