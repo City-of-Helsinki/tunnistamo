@@ -1,7 +1,5 @@
 import uuid
 
-from social_core.utils import url_add_parameters
-
 from auth_backends.adfs.base import BaseADFS
 
 
@@ -53,15 +51,6 @@ class EspooADFS(BaseADFS):
         'DNQhLHEL0mYumZUawi+EaNQOtTE8SN1tbKicI09WR0jdvNs7lvePrB/K1q19hz5m'
         'U+rbNk9+8Jgpzd5ielj37oqQOJazbSxNt+xF'
     )
-
-    def get_redirect_uri(self, state=None):
-        """Build redirect with redirect_state parameter."""
-        uri = '/accounts/adfs/espoo/login/callback/'
-        if self.REDIRECT_STATE and state:
-            uri = url_add_parameters(uri, {
-                'redirect_state': state
-            })
-        return uri
 
     def clean_attributes(self, attrs_in):
         attr_map = {
