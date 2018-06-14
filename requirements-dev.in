@@ -6,3 +6,4 @@ pytest-django
 httpretty
 factory_boy
 freezegun
+unittest2  # required by social_core-based tests
