@@ -1,5 +1,6 @@
 from allauth.socialaccount.models import SocialAccount, SocialApp
 from django.core.management.base import BaseCommand
+from django.db import transaction
 from social_django.models import UserSocialAuth
 
 
@@ -18,19 +19,29 @@ class Command(BaseCommand):
         providers = {}
         for usa in UserSocialAuth.objects.all():
             provider = providers.setdefault(usa.provider, {})
-            provider[usa.user_id] = usa
+            provider[usa.uid] = usa
 
-        for sa in SocialAccount.objects.all():
-            provider = providers.setdefault(sa.provider, {})
-            if sa.user_id in provider:
-                continue
-            provider[sa.user_id] = UserSocialAuth.objects.create(
-                user=sa.user,
-                provider=sa.provider,
-                uid=sa.uid,
-                extra_data=sa.extra_data,
-            )
-            self.stdout.write(self.style.SUCCESS('Added. (provider: {}, uid: {})'.format(sa.provider, sa.uid)))
+        with transaction.atomic():
+            create_objs = []
+            for sa in SocialAccount.objects.all():
+                provider = providers.setdefault(sa.provider, {})
+                if sa.uid in provider:
+                    continue
+                usa = provider[sa.uid] = UserSocialAuth(
+                    user=sa.user,
+                    provider=sa.provider,
+                    uid=sa.uid,
+                    extra_data=sa.extra_data,
+                )
+                create_objs.append(usa)
+                self.stdout.write(self.style.SUCCESS('Adding provider {}, uid {}'.format(sa.provider, sa.uid)))
+                if len(create_objs) == 1000:
+                    self.stdout.write(self.style.SUCCESS('Saving'))
+                    UserSocialAuth.objects.bulk_create(create_objs)
+                    create_objs = []
+
+            if create_objs:
+                UserSocialAuth.objects.bulk_create(create_objs)
 
         self.stdout.write(self.style.SUCCESS('Done.'))
 
