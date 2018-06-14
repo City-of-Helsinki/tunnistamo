@@ -10,8 +10,11 @@ from social_core.tests.backends.oauth import OAuth2Test
 
 
 class YleTunnusOAuth2Test(OAuth2Test):
-    client_key = 'a-client-id'
+    app_id = 'an-app-id'
+    app_key = 'an-app-key'
+    client_key = app_id
     client_secret = 'a-secret-key'
+    jwt_secret = 'jwt-secret-key'
 
     backend_path = 'yletunnus.backends.YleTunnusOAuth2'
     expected_uid = '1234567890abcdef12345678'
@@ -21,8 +24,10 @@ class YleTunnusOAuth2Test(OAuth2Test):
     def extra_settings(self):
         settings = super().extra_settings()
         settings.update({
-            'SOCIAL_AUTH_{0}_KEY'.format(self.name): self.client_key,
+            'SOCIAL_AUTH_{0}_APP_ID'.format(self.name): self.app_id,
+            'SOCIAL_AUTH_{0}_APP_KEY'.format(self.name): self.app_key,
             'SOCIAL_AUTH_{0}_SECRET'.format(self.name): self.client_secret,
+            'SOCIAL_AUTH_{0}_JWT_SECRET'.format(self.name): self.jwt_secret,
         })
         return settings
 
@@ -32,8 +37,8 @@ class YleTunnusOAuth2Test(OAuth2Test):
         return the complete response.
         """
         qs = request.querystring
-        assert qs.get('app_id')[0] == self.client_key
-        assert qs.get('app_key')[0] == self.client_secret
+        assert qs.get('app_id')[0] == self.app_id
+        assert qs.get('app_key')[0] == self.app_key
 
         body = self.prepare_access_token_body()
         return 200, headers, body
@@ -67,7 +72,7 @@ class YleTunnusOAuth2Test(OAuth2Test):
             timegm(issue_datetime.utctimetuple())
         )
 
-        key = SYMKey(key=self.client_secret, alg='HS256')
+        key = SYMKey(key=self.jwt_secret, alg='HS256')
         body['access_token'] = JWS(id_token, jwk=key, alg='HS256').sign_compact()
         if tamper_message:
             header, msg, sig = body['id_token'].split('.')
