@@ -66,6 +66,18 @@ class CustomInfoTextStandardScopeClaims(StandardScopeClaims):
         _('Access to your address. Includes country, locality, street and other information.'),
     )
 
+    def scope_profile(self):
+        return super().scope_profile()
+
+    def scope_email(self):
+        return super().scope_email()
+
+    def scope_phone(self):
+        return super().scope_phone()
+
+    def scope_address(self):
+        return super().scope_address()
+
 
 class CombinedScopeClaims(ScopeClaims):
     combined_scope_claims = [
