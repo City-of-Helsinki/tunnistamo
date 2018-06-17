@@ -79,7 +79,7 @@ def require_email(details, backend, user=None, *args, **kwargs):
         return redirect(redirect_to)
 
 
-def deny_duplicate_email(strategy, details, user=None, *args, **kwargs):
+def associate_by_email(strategy, details, user=None, *args, **kwargs):
     """Deny duplicate email.
 
     Stop authentication if the email address already exists in the user
@@ -91,28 +91,39 @@ def deny_duplicate_email(strategy, details, user=None, *args, **kwargs):
     if user:
         return
 
-    User = get_user_model()  # noqa
-
     email = details.get('email')
-    if email and User.objects.filter(email__iexact=email).count() > 0:
-        try:
-            existing_user = User.objects.get(email__iexact=email)
-            social_set = existing_user.social_auth.all()
-            # If the account doesn't have any social logins yet,
-            # allow the signup.
-            if not social_set:
-                return {
-                    'user': existing_user,
-                }
+    if not email:
+        return
 
-            providers = [a.provider for a in social_set]
-            strategy.request.other_logins = LoginMethod.objects.filter(provider_id__in=providers)
-        except User.DoesNotExist:
-            strategy.request.other_logins = []
+    backend = kwargs['backend']
 
-        error_view = AuthenticationErrorView(request=strategy.request)
+    User = get_user_model()  # noqa
+    existing_users = User.objects.filter(email__iexact=email).order_by('-date_joined')
+    if not existing_users:
+        return
 
-        return error_view.get(strategy.request)
+    user = existing_users[0]
+
+    trusted_email_domains = backend.setting('TRUSTED_EMAIL_DOMAINS', [])
+    explicitly_trusted = False
+    if trusted_email_domains:
+        email_domain = email.split('@')[1]
+        if email_domain in trusted_email_domains or trusted_email_domains == '*':
+            explicitly_trusted = True
+
+    social_set = user.social_auth.all()
+    # If the account doesn't have any social logins yet, or if we
+    # explicitly trust the social media provider, allow the signup.
+    if explicitly_trusted or not social_set:
+        return {
+            'user': user,
+        }
+
+    providers = [a.provider for a in social_set]
+    strategy.request.other_logins = LoginMethod.objects.filter(provider_id__in=providers)
+
+    error_view = AuthenticationErrorView(request=strategy.request)
+    return error_view.get(strategy.request)
 
 
 def update_ad_groups(details, backend, user=None, *args, **kwargs):

@@ -308,8 +308,8 @@ SOCIAL_AUTH_PIPELINE = (
     'users.pipeline.get_username',
     # Enforce email address.
     'users.pipeline.require_email',
-    # Deny duplicate email.
-    'users.pipeline.deny_duplicate_email',
+    # Deny duplicate email or associate to an existing user by email
+    'users.pipeline.associate_by_email',
 
     # Make up a username for this person, appends a random string at the end if
     # there's any collision.
