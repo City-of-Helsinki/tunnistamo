@@ -45,6 +45,15 @@ class BaseADFS(BaseOAuth2):
         params['resource'] = self.resource
         return params
 
+    def auth_complete_params(self, state=None):
+        # ADFS 4.0 has become more sensitive about the client_secret parameter
+        # being there if no client secret has been set, so remove it from
+        # params if a secret has not been configured.
+        params = super().auth_complete_params(state)
+        if not self.setting('SECRET') and 'client_secret' in params:
+            del params['client_secret']
+        return params
+
     def extra_data(self, user, uid, response, details=None, *args, **kwargs):
         """Return data to store in the extra_data field"""
         extra_data = super().extra_data(user, uid, response, details, *args, **kwargs)
