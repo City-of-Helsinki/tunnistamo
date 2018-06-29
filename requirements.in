@@ -23,3 +23,4 @@ social-auth-app-django
 requests
 jwcrypto
 Pillow
+django-crequest

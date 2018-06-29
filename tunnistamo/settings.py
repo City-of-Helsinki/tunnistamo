@@ -54,6 +54,7 @@ INSTALLED_APPS = (
     'corsheaders',
     'helsinki_theme',
     'bootstrap3',
+    'crequest',
 
     'helusers',
 
@@ -74,6 +75,7 @@ MIDDLEWARE = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
+    'crequest.middleware.CrequestMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
