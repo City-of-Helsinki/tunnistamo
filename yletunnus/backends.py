@@ -36,13 +36,14 @@ class YleTunnusOAuth2(BaseOAuth2):
 
     def user_data(self, access_token, *args, **kwargs):
         data = jwt.decode(
-            # YLE uses a security model where the signature key is not given to users their
-            # authentication service. Instead the token is to be verified using YLEs
-            # introspection endpoint (https://auth.api.yle.fi/v1/tokeninfo)
-            # As we have just received the token over TLS-protected channel we can
-            # just proceed to use it as is. We still verify that the token claims to signed
-            # as a sanity check.
-            access_token, algorithms=('HS256', 'HS512'), verify=False, 
+            # YLE uses a security model where the signature key is not given to
+            # users of their authentication service. Instead the token is to be
+            # verified using YLEs introspection endpoint
+            # (https://auth.api.yle.fi/v1/tokeninfo)
+            # As we have just received the token over TLS-protected channel we
+            # can just proceed to use it as is. We still verify that the token
+            # claims to signed as a sanity check.
+            access_token, algorithms=('HS256', 'HS512'), verify=False,
             issuer='https://auth.api.yle.fi', audience=self.setting('APP_ID')
         )
         return data
