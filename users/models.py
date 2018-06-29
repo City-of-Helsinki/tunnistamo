@@ -2,8 +2,10 @@ from __future__ import unicode_literals
 
 import uuid
 
+from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils.encoding import python_2_unicode_compatible
+from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from helusers.models import AbstractUser
 from oauth2_provider.models import AbstractApplication
@@ -73,3 +75,31 @@ class OidcClientOptions(OptionsBase):
     class Meta:
         verbose_name = _("OIDC Client Options")
         verbose_name_plural = _("OIDC Client Options")
+
+
+class UserLoginEntryManager(models.Manager):
+    def create_from_request(self, request, service, **kwargs):
+        kwargs.setdefault('user', request.user)
+        return self.create(service=service, **kwargs)
+
+
+class UserLoginEntry(models.Model):
+    user = models.ForeignKey(User, verbose_name=_('user'), related_name='login_entries', on_delete=models.CASCADE)
+    service = models.ForeignKey(
+        'services.Service', verbose_name=_('service'), related_name='user_login_entries', on_delete=models.CASCADE
+    )
+    timestamp = models.DateTimeField(verbose_name=_('timestamp'), db_index=True)
+    ip_address = models.CharField(verbose_name=_('IP address'), max_length=50, null=True, blank=True)
+    geo_location = JSONField(verbose_name=_('geo location'), null=True, blank=True)
+
+    objects = UserLoginEntryManager()
+
+    class Meta:
+        verbose_name = _('user login entry')
+        verbose_name_plural = _('user login entries')
+        ordering = ('timestamp',)
+
+    def save(self, *args, **kwargs):
+        if not self.timestamp:
+            self.timestamp = now()
+        super().save(*args, **kwargs)
