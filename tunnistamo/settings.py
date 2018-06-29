@@ -63,6 +63,7 @@ INSTALLED_APPS = (
     'oidc_apis',
     'devices',
     'identities',
+    'services',
 )
 
 MIDDLEWARE = (
@@ -159,6 +160,9 @@ STATICFILES_FINDERS = (
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/sso/static/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 
 STATICFILES_DIRS = [
     ('node_modules', os.path.join(BASE_DIR, 'node_modules')),
