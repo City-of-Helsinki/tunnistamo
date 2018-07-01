@@ -370,6 +370,8 @@ SOCIAL_AUTH_HELSINKI_ADFS_SECRET = None
 SOCIAL_AUTH_ESPOO_ADFS_KEY = ''
 SOCIAL_AUTH_ESPOO_ADFS_SECRET = None
 
+IPWARE_META_PRECEDENCE_ORDER = ('REMOTE_ADDR',)
+
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
