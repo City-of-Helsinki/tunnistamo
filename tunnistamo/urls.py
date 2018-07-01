@@ -12,6 +12,7 @@ from devices.api import UserDeviceViewSet
 from identities.api import UserIdentityViewSet
 from oidc_apis.views import get_api_tokens_view
 from tunnistamo import social_auth_urls
+from users.api import UserLoginEntryViewSet
 from users.views import EmailNeededView, LoginView, LogoutView
 
 from .api import GetJWTView, UserView
@@ -36,6 +37,7 @@ def show_login(request):
 router = SimpleRouter()
 router.register('user_identity', UserIdentityViewSet)
 router.register('user_device', UserDeviceViewSet)
+router.register('user_login_entry', UserLoginEntryViewSet)
 
 
 urlpatterns = [
