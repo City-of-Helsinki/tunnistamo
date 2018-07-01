@@ -11,6 +11,7 @@ from rest_framework.routers import SimpleRouter
 from devices.api import UserDeviceViewSet
 from identities.api import UserIdentityViewSet
 from oidc_apis.views import get_api_tokens_view
+from services.api import ServiceViewSet
 from tunnistamo import social_auth_urls
 from users.api import UserLoginEntryViewSet
 from users.views import EmailNeededView, LoginView, LogoutView
@@ -38,6 +39,7 @@ router = SimpleRouter()
 router.register('user_identity', UserIdentityViewSet)
 router.register('user_device', UserDeviceViewSet)
 router.register('user_login_entry', UserLoginEntryViewSet)
+router.register('service', ServiceViewSet)
 
 
 urlpatterns = [
