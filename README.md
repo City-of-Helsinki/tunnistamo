@@ -109,5 +109,18 @@ rm requirements.txt
 prequ update
 ```
 
+## Configuring
+
+### Client IP obtaining
+
+Tunnistamo uses [django-ipware](https://github.com/un33k/django-ipware) to obtain
+client ip addresses for user login history entries. By default, a client ip address
+is read from `REMOTE_ADDR`. If you need to use some HTTP header(s) instead,
+for instance when deploying Tunnistamo behind a reverse proxy, use setting
+`IPWARE_META_PRECEDENCE_ORDER` to set the header(s), for example:
+```python
+IPWARE_META_PRECEDENCE_ORDER = ('HTTP_X_FORWARDED_FOR',)
+```
+
 ## License
 This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.

@@ -8,6 +8,7 @@ from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from helusers.models import AbstractUser
+from ipware import get_client_ip
 from oauth2_provider.models import AbstractApplication
 from oidc_provider.models import Client
 
@@ -80,6 +81,7 @@ class OidcClientOptions(OptionsBase):
 class UserLoginEntryManager(models.Manager):
     def create_from_request(self, request, service, **kwargs):
         kwargs.setdefault('user', request.user)
+        kwargs.setdefault('ip_address', get_client_ip(request)[0])
         return self.create(service=service, **kwargs)
 
 

@@ -24,3 +24,4 @@ requests
 jwcrypto
 Pillow
 django-crequest
+django-ipware
