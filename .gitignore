@@ -11,3 +11,4 @@
 .coverage
 .cache
 .idea
+/data

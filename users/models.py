@@ -1,5 +1,6 @@
 from __future__ import unicode_literals
 
+import logging
 import uuid
 
 from django.contrib.postgres.fields import JSONField
@@ -11,6 +12,10 @@ from helusers.models import AbstractUser
 from ipware import get_client_ip
 from oauth2_provider.models import AbstractApplication
 from oidc_provider.models import Client
+
+from users.utils import get_geo_location_data_for_ip
+
+logger = logging.getLogger(__name__)
 
 
 class User(AbstractUser):
@@ -81,7 +86,18 @@ class OidcClientOptions(OptionsBase):
 class UserLoginEntryManager(models.Manager):
     def create_from_request(self, request, service, **kwargs):
         kwargs.setdefault('user', request.user)
-        kwargs.setdefault('ip_address', get_client_ip(request)[0])
+
+        if 'ip_address' not in kwargs:
+            kwargs['ip_address'] = get_client_ip(request)[0]
+
+        if 'geo_location' not in kwargs:
+            try:
+                kwargs['geo_location'] = get_geo_location_data_for_ip(kwargs['ip_address'])
+            except Exception as e:
+                # catch all exceptions here because we don't want any geo location related error
+                # to make the whole login entry creation fail.
+                logger.exception('Error getting geo location data for an IP: {}'.format(e))
+
         return self.create(service=service, **kwargs)
 
 
