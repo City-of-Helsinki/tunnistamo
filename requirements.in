@@ -25,3 +25,4 @@ jwcrypto
 Pillow
 django-crequest
 django-ipware
+geoip2
