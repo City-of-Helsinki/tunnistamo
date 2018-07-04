@@ -48,6 +48,11 @@ class IdentitiesScopeClaims(ScopeClaims):
         _('Identities'), _('Access to cards and other identity information.'))
 
 
+class LoginEntriesScopeClaims(ScopeClaims):
+    info_login_entries = (
+        _('Login history'), _('Access to your login history.'))
+
+
 class CustomInfoTextStandardScopeClaims(StandardScopeClaims):
     info_profile = (
         _('Basic profile'),
@@ -86,6 +91,7 @@ class CombinedScopeClaims(ScopeClaims):
         ApiScopeClaims,
         DevicesScopeClaims,
         IdentitiesScopeClaims,
+        LoginEntriesScopeClaims,
     ]
 
     @classmethod
