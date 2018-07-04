@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-03-20 21:18+0000\n"
+"POT-Creation-Date: 2018-07-05 10:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,7 +26,7 @@ msgstr ""
 msgid "Department name"
 msgstr ""
 
-#: adfs_provider/models.py:20 oidc_apis/scopes.py:57
+#: adfs_provider/models.py:20 oidc_apis/scopes.py:62
 msgid "Email"
 msgstr "Sähköposti"
 
@@ -46,7 +46,7 @@ msgstr "Etunimi"
 msgid "Last name"
 msgstr "Sukunimi"
 
-#: devices/models.py:17 identities/models.py:11
+#: devices/models.py:17 identities/models.py:11 users/models.py:105
 msgid "user"
 msgstr "käyttäjä"
 
@@ -90,7 +90,7 @@ msgstr "käyttäjien laitteet"
 msgid "allowed OAuth scopes"
 msgstr ""
 
-#: identities/models.py:12
+#: identities/models.py:12 services/models.py:25 users/models.py:107
 msgid "service"
 msgstr "palvelu"
 
@@ -146,7 +146,7 @@ msgstr ""
 msgid "API domains"
 msgstr ""
 
-#: oidc_apis/models.py:49 oidc_apis/models.py:177
+#: oidc_apis/models.py:49 oidc_apis/models.py:177 services/models.py:12
 msgid "name"
 msgstr "nimi"
 
@@ -215,7 +215,7 @@ msgstr ""
 msgid "API scopes"
 msgstr ""
 
-#: oidc_apis/models.py:179
+#: oidc_apis/models.py:179 services/models.py:14
 msgid "description"
 msgstr ""
 
@@ -248,10 +248,18 @@ msgid "Access to cards and other identity information."
 msgstr "Lupa lukea korttitietoja ja lisätä kortteja käyttäjätilillesi"
 
 #: oidc_apis/scopes.py:53
+msgid "Login history"
+msgstr "Kirjautumishistoria"
+
+#: oidc_apis/scopes.py:53
+msgid "Access to your login history."
+msgstr "Lupa lukea kirjautumishistoria."
+
+#: oidc_apis/scopes.py:58
 msgid "Basic profile"
 msgstr "Perustiedot"
 
-#: oidc_apis/scopes.py:54
+#: oidc_apis/scopes.py:59
 msgid ""
 "Access to your basic information. Includes names, gender, birthdate and "
 "other information."
@@ -259,23 +267,23 @@ msgstr ""
 "Lupa lukea perustiedot, jotka sisältävät muun muassa nimen, sukupuolen ja "
 "syntymäajan."
 
-#: oidc_apis/scopes.py:58
+#: oidc_apis/scopes.py:63
 msgid "Access to your email address."
 msgstr "Lupa lukea sähköpostiosoite."
 
-#: oidc_apis/scopes.py:61
+#: oidc_apis/scopes.py:66
 msgid "Phone number"
 msgstr "Puhelinnumero"
 
-#: oidc_apis/scopes.py:62
+#: oidc_apis/scopes.py:67
 msgid "Access to your phone number."
 msgstr "Lupa lukea puhelinnumero."
 
-#: oidc_apis/scopes.py:65
+#: oidc_apis/scopes.py:70
 msgid "Address information"
 msgstr "Osoitetiedot"
 
-#: oidc_apis/scopes.py:66
+#: oidc_apis/scopes.py:71
 msgid ""
 "Access to your address. Includes country, locality, street and other "
 "information."
@@ -283,14 +291,76 @@ msgstr ""
 "Lupa lukea osoitetiedot, jotka sisältävät muun muassa valtion, paikkakunnan "
 "ja katuosoitteen."
 
+#: services/admin.py:16
+msgid "Not translatable fields"
+msgstr "Kentät joita ei käännetä"
+
+#: services/models.py:13
+msgid "URL"
+msgstr ""
+
+#: services/models.py:16
+msgid "image"
+msgstr "kuva"
+
+#: services/models.py:18
+msgid "application"
+msgstr ""
+
+#: services/models.py:21
+msgid "client"
+msgstr ""
+
+#: services/models.py:26
+msgid "services"
+msgstr "palvelut"
+
+#: services/models.py:34
+msgid "Either application or client required."
+msgstr "Joko \"application\" tai \"client\" on pakollinen."
+
+#: services/models.py:36
+msgid "Cannot set both application and client."
+msgstr "Molempia \"application\" ja \"client\" ei voi asettaa."
+
+#: tunnistamo/utils.py:50
+#, python-format
+msgid "Not a valid translation format. Expecting {\"lang_code\": %(data)s}"
+msgstr ""
+
+#: tunnistamo/utils.py:54
+#, python-format
+msgid "%(lang)s is not a supported languages (%(allowed)s)"
+msgstr ""
+
 #: users/apps.py:7
 msgid "Users"
 msgstr "Käyttäjät"
 
-#: users/models.py:68
+#: users/models.py:76
 msgid "OIDC Client"
 msgstr ""
 
-#: users/models.py:74 users/models.py:75
+#: users/models.py:82 users/models.py:83
 msgid "OIDC Client Options"
 msgstr ""
+
+#: users/models.py:109
+msgid "timestamp"
+msgstr "aikaleima"
+
+#: users/models.py:110
+msgid "IP address"
+msgstr "IP-osoite"
+
+#: users/models.py:111
+msgid "geo location"
+msgstr "sijaintitiedot"
+
+#: users/models.py:116
+msgid "user login entry"
+msgstr "kirjautumismerkintä"
+
+#: users/models.py:117
+msgid "user login entries"
+msgstr "kirjautumismerkinnät"
