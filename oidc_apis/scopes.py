@@ -58,6 +58,15 @@ class UserConsentsScopeClaims(ScopeClaims):
         _('Consents'), _('Permission to view and delete your consents for services.'))
 
 
+class AdGroupsScopeClaims(ScopeClaims):
+    info_ad_groups = (_("AD Groups"), _("Access to your AD Group memberships."))
+
+    def scope_ad_groups(self):
+        return {
+            'ad_groups': list(self.user.ad_groups.all().values_list('name', flat=True)),
+        }
+
+
 class CustomInfoTextStandardScopeClaims(StandardScopeClaims):
     info_profile = (
         _('Basic profile'),
@@ -97,6 +106,7 @@ class CombinedScopeClaims(ScopeClaims):
         DevicesScopeClaims,
         IdentitiesScopeClaims,
         LoginEntriesScopeClaims,
+        AdGroupsScopeClaims,
     ]
 
     @classmethod

@@ -20,6 +20,7 @@ SCOPE_CHOICES = [
     ('profile', _("Profile")),
     ('address', _("Address")),
     ('github_username', _("GitHub username")),
+    ('ad_groups', _("AD Groups")),
 ]
 
 
