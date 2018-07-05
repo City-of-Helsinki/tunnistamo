@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-05 10:13+0000\n"
+"POT-Creation-Date: 2018-07-05 10:23+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,7 +26,7 @@ msgstr ""
 msgid "Department name"
 msgstr ""
 
-#: adfs_provider/models.py:20 oidc_apis/scopes.py:62
+#: adfs_provider/models.py:20 oidc_apis/scopes.py:67
 msgid "Email"
 msgstr "Sähköposti"
 
@@ -256,10 +256,18 @@ msgid "Access to your login history."
 msgstr "Lupa lukea kirjautumishistoria."
 
 #: oidc_apis/scopes.py:58
+msgid "Consents"
+msgstr "Luvitukset"
+
+#: oidc_apis/scopes.py:58
+msgid "Permission to view and delete your consents for services."
+msgstr "Lupa lukea luvitukset palveluille ja poistaa niitä."
+
+#: oidc_apis/scopes.py:63
 msgid "Basic profile"
 msgstr "Perustiedot"
 
-#: oidc_apis/scopes.py:59
+#: oidc_apis/scopes.py:64
 msgid ""
 "Access to your basic information. Includes names, gender, birthdate and "
 "other information."
@@ -267,23 +275,23 @@ msgstr ""
 "Lupa lukea perustiedot, jotka sisältävät muun muassa nimen, sukupuolen ja "
 "syntymäajan."
 
-#: oidc_apis/scopes.py:63
+#: oidc_apis/scopes.py:68
 msgid "Access to your email address."
 msgstr "Lupa lukea sähköpostiosoite."
 
-#: oidc_apis/scopes.py:66
+#: oidc_apis/scopes.py:71
 msgid "Phone number"
 msgstr "Puhelinnumero"
 
-#: oidc_apis/scopes.py:67
+#: oidc_apis/scopes.py:72
 msgid "Access to your phone number."
 msgstr "Lupa lukea puhelinnumero."
 
-#: oidc_apis/scopes.py:70
+#: oidc_apis/scopes.py:75
 msgid "Address information"
 msgstr "Osoitetiedot"
 
-#: oidc_apis/scopes.py:71
+#: oidc_apis/scopes.py:76
 msgid ""
 "Access to your address. Includes country, locality, street and other "
 "information."
