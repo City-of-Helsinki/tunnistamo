@@ -53,6 +53,11 @@ class LoginEntriesScopeClaims(ScopeClaims):
         _('Login history'), _('Access to your login history.'))
 
 
+class UserConsentsScopeClaims(ScopeClaims):
+    info_user_consents = (
+        _('Consents'), _('Permission to view and delete your consents for services.'))
+
+
 class CustomInfoTextStandardScopeClaims(StandardScopeClaims):
     info_profile = (
         _('Basic profile'),

@@ -13,7 +13,7 @@ from identities.api import UserIdentityViewSet
 from oidc_apis.views import get_api_tokens_view
 from services.api import ServiceViewSet
 from tunnistamo import social_auth_urls
-from users.api import UserLoginEntryViewSet
+from users.api import UserConsentViewSet, UserLoginEntryViewSet
 from users.views import EmailNeededView, LoginView, LogoutView
 
 from .api import GetJWTView, UserView
@@ -40,6 +40,7 @@ router.register('user_identity', UserIdentityViewSet)
 router.register('user_device', UserDeviceViewSet)
 router.register('user_login_entry', UserLoginEntryViewSet)
 router.register('service', ServiceViewSet)
+router.register('user_consent', UserConsentViewSet)
 
 
 urlpatterns = [
