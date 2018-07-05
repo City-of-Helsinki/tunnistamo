@@ -1,7 +1,7 @@
 from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from oidc_provider.lib.utils.oauth2 import protected_resource_view
-from django.views.decorators.csrf import csrf_exempt
 
 from .api_tokens import get_api_tokens_by_access_token
 
