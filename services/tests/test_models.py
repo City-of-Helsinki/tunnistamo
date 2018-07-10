@@ -1,0 +1,30 @@
+import pytest
+from django.core.exceptions import ValidationError
+
+from services.factories import ServiceFactory
+from users.factories import ApplicationFactory, OIDCClientFactory
+
+
+@pytest.fixture(autouse=True)
+def auto_mark_django_db(db):
+    pass
+
+
+def test_create_with_application():
+    ServiceFactory(target='application')
+
+
+def test_create_with_client():
+    ServiceFactory(target='client')
+
+
+def test_create_without_application_or_client():
+    with pytest.raises(ValidationError) as e:
+        ServiceFactory(target='this target creates neither')
+    assert 'Either application or client required.' in str(e)
+
+
+def test_create_with_both_application_and_client():
+    with pytest.raises(ValidationError) as e:
+        ServiceFactory(application=ApplicationFactory(), client=OIDCClientFactory())
+    assert 'Cannot set both application and client.' in str(e)

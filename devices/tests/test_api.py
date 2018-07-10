@@ -4,7 +4,7 @@ from rest_framework.test import APIClient
 
 from devices.factories import UserDeviceFactory
 from devices.models import UserDevice
-from tunnistamo.factories import UserFactory, access_token_factory
+from users.factories import UserFactory, access_token_factory
 
 list_url = reverse('v1:userdevice-list')
 
