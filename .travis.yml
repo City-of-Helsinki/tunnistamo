@@ -19,7 +19,8 @@ script:
   # Check requirements.txt
   - |
     if [ "$TRAVIS_PYTHON_VERSION" = "3.6" ]; then
-        pip install -q prequ==1.4.1
+        pip install -q pip==18.0
+        pip install -q prequ==1.4.3
         prequ check -v
     fi
 
