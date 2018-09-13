@@ -12,10 +12,10 @@ from jwcrypto.common import json_encode
 from rest_framework.test import APIClient
 
 from devices.factories import InterfaceDeviceFactory, UserDeviceFactory
-from identities.factories import UserFactory, UserIdentityFactory
+from identities.factories import UserIdentityFactory
 from identities.helmet_requests import HelmetConnectionException
 from identities.models import UserIdentity
-from tunnistamo.factories import access_token_factory
+from users.factories import UserFactory, access_token_factory
 
 User = get_user_model()
 

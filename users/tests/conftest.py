@@ -6,7 +6,10 @@ from allauth.socialaccount.models import SocialAccount, SocialApp
 from django.contrib.auth import get_user_model
 from django.utils.crypto import get_random_string
 from oidc_provider.models import Client
+from rest_framework.test import APIClient
 
+from services.factories import ServiceFactory
+from users.factories import UserFactory
 from users.models import Application, LoginMethod, OidcClientOptions
 
 
@@ -139,3 +142,26 @@ def emailaddress_factory():
         return instance
 
     return make_instance
+
+
+@pytest.fixture
+def api_client():
+    return APIClient()
+
+
+@pytest.fixture
+def user():
+    return UserFactory()
+
+
+@pytest.fixture
+def user_api_client(user):
+    api_client = APIClient()
+    api_client.force_authenticate(user)
+    api_client.user = user
+    return api_client
+
+
+@pytest.fixture
+def service():
+    return ServiceFactory()

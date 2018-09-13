@@ -1,7 +1,7 @@
 import factory
 
 from devices.models import InterfaceDevice, UserDevice
-from tunnistamo.factories import UserFactory
+from users.factories import UserFactory
 
 
 class UserDeviceFactory(factory.django.DjangoModelFactory):

@@ -1,7 +1,7 @@
 import factory
 
 from identities.models import UserIdentity
-from tunnistamo.factories import UserFactory
+from users.factories import UserFactory
 
 
 class UserIdentityFactory(factory.django.DjangoModelFactory):
