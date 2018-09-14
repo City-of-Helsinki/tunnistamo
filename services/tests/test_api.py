@@ -23,7 +23,7 @@ def api_client():
 
 @pytest.fixture
 def service():
-    return ServiceFactory()
+    return ServiceFactory(target='client')
 
 
 @pytest.mark.parametrize('endpoint', ('list', 'detail'))

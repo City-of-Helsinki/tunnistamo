@@ -65,7 +65,7 @@ def fake_dict():
 
 class UserLoginEntryFactory(factory.django.DjangoModelFactory):
     user = factory.SubFactory(UserFactory)
-    service = factory.SubFactory('services.factories.ServiceFactory')
+    service = factory.SubFactory('services.factories.ServiceFactory', target='client')
     timestamp = factory.LazyFunction(now)
     ip_address = factory.Faker('ipv4')
     geo_location = factory.LazyFunction(fake_dict)
