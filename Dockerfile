@@ -10,7 +10,7 @@ WORKDIR /code
 
 COPY . /code
 
-RUN pip install pip==9.0.2 \
+RUN pip install pip==18.0 \
     && pip install -r /code/requirements.txt \
     && pip install -r /code/requirements-dev.txt \
-    && pip install prequ==1.2.2
+    && pip install prequ==1.4.3
