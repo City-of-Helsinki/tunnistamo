@@ -4,6 +4,7 @@ import factory
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now
 from faker import Faker
+from oauth2_provider.models import AccessToken
 from oidc_provider.models import Client, UserConsent
 from oidc_provider.tests.app.utils import create_fake_client, create_fake_token
 
@@ -83,3 +84,14 @@ class UserConsentFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = UserConsent
+
+
+class OAuth2AccessTokenFactory(factory.django.DjangoModelFactory):
+    user = factory.SubFactory(UserFactory)
+    application = factory.SubFactory(ApplicationFactory)
+    expires = factory.LazyAttribute(lambda o: now() + timedelta(days=1))
+    scope = 'read write'
+    token = factory.Faker('uuid4')
+
+    class Meta:
+        model = AccessToken
