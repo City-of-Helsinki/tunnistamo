@@ -26,3 +26,4 @@ Pillow
 django-crequest
 django-ipware
 geoip2
+django-filter

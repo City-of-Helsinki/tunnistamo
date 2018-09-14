@@ -55,6 +55,7 @@ INSTALLED_APPS = (
     'helsinki_theme',
     'bootstrap3',
     'crequest',
+    'django_filters',
 
     'helusers',
 
@@ -235,6 +236,9 @@ OAUTH2_PROVIDER = {
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    ),
+    'DEFAULT_FILTER_BACKENDS': (
+        'django_filters.rest_framework.DjangoFilterBackend',
     ),
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
