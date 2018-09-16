@@ -3,6 +3,7 @@ from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
 
 from services.factories import ServiceFactory
+from tunnistamo.utils import assert_objects_in_response
 from users.factories import OAuth2AccessTokenFactory, UserConsentFactory, UserFactory
 
 LIST_URL = reverse('v1:service-list')
@@ -92,3 +93,34 @@ def test_service_consent_given_field(user_api_client):
         response = user_api_client.get(get_detail_url(service))
         assert response.status_code == 200
         assert response.data['consent_given'] is True
+
+
+def test_service_consent_given_filtering(api_client, user_api_client):
+    user = user_api_client.user
+    other_user = UserFactory()
+
+    not_connected_client_service = ServiceFactory(target='client')
+    not_connected_application_service = ServiceFactory(target='application')
+    other_user_client_service = ServiceFactory(target='client')
+    UserConsentFactory(user=other_user, client=other_user_client_service.client)
+    other_user_application_service = ServiceFactory(target='application')
+    OAuth2AccessTokenFactory(user=other_user, application=other_user_application_service.application)
+
+    own_client_service = ServiceFactory(target='client')
+    UserConsentFactory(user=user, client=own_client_service.client)
+    own_application_service = ServiceFactory(target='application')
+    OAuth2AccessTokenFactory(user=user, application=own_application_service.application)
+
+    for consent_given in (True, False):
+        response = api_client.get(LIST_URL, {'consent_given': consent_given})  # unauthenticated user
+        assert response.status_code == 200
+        assert len(response.data['results']) == 6
+
+    response = user_api_client.get(LIST_URL, {'consent_given': True})
+    assert response.status_code == 200
+    assert_objects_in_response(response, (own_application_service, own_client_service))
+
+    response = user_api_client.get(LIST_URL, {'consent_given': False})
+    assert response.status_code == 200
+    assert_objects_in_response(response, (not_connected_application_service, not_connected_client_service,
+                                          other_user_application_service, other_user_client_service))

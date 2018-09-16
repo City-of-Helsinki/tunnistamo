@@ -119,3 +119,7 @@ class TranslatableSerializer(serializers.Serializer):
                 translation = instance._get_translated_model(lang_code, auto_create=True)
                 setattr(translation, field, value)
         instance.save_translations()
+
+
+def assert_objects_in_response(response, objects):
+    assert {r['id'] for r in response.data['results']} == {o.id for o in objects}
