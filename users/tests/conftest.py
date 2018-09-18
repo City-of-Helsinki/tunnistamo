@@ -164,4 +164,4 @@ def user_api_client(user):
 
 @pytest.fixture
 def service():
-    return ServiceFactory()
+    return ServiceFactory(target='client')

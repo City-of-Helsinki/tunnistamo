@@ -15,7 +15,7 @@ class ServiceFactory(factory.django.DjangoModelFactory):
     client = factory.LazyAttribute(lambda o: OIDCClientFactory() if o.target == 'client' else None)
 
     class Params:
-        target = 'client'
+        target = None
 
     class Meta:
         model = Service
