@@ -161,12 +161,3 @@ class FakeToken(object):
     @classmethod
     def from_claims(cls, claims):
         return cls(claims.user, claims.scopes, claims.client)
-
-
-def get_userinfo_by_scopes(user, scopes, client=None):
-    token = FakeToken(user, scopes, client)
-    return _get_userinfo_by_token(token)
-
-
-def _get_userinfo_by_token(token):
-    return CombinedScopeClaims(token).create_response_dic()
