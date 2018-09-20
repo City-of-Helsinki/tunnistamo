@@ -1,6 +1,9 @@
+import time
 import uuid
 from datetime import timedelta
+from urllib.parse import parse_qs, urlparse
 
+import jwt
 import pytest
 from Cryptodome.PublicKey import RSA
 from django.urls import reverse
@@ -114,6 +117,75 @@ def test_implicit_oidc_login_user_login_entry_creation(client, oidc_client, user
         assert entry.service == service
     else:
         assert UserLoginEntry.objects.count() == 0
+
+
+@pytest.mark.parametrize('scope', ['', 'profile', 'email', 'profile email'])
+def test_implicit_oidc_login_id_token_content(
+        client, oidc_client, user, scope):
+    client.force_login(user)
+
+    data = {
+        'response_type': 'id_token token',
+        'client_id': oidc_client.client_id,
+        'redirect_uri': oidc_client.redirect_uris,
+        'scope': ' '.join(['openid', scope]),
+        'nonce': '123nonce456',
+    }
+
+    url = reverse('oidc_provider:authorize')
+    response = client.get(url, data, REMOTE_ADDR='1.2.3.4')
+    assert response.status_code == 302
+    redirect_location = response.get('location')
+    parsed_loc = urlparse(redirect_location)
+    params = parse_qs(parsed_loc.fragment)
+
+    id_token = params['id_token'][0]
+    id_token_data = jwt.decode(id_token, verify=False)
+
+    expected_keys = {
+        'aud', 'sub', 'exp', 'iat', 'iss',  'nonce',
+        'at_hash', 'auth_time',
+    } | ({
+        'name', 'family_name', 'given_name', 'nickname',
+    } if 'profile' in scope else set()) | ({
+        'email', 'email_verified',
+    } if 'email' in scope else set())
+
+    assert set(id_token_data.keys()) == expected_keys
+
+    # Basic data
+    assert id_token_data['aud'] == oidc_client.client_id
+    assert id_token_data['iss'].endswith('/openid')
+    assert id_token_data['nonce'] == '123nonce456'
+
+    # Subject
+    assert id_token_data['sub'] == str(user.uuid)
+
+    # Times
+    auth_time = id_token_data['auth_time']
+    iat = id_token_data['iat']
+    exp = id_token_data['exp']
+    assert auth_time <= time.time()
+    assert auth_time >= time.time() - 30
+    assert iat == auth_time
+    assert exp == iat + 600  # ID token expires in 10 min
+
+    # Requested claims
+    if 'profile' in scope:
+        assert id_token_data['name'] == user.get_full_name()
+        assert id_token_data['family_name'] == user.last_name
+        assert id_token_data['given_name'] == user.first_name
+        assert id_token_data['nickname'] == user.get_short_name()
+        assert id_token_data.get('preferred_username') is None
+
+    if 'email' in scope:
+        assert id_token_data['email'] == user.email
+        assert id_token_data['email_verified'] is False
+
+    # Check the other parameters from the location fragment
+    assert len(params['access_token'][0]) >= 32
+    assert params['token_type'] == ['bearer']
+    assert params['expires_in'] == ['3600']  # Access token expires in 1 h
 
 
 @pytest.mark.parametrize('service_exists', (False, True))
