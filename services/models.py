@@ -14,9 +14,13 @@ class Service(TranslatableModel):
         description=models.TextField(verbose_name=_('description'), null=True, blank=True),
     )
     image = models.ImageField(verbose_name=_('image'), null=True, blank=True)
+    # An application uses oauth2_provider and implements
+    # OAuth2 authentication (instead of OpenID Connect flow)
     application = models.OneToOneField(
         Application, verbose_name=_('application'), null=True, blank=True, on_delete=models.SET_NULL
     )
+    # A client uses oidc_provider and implements the
+    # OpenID Connect flow
     client = models.OneToOneField(
         Client, verbose_name=_('client'), null=True, blank=True, on_delete=models.SET_NULL
     )
