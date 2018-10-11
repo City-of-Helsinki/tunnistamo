@@ -34,8 +34,6 @@ class Service(TranslatableModel):
         return self.name
 
     def clean(self):
-        if not (self.application or self.client):
-            raise ValidationError(_('Either application or client required.'))
         if self.application and self.client:
             raise ValidationError(_('Cannot set both application and client.'))
 
