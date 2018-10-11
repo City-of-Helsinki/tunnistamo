@@ -134,39 +134,13 @@ class CombinedScopeClaims(ScopeClaims):
         apis = {x.api for x in api_scopes}
         return set(sum((list(api.required_scopes) for api in apis), []))
 
+    def __init__(self, token, *args, **kwargs):
+        self._token = token
+        super().__init__(token, *args, **kwargs)
+
     def create_response_dic(self):
         result = super(CombinedScopeClaims, self).create_response_dic()
-        token = FakeToken.from_claims(self)
         for claim_cls in self.combined_scope_claims:
-            claim = claim_cls(token)
+            claim = claim_cls(self._token)
             result.update(claim.create_response_dic())
         return result
-
-
-class FakeToken(object):
-    """
-    Object that adapts a token.
-
-    ScopeClaims constructor needs a token, but really uses just its
-    user, scope and client attributes.  This adapter makes it possible
-    to create a token like object from those three attributes or from a
-    claims object (which doesn't store the token) allowing it to be
-    passed to a ScopeClaims constructor.
-    """
-    def __init__(self, user, scope, client):
-        self.user = user
-        self.scope = scope
-        self.client = client
-
-    @classmethod
-    def from_claims(cls, claims):
-        return cls(claims.user, claims.scopes, claims.client)
-
-
-def get_userinfo_by_scopes(user, scopes, client=None):
-    token = FakeToken(user, scopes, client)
-    return _get_userinfo_by_token(token)
-
-
-def _get_userinfo_by_token(token):
-    return CombinedScopeClaims(token).create_response_dic()
