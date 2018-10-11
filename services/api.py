@@ -7,6 +7,7 @@ from oidc_provider.models import UserConsent
 from rest_framework import serializers, viewsets
 
 from services.models import Service
+from tunnistamo.api_common import OidcTokenAuthentication, TokenAuth
 from tunnistamo.pagination import DefaultPagination
 from tunnistamo.utils import TranslatableSerializer
 
@@ -48,16 +49,22 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Service.objects.all()
     pagination_class = DefaultPagination
     filterset_class = ServiceFilter
+    authentication_classes = (OidcTokenAuthentication,)
 
     def get_queryset(self):
         queryset = super().get_queryset()
         user = self.request.user
 
-        if user.is_authenticated:
-            user_consents = UserConsent.objects.filter(client__service=OuterRef('pk'), user=user)
-            user_access_tokens = AccessToken.objects.filter(application__service=OuterRef('pk'), user=user)
-            queryset = queryset.annotate(
-                consent_given=Greatest(Exists(user_consents), Exists(user_access_tokens))
-            )
+        if user.is_authenticated and isinstance(self.request.auth, TokenAuth):
+            token_domains = self.request.auth.scope_domains
+            consent_perms = token_domains.get('consents', set())
+            consent_read_perm_included = any('read' in perm[0] and perm[1] is None for perm in consent_perms)
+
+            if consent_read_perm_included:
+                user_consents = UserConsent.objects.filter(client__service=OuterRef('pk'), user=user)
+                user_access_tokens = AccessToken.objects.filter(application__service=OuterRef('pk'), user=user)
+                queryset = queryset.annotate(
+                    consent_given=Greatest(Exists(user_consents), Exists(user_access_tokens))
+                )
 
         return queryset

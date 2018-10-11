@@ -4,13 +4,22 @@ from rest_framework.test import APIClient
 
 from services.factories import ServiceFactory
 from tunnistamo.utils import assert_objects_in_response
-from users.factories import OAuth2AccessTokenFactory, UserConsentFactory, UserFactory
+from users.factories import OAuth2AccessTokenFactory, UserConsentFactory, UserFactory, access_token_factory
 
 LIST_URL = reverse('v1:service-list')
 
 
 def get_detail_url(service):
     return reverse('v1:service-detail', kwargs={'pk': service.pk})
+
+
+def create_oidc_api_client(scopes=(), user=None):
+    user = user or UserFactory()
+    token = access_token_factory(scopes=scopes, user=user)
+    api_client = APIClient()
+    api_client.credentials(HTTP_AUTHORIZATION='Bearer {}'.format(token.access_token))
+    api_client.user = user
+    return api_client
 
 
 @pytest.fixture(autouse=True)
@@ -34,6 +43,11 @@ def user_api_client(user):
     api_client.force_authenticate(user=user)
     api_client.user = user
     return api_client
+
+
+@pytest.fixture
+def oidc_api_client(user):
+    return create_oidc_api_client(scopes=('read:consents',), user=user)
 
 
 @pytest.fixture
@@ -67,8 +81,8 @@ def test_get(api_client, service, endpoint):
     assert service_data['url'] == {'fi': service.url}
 
 
-def test_service_consent_given_field(user_api_client):
-    user = user_api_client.user
+def test_service_consent_given_field(oidc_api_client):
+    user = oidc_api_client.user
     other_user = UserFactory()
 
     not_connected_client_service = ServiceFactory(target='client')
@@ -85,18 +99,18 @@ def test_service_consent_given_field(user_api_client):
 
     for service in (not_connected_client_service, not_connected_application_service, other_user_client_service,
                     other_user_application_service):
-        response = user_api_client.get(get_detail_url(service))
+        response = oidc_api_client.get(get_detail_url(service))
         assert response.status_code == 200
         assert response.data['consent_given'] is False
 
     for service in (own_client_service, own_application_service):
-        response = user_api_client.get(get_detail_url(service))
+        response = oidc_api_client.get(get_detail_url(service))
         assert response.status_code == 200
         assert response.data['consent_given'] is True
 
 
-def test_service_consent_given_filtering(api_client, user_api_client):
-    user = user_api_client.user
+def test_service_consent_given_filtering(api_client, oidc_api_client):
+    user = oidc_api_client.user
     other_user = UserFactory()
 
     not_connected_client_service = ServiceFactory(target='client')
@@ -116,11 +130,26 @@ def test_service_consent_given_filtering(api_client, user_api_client):
         assert response.status_code == 200
         assert len(response.data['results']) == 6
 
-    response = user_api_client.get(LIST_URL, {'consent_given': True})
+    response = oidc_api_client.get(LIST_URL, {'consent_given': True})
     assert response.status_code == 200
     assert_objects_in_response(response, (own_application_service, own_client_service))
 
-    response = user_api_client.get(LIST_URL, {'consent_given': False})
+    response = oidc_api_client.get(LIST_URL, {'consent_given': False})
     assert response.status_code == 200
     assert_objects_in_response(response, (not_connected_application_service, not_connected_client_service,
                                           other_user_application_service, other_user_client_service))
+
+
+@pytest.mark.parametrize('scope, consent_given_visible', (
+    ('', False),
+    ('foo', False),
+    ('consents', True),
+    ('read:consents', True),
+    ('write:consents', False),
+    ('read:consents:specifier', False),
+))
+def test_oidc_authentication(service, scope, consent_given_visible):
+    oidc_api_client = create_oidc_api_client(scopes=('read:bar', scope))
+    response = oidc_api_client.get(get_detail_url(service))
+    assert response.status_code == 200
+    assert bool('consent_given' in response.data) is consent_given_visible
