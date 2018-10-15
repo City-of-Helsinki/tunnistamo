@@ -1,5 +1,6 @@
 from django.db.models import Exists, OuterRef
 from django.db.models.functions import Greatest
+from django.utils.translation import ugettext_lazy as _
 from django_filters import rest_framework as filters
 from django_filters.widgets import BooleanWidget
 from oauth2_provider.models import AccessToken
@@ -31,7 +32,10 @@ class ServiceSerializer(TranslatableSerializer):
 
 
 class ServiceFilter(filters.FilterSet):
-    consent_given = filters.Filter(method='filter_consent_given', widget=BooleanWidget())
+    consent_given = filters.Filter(
+        method='filter_consent_given', widget=BooleanWidget(),
+        help_text=_('Include only services that have or don\'t have a consent given by the current user. '
+                    'Accepts boolean values "true" and "false".'))
 
     class Meta:
         model = Service
@@ -45,6 +49,15 @@ class ServiceFilter(filters.FilterSet):
 
 
 class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    List services.
+
+    retrieve:
+    Return a service instance.
+
+    list:
+    Return all services.
+    """
     serializer_class = ServiceSerializer
     queryset = Service.objects.all()
     pagination_class = DefaultPagination
