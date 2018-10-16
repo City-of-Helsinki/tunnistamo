@@ -79,6 +79,9 @@ class UserIdentityViewSet(ListModelMixin, CreateModelMixin, DestroyModelMixin, G
     required_scopes = ('identities',)
 
     def get_queryset(self):
+        if not self.request:
+            return self.queryset.none()
+
         qs = self.queryset.filter(user=self.request.user)
         scope_specifiers = self.get_read_scope_specifiers()
 

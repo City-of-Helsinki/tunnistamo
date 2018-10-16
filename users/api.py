@@ -70,4 +70,7 @@ class UserConsentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixin
     required_scopes = ('consents',)
 
     def get_queryset(self):
+        if not self.request:
+            return self.queryset.none()
+
         return self.queryset.filter(user_id=self.request.user.id).exclude(client__service=None)

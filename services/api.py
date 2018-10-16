@@ -66,6 +66,10 @@ class ServiceViewSet(viewsets.ReadOnlyModelViewSet):
 
     def get_queryset(self):
         queryset = super().get_queryset()
+
+        if not self.request:
+            return queryset
+
         user = self.request.user
 
         if user.is_authenticated and isinstance(self.request.auth, TokenAuth):
