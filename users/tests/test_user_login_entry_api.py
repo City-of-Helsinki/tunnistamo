@@ -1,3 +1,5 @@
+from datetime import timedelta
+
 import pytest
 from django.utils.timezone import now
 from rest_framework.reverse import reverse
@@ -74,3 +76,25 @@ def test_cannot_see_others_login_entries(user_api_client):
     response = user_api_client.get(LIST_URL)
     assert response.status_code == 200
     assert len(response.data['results']) == 0
+
+
+@pytest.mark.parametrize('filtering, expected_index_order', (
+    (None, (0, 1)),
+    ('timestamp', (0, 1)),
+    ('-ip_address', (0, 1)),  # ordering by timestamp should be the only one allowed
+    ('-timestamp', (1, 0)),
+))
+def test_ordering_filter(user_api_client, filtering, expected_index_order):
+    user = user_api_client.user
+    user_login_entries = (
+        UserLoginEntryFactory(user=user, timestamp=now() - timedelta(hours=1), ip_address='1.1.1.1'),
+        UserLoginEntryFactory(user=user, timestamp=now(), ip_address='2.2.2.2'),
+    )
+
+    filter_str = '?ordering={}'.format(filtering) if filtering else ''
+    response = user_api_client.get(LIST_URL + filter_str)
+    assert response.status_code == 200
+
+    results = [r['ip_address'] for r in response.data['results']]  # ip address is used to identify the entries
+    expected = [user_login_entries[u].ip_address for u in expected_index_order]
+    assert results == expected

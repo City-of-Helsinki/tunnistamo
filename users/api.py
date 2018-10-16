@@ -1,5 +1,5 @@
 from oidc_provider.models import UserConsent
-from rest_framework import mixins, serializers, viewsets
+from rest_framework import filters, mixins, serializers, viewsets
 from rest_framework.permissions import IsAuthenticated
 
 from tunnistamo.api_common import OidcTokenAuthentication, ScopePermission
@@ -20,6 +20,8 @@ class UserLoginEntryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
     authentication_classes = (OidcTokenAuthentication,)
     permission_classes = (IsAuthenticated, ScopePermission)
     required_scopes = ('login_entries',)
+    filter_backends = (filters.OrderingFilter,)
+    ordering_fields = ('timestamp',)
 
     def get_queryset(self):
         return self.queryset.filter(user_id=self.request.user.id)
