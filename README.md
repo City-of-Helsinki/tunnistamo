@@ -133,5 +133,9 @@ is in `.gitignore`), and add setting `GEOIP_PATH` pointing to that directory.
 See [Django docs](https://docs.djangoproject.com/en/1.11/ref/contrib/gis/geoip2/)
 for more info.
 
+## API documentation
+
+When the dev server is running, auto-generated API documentation is available at [http://localhost:8000/docs/](http://localhost:8000/docs/)
+
  ## License
 This project is licensed under the MIT License – see the [LICENSE](LICENSE) file for details.

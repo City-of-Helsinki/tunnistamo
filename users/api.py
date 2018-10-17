@@ -14,6 +14,12 @@ class UserLoginEntrySerializer(serializers.ModelSerializer):
 
 
 class UserLoginEntryViewSet(mixins.ListModelMixin, viewsets.GenericViewSet):
+    """
+    List service login entries.
+
+    list:
+    Return all login entries of the current user.
+    """
     serializer_class = UserLoginEntrySerializer
     queryset = UserLoginEntry.objects.all()
     pagination_class = DefaultPagination
@@ -44,6 +50,18 @@ class UserConsentSerializer(serializers.ModelSerializer):
 
 class UserConsentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixins.DestroyModelMixin,
                          viewsets.GenericViewSet):
+    """
+    List consents given to services.
+
+    retrieve:
+    Return a consent instance.
+
+    list:
+    Return all consents given by the current user.
+
+    delete:
+    Delete a consent instance.
+    """
     serializer_class = UserConsentSerializer
     queryset = UserConsent.objects.select_related('client__service')
     pagination_class = DefaultPagination
@@ -52,4 +70,7 @@ class UserConsentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixin
     required_scopes = ('consents',)
 
     def get_queryset(self):
+        if not self.request:
+            return self.queryset.none()
+
         return self.queryset.filter(user_id=self.request.user.id).exclude(client__service=None)

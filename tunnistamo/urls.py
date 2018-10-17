@@ -5,8 +5,11 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import include, path, re_path
+from django.utils import translation
 from django.views.defaults import permission_denied
+from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import SimpleRouter
+from rest_framework.schemas import SchemaGenerator
 
 from devices.api import UserDeviceViewSet
 from identities.api import UserIdentityViewSet
@@ -35,6 +38,12 @@ def show_login(request):
     return HttpResponse(html)
 
 
+class AllEnglishSchemaGenerator(SchemaGenerator):
+    def get_schema(self, *args, **kwargs):
+        with translation.override('en'):
+            return super().get_schema(*args, **kwargs)
+
+
 router = SimpleRouter()
 router.register('user_identity', UserIdentityViewSet)
 router.register('user_device', UserDeviceViewSet)
@@ -42,6 +51,7 @@ router.register('user_login_entry', UserLoginEntryViewSet)
 router.register('service', ServiceViewSet)
 router.register('user_consent', UserConsentViewSet)
 
+v1_api_path = path('v1/', include((router.urls, 'v1')))
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -59,7 +69,9 @@ urlpatterns = [
     path('login/', LoginView.as_view()),
     path('logout/', LogoutView.as_view()),
     path('email-needed/', EmailNeededView.as_view(), name='email_needed'),
-    path('v1/', include((router.urls, 'v1'))),
+    v1_api_path,
+    path('docs/', include_docs_urls(title='Tunnistamo API v1', patterns=[v1_api_path],
+                                    generator_class=AllEnglishSchemaGenerator)),
 ]
 
 if settings.DEBUG:
