@@ -1,13 +1,16 @@
 import re
 from urllib.parse import parse_qs, urlparse
 
+from django.conf import settings
 from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils import translation
 from django.utils.http import quote
 from django.views.generic.base import TemplateView
 from oauth2_provider.models import get_application_model
 from oidc_provider.models import Client
+from oidc_provider.views import AuthorizeView
 
 from .models import LoginMethod, OidcClientOptions
 
@@ -109,3 +112,12 @@ class AuthenticationErrorView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
+
+
+class TunnistamoOidcAuthorizeView(AuthorizeView):
+    def get(self, request, *args, **kwargs):
+        language = request.GET.get('lang')
+        if language and language in (l[0] for l in settings.LANGUAGES):
+            with translation.override(language):
+                return super().get(request, *args, **kwargs)
+        return super().get(request, *args, **kwargs)
