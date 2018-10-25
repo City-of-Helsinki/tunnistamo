@@ -2,7 +2,6 @@ from django.utils.translation import ugettext_lazy as _
 from oidc_provider.lib.claims import ScopeClaims, StandardScopeClaims
 
 from .models import ApiScope
-from .utils import combine_uniquely
 
 
 class ApiScopeClaims(ScopeClaims):
@@ -111,7 +110,7 @@ class CombinedScopeClaims(ScopeClaims):
 
     @classmethod
     def get_scopes_info(cls, scopes=[]):
-        extended_scopes = cls._extend_scope(scopes)
+        extended_scopes = ApiScope.extend_scope(scopes)
         scopes_info_map = {}
         for claim_cls in cls.combined_scope_claims:
             for info in claim_cls.get_scopes_info(extended_scopes):
@@ -121,18 +120,6 @@ class CombinedScopeClaims(ScopeClaims):
             for scope in extended_scopes
             if scope in scopes_info_map
         ]
-
-    @classmethod
-    def _extend_scope(cls, scopes):
-        required_scopes = cls._get_all_required_scopes_by_api_scopes(scopes)
-        extended_scopes = combine_uniquely(scopes, sorted(required_scopes))
-        return extended_scopes
-
-    @classmethod
-    def _get_all_required_scopes_by_api_scopes(cls, scopes):
-        api_scopes = ApiScope.objects.by_identifiers(scopes)
-        apis = {x.api for x in api_scopes}
-        return set(sum((list(api.required_scopes) for api in apis), []))
 
     def __init__(self, token, *args, **kwargs):
         self._token = token

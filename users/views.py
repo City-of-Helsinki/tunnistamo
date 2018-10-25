@@ -12,6 +12,8 @@ from oauth2_provider.models import get_application_model
 from oidc_provider.models import Client
 from oidc_provider.views import AuthorizeView
 
+from oidc_apis.models import ApiScope
+
 from .models import LoginMethod, OidcClientOptions
 
 
@@ -116,8 +118,29 @@ class AuthenticationErrorView(TemplateView):
 
 class TunnistamoOidcAuthorizeView(AuthorizeView):
     def get(self, request, *args, **kwargs):
+        request.GET = _extend_scope_in_query_params(request.GET)
+
         language = request.GET.get('lang')
         if language and language in (l[0] for l in settings.LANGUAGES):
             with translation.override(language):
                 return super().get(request, *args, **kwargs)
+
         return super().get(request, *args, **kwargs)
+
+    def post(self, request, *args, **kwargs):
+        request.POST = _extend_scope_in_query_params(request.POST)
+        return super().post(request, *args, **kwargs)
+
+
+def _extend_scope_in_query_params(query_params):
+    scope = query_params.get('scope')
+    if scope:
+        query_params = query_params.copy()
+        query_params['scope'] = _add_api_scopes(scope)
+    return query_params
+
+
+def _add_api_scopes(scope_string):
+    scopes = scope_string.split()
+    extended_scopes = ApiScope.extend_scope(scopes)
+    return ' '.join(extended_scopes)
