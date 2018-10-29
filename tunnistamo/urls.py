@@ -17,7 +17,7 @@ from oidc_apis.views import get_api_tokens_view
 from services.api import ServiceViewSet
 from tunnistamo import social_auth_urls
 from users.api import UserConsentViewSet, UserLoginEntryViewSet
-from users.views import EmailNeededView, LoginView, LogoutView
+from users.views import EmailNeededView, LoginView, LogoutView, TunnistamoOidcAuthorizeView
 
 from .api import GetJWTView, UserView
 
@@ -62,6 +62,7 @@ urlpatterns = [
     path('accounts/', include(social_auth_urls, namespace='social')),
     path('oauth2/applications/', permission_denied),
     path('oauth2/', include(oauth2_provider.urls, namespace='oauth2_provider')),
+    re_path(r'^openid/authorize/?$', TunnistamoOidcAuthorizeView.as_view(), name='authorize'),
     path('openid/', include(oidc_provider.urls, namespace='oidc_provider')),
     re_path(r'^user/(?P<username>[\w.@+-]+)/?$', UserView.as_view()),
     path('user/', UserView.as_view()),

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-07-05 12:21+0000\n"
+"POT-Creation-Date: 2018-10-22 19:55+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,7 +89,7 @@ msgstr "käyttäjien laitteet"
 msgid "allowed OAuth scopes"
 msgstr ""
 
-#: identities/models.py:12 services/models.py:25 users/models.py:107
+#: identities/models.py:12 services/models.py:29 users/models.py:107
 msgid "service"
 msgstr "palvelu"
 
@@ -306,6 +306,12 @@ msgstr ""
 msgid "Not translatable fields"
 msgstr "Kentät joita ei käännetä"
 
+#: services/api.py:37
+msgid ""
+"Include only services that have or don't have a consent given by the current "
+"user. Accepts boolean values \"true\" and \"false\"."
+msgstr ""
+
 #: services/models.py:13
 msgid "URL"
 msgstr ""
@@ -314,23 +320,19 @@ msgstr ""
 msgid "image"
 msgstr "kuva"
 
-#: services/models.py:18
+#: services/models.py:20
 msgid "application"
 msgstr ""
 
-#: services/models.py:21
+#: services/models.py:25
 msgid "client"
 msgstr ""
 
-#: services/models.py:26
+#: services/models.py:30
 msgid "services"
 msgstr "palvelut"
 
-#: services/models.py:34
-msgid "Either application or client required."
-msgstr "Joko \"application\" tai \"client\" on pakollinen."
-
-#: services/models.py:36
+#: services/models.py:38
 msgid "Cannot set both application and client."
 msgstr "Molempia \"application\" ja \"client\" ei voi asettaa."
 
@@ -375,3 +377,23 @@ msgstr "kirjautumismerkintä"
 #: users/models.py:117
 msgid "user login entries"
 msgstr "kirjautumismerkinnät"
+
+#: users/templates/oidc_provider/authorize.html:4
+msgid "Permission request"
+msgstr "Lupapyyntö"
+
+#: users/templates/oidc_provider/authorize.html:6
+msgid ""
+"Service <strong>%(service_name)s</strong> is requesting access to the "
+"following information of your user account"
+msgstr ""
+"Palvelu <strong>%(service_name)s</strong> pyytää lupaa käyttää "
+"käyttäjätilisi seuraavia tietoja"
+
+#: users/templates/oidc_provider/authorize.html:20
+msgid "Deny"
+msgstr "Älä anna lupaa"
+
+#: users/templates/oidc_provider/authorize.html:21
+msgid "Allow"
+msgstr "Anna lupa"

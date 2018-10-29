@@ -1,8 +1,9 @@
 {% extends 'base.html' %}
+{% load i18n %}
 {% block content %}
-<h2>Lupapyyntö</h2>
+<h2>{% trans 'Permission request' %}</h2>
 
-<p>Palvelu <strong>{{ client.name }}</strong> pyytää lupaa käyttää käyttäjätilisi seuraavia tietoja</p>
+  <p>{% blocktrans with service_name=client.name %}Service <strong>{{ service_name }}</strong> is requesting access to the following information of your user account{% endblocktrans %}</p>
 
 <form method="post" action="{% url 'oidc_provider:authorize' %}">
 
@@ -16,8 +17,8 @@
         {% endfor %}
     </ul>
     <div class="pull-right">
-      <input class="btn btn-default" type="submit" value="Älä anna lupaa" />
-      <input class="btn btn-primary" name="allow" type="submit" value="Anna lupa" />
+      <input class="btn btn-default" type="submit" value="{% trans 'Deny' %}" />
+      <input class="btn btn-primary" name="allow" type="submit" value="{% trans 'Allow' %}" />
     </div>
 </form>
 {% endblock %}
