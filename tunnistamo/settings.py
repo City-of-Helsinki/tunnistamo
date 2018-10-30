@@ -63,6 +63,7 @@ INSTALLED_APPS = (
     'oidc_apis',
     'devices',
     'identities',
+    'auth_backends'
 )
 
 MIDDLEWARE = (
