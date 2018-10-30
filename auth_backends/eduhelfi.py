@@ -1,5 +1,3 @@
-import uuid
-from social_core.backends.open_id_connect import OpenIdConnectAuth
 from social_core.backends.microsoft import MicrosoftOAuth2
 
 
