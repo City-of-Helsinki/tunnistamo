@@ -42,7 +42,7 @@ class YleTunnusOAuth2(BaseOAuth2):
             # As we have just received the token over TLS-protected channel we can
             # just proceed to use it as is. We still verify that the token claims to signed
             # as a sanity check.
-            access_token, algorithms=('HS256', 'HS512'), verify=False, 
+            access_token, algorithms=('HS256', 'HS512'), verify=False,
             issuer='https://auth.api.yle.fi', audience=self.setting('APP_ID')
         )
         return data
