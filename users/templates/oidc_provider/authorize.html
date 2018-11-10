@@ -2,7 +2,11 @@
 {% block content %}
 <h2>Lupapyyntö</h2>
 
+{% if scopes %}
 <p>Palvelu <strong>{{ client.name }}</strong> pyytää lupaa käyttää käyttäjätilisi seuraavia tietoja</p>
+{% else %}
+<p>Palvelu <strong>{{ client.name }}</strong> pyytää lupaa käyttää käyttäjätiliäsi kirjautumiseen.</p>
+{% endif %}
 
 <form method="post" action="{% url 'oidc_provider:authorize' %}">
 
