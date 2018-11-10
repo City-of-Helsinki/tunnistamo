@@ -12,4 +12,5 @@ class EduHelFiAzure(MicrosoftOAuth2):
     def auth_params(self, *args, **kwargs):
         params = super().auth_params(*args, **kwargs)
         params['domain_hint'] = 'edu.hel.fi'
+        params['prompt'] = 'login'
         return params

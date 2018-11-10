@@ -29,6 +29,11 @@ class HelsinkiLibraryAskoADFS(BaseADFS):
             'e9G4mgmktvSgc1LCK9JAJ76ICaN/p0UfxEXcy3LQj32ihUbKb7dFC+FBCIJhSr'
             'EMwdHX1eilAT2gAJkTmU+F/ISo95BBuBNunpwBt2Pa93T6GZ0=')
 
+    def auth_params(self, *args, **kwargs):
+        params = super().auth_params(*args, **kwargs)
+        params['prompt'] = 'login'
+        return params
+
     def clean_attributes(self, attrs_in):
         attr_map = {
             'primarysid': 'primary_sid',
