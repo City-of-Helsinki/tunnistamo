@@ -62,8 +62,7 @@ INSTALLED_APPS = (
     'hkijwt',
     'oidc_apis',
     'devices',
-    'identities',
-    'auth_backends'
+    'identities'
 )
 
 MIDDLEWARE = (
