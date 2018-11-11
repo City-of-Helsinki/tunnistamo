@@ -1,9 +1,11 @@
 from collections import OrderedDict
-import django
-from oidc_provider import settings
+
 from django.contrib.auth import logout as django_user_logout
-from users.models import OidcClientOptions
 from django.contrib.auth.views import redirect_to_login
+from django.core.exceptions import PermissionDenied
+from oidc_provider import settings
+
+from users.models import OidcClientOptions
 
 
 def combine_uniquely(iterable1, iterable2):
@@ -39,7 +41,7 @@ def after_userlogin_hook(request, user, client):
 
     allowed_methods = client_options.login_methods.all()
     if allowed_methods is None:
-        raise django.core.exceptions.PermissionDenied
+        raise PermissionDenied
 
     allowed_providers = set((x.provider_id for x in allowed_methods))
     if last_login_backend is not None:
