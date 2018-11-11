@@ -1,9 +1,8 @@
 from collections import OrderedDict
 import django
 from oidc_provider import settings
-from django.contrib.auth import BACKEND_SESSION_KEY
 from django.contrib.auth import logout as django_user_logout
-from users.models import LoginMethod, OidcClientOptions
+from users.models import OidcClientOptions
 from django.contrib.auth.views import redirect_to_login
 
 
