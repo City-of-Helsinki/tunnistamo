@@ -22,11 +22,17 @@ def combine_uniquely(iterable1, iterable2):
 
 
 def after_userlogin_hook(request, user, client):
-    """Marks Django session modified
+    """Marks Django session modified and ensures the current
+    session has an allowed login backend for the client.
 
-    The purpose of this function is to keep the session used by the
+    One purpose of this function is to keep the session used by the
     oidc-provider fresh. This is achieved by pointing
-    'OIDC_AFTER_USERLOGIN_HOOK' setting to this."""
+    'OIDC_AFTER_USERLOGIN_HOOK' setting to this.
+
+    The other is to prevent authorizing users with an unallowed backend
+    for specific clients.
+
+    """
     request.session.modified = True
 
     last_login_backend = request.session.get('social_auth_last_login_backend')
