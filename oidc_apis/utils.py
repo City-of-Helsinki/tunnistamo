@@ -37,7 +37,10 @@ def after_userlogin_hook(request, user, client):
     request.session.modified = True
 
     last_login_backend = request.session.get('social_auth_last_login_backend')
-    client_options = OidcClientOptions.objects.get(oidc_client=client)
+    try:
+        client_options = OidcClientOptions.objects.get(oidc_client=client)
+    except OidcClientOptions.DoesNotExist:
+        return None
 
     allowed_methods = client_options.login_methods.all()
     if allowed_methods is None:
