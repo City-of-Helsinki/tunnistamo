@@ -9,6 +9,8 @@ from parler.fields import TranslatedField
 from parler.managers import TranslatableQuerySet
 from parler.models import TranslatableModel, TranslatedFieldsModel
 
+from oidc_apis.utils import combine_uniquely
+
 from .mixins import AutoFilledIdentifier, ImmutableFields
 
 alphanumeric_validator = RegexValidator(
@@ -167,6 +169,18 @@ class ApiScope(AutoFilledIdentifier, ImmutableFields, TranslatableModel):
             api_identifier=self.api.identifier,
             suffix=('.' + self.specifier if self.specifier else '')
         )
+
+    @classmethod
+    def extend_scope(cls, scopes):
+        required_scopes = cls._get_required_scopes(scopes)
+        extended_scopes = combine_uniquely(scopes, sorted(required_scopes))
+        return extended_scopes
+
+    @classmethod
+    def _get_required_scopes(cls, scopes):
+        api_scopes = ApiScope.objects.by_identifiers(scopes)
+        apis = {x.api for x in api_scopes}
+        return set(sum((list(api.required_scopes) for api in apis), []))
 
 
 class ApiScopeTranslation(TranslatedFieldsModel):
