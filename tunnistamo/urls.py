@@ -14,6 +14,7 @@ from rest_framework.schemas import SchemaGenerator
 from devices.api import UserDeviceViewSet
 from identities.api import UserIdentityViewSet
 from oidc_apis.views import get_api_tokens_view
+from scopes.api import ScopeListView
 from services.api import ServiceViewSet
 from tunnistamo import social_auth_urls
 from users.api import UserConsentViewSet, UserLoginEntryViewSet
@@ -51,7 +52,8 @@ router.register('user_login_entry', UserLoginEntryViewSet)
 router.register('service', ServiceViewSet)
 router.register('user_consent', UserConsentViewSet)
 
-v1_api_path = path('v1/', include((router.urls, 'v1')))
+v1_scope_path = path('scope/', ScopeListView.as_view(), name='scope-list')
+v1_api_path = path('v1/', include((router.urls + [v1_scope_path], 'v1')))
 
 urlpatterns = [
     path('admin/', admin.site.urls),
