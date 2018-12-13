@@ -1,8 +1,10 @@
 import pytest
 from django.utils.dateparse import parse_datetime
 from oidc_provider.models import UserConsent
+from parler.utils.context import switch_language
 from rest_framework.reverse import reverse
 
+from oidc_apis.factories import ApiDomainFactory, ApiFactory, ApiScopeFactory
 from users.factories import OIDCClientFactory, UserConsentFactory, UserFactory, access_token_factory
 
 LIST_URL = reverse('v1:userconsent-list')
@@ -35,8 +37,26 @@ def test_detail_endpoint_disallowed_methods(user_api_client, user_consent, metho
 
 
 @pytest.mark.parametrize('endpoint', ('list', 'detail'))
-def test_get(user_api_client, user_consent, endpoint):
+@pytest.mark.parametrize('scope_included', (False, True))
+def test_get(user_api_client, endpoint, scope_included, service):
+    foo_scope = ApiScopeFactory(api=ApiFactory(domain=ApiDomainFactory(identifier='https://foo.com')))
+    with switch_language(foo_scope, 'en'):
+        foo_scope.name = 'name'
+        foo_scope.description = 'description'
+        foo_scope.save()
+    with switch_language(foo_scope, 'fi'):
+        foo_scope.name = 'nimi'
+        foo_scope.description = 'kuvaus'
+        foo_scope.save()
+
+    user_consent = UserConsentFactory(
+        user=user_api_client.user, client=service.client, scope=['email', foo_scope.identifier]
+    )
+
     url = LIST_URL if endpoint == 'list' else get_detail_url(user_consent)
+    if scope_included:
+        url += '?include=scope'
+
     response = user_api_client.get(url)
     assert response.status_code == 200
 
@@ -50,7 +70,24 @@ def test_get(user_api_client, user_consent, endpoint):
     assert parse_datetime(user_consent_data['date_given']) == user_consent.date_given
     assert parse_datetime(user_consent_data['expires_at']) == user_consent.expires_at
     assert user_consent_data['service'] == user_consent.client.service.id
-    assert user_consent_data['scopes'] == user_consent.scope
+
+    if scope_included:
+        scope_data = user_consent_data['scopes']
+        assert len(scope_data) == 2
+        oidc_scope = scope_data[0]
+        api_scope = scope_data[1]
+
+        assert oidc_scope.keys() == {'id', 'name', 'description'}
+        assert oidc_scope['id'] == 'email'
+        assert oidc_scope['name'] == {'fi': 'Sähköposti', 'sv': 'E-postadress', 'en': 'Email'}
+        assert 'en' in oidc_scope['description']
+
+        assert api_scope.keys() == {'id', 'name', 'description'}
+        assert api_scope['id'] == foo_scope.identifier
+        assert api_scope['name'] == {'fi': 'nimi', 'en': 'name'}
+        assert api_scope['description'] == {'fi': 'kuvaus', 'en': 'description'}
+    else:
+        assert user_consent_data['scopes'] == user_consent.scope
 
 
 def test_delete(user_api_client, user_consent):
