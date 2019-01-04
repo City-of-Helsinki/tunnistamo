@@ -272,11 +272,11 @@ msgstr "Perustiedot"
 
 #: oidc_apis/scopes.py:78
 msgid ""
-"Access to your basic information. Includes names, gender, birthdate and "
-"other information."
+"Access to your basic information. Includes names, nickname and possible "
+"user picture."
 msgstr ""
-"Lupa lukea perustiedot, jotka sisältävät muun muassa nimen, sukupuolen ja "
-"syntymäajan."
+"Lupa lukea perustiedot, jotka sisältävät nimet, lempinimen ja mahdollisen "
+"profiilikuvan."
 
 #: oidc_apis/scopes.py:82
 msgid "Access to your email address."
