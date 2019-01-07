@@ -5,7 +5,6 @@ from social_django.utils import load_backend, load_strategy
 
 @pytest.mark.parametrize('backend_name, expected_url', (
     ('helsinki_adfs', '/accounts/adfs/helsinki/login/callback/'),
-    ('espoo_adfs', '/accounts/adfs/espoo/login/callback/'),
     ('github', '/accounts/github/login/callback/'),
     ('facebook', '/accounts/facebook/login/callback/'),
     ('google', '/accounts/google/login/callback/'),
