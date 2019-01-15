@@ -14,8 +14,16 @@ def test_tunnistamo_authorize_view_is_used(client, with_trailing_slash):
     assert response.resolver_match.func.__name__ == TunnistamoOidcAuthorizeView.as_view().__name__
 
 
+@pytest.mark.parametrize('ui_locales, expected_text', (
+    (None, 'Sähköposti'),
+    ('', 'Sähköposti'),
+    ('bogus', 'Sähköposti'),
+    ('en', 'Email'),
+    ('fi en', 'Sähköposti'),
+    ('bogus      en fi', 'Email'),
+))
 @pytest.mark.django_db
-def test_tunnistamo_authorize_view_language(client):
+def test_tunnistamo_authorize_view_language(client, ui_locales, expected_text):
     oidc_client = OIDCClientFactory(require_consent=True)
     user = UserFactory()
     client.force_login(user)
@@ -27,17 +35,11 @@ def test_tunnistamo_authorize_view_language(client):
         'response_type': 'code',
         'scope': 'email',
     }
+    if ui_locales is not None:
+        data['ui_locales'] = ui_locales
 
     response = client.get(url, data)
-    assert 'Sähköposti' in response.content.decode('utf-8')
-
-    data['lang'] = 'en'
-    response = client.get(url, data)
-    assert 'Email' in response.content.decode('utf-8')
-
-    data['lang'] = 'bogus'
-    response = client.get(url, data)
-    assert 'Sähköposti' in response.content.decode('utf-8')
+    assert expected_text in response.content.decode('utf-8')
 
 
 @pytest.mark.django_db
