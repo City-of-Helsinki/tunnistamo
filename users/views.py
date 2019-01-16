@@ -119,11 +119,13 @@ class AuthenticationErrorView(TemplateView):
 class TunnistamoOidcAuthorizeView(AuthorizeView):
     def get(self, request, *args, **kwargs):
         request.GET = _extend_scope_in_query_params(request.GET)
+        request_locales = [l.strip() for l in request.GET.get('ui_locales', '').split(' ') if l]
+        available_locales = [l[0] for l in settings.LANGUAGES]
 
-        language = request.GET.get('lang')
-        if language and language in (l[0] for l in settings.LANGUAGES):
-            with translation.override(language):
-                return super().get(request, *args, **kwargs)
+        for locale in request_locales:
+            if locale in available_locales:
+                with translation.override(locale):
+                    return super().get(request, *args, **kwargs)
 
         return super().get(request, *args, **kwargs)
 
