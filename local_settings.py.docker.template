@@ -9,3 +9,5 @@ DATABASES = {
         'HOST': 'tunnistamo-db',
     }
 }
+
+STATIC_URL = '/static/'
