@@ -10,9 +10,22 @@ from key_manager.models import ManagedRsaKey
 class Command(BaseCommand):
     help = 'Manages default OpenID RSA key for Tunnistamo'
 
+    def add_arguments(self, parser):
+        parser.add_argument('--list-before', action='store_true', help='List keys before management cycle')
+        parser.add_argument('--list-after', action='store_true', help='List keys after management cycle')
+
     def handle(self, *args, **options):
+        # Show key summary
+        if options['list_before']:
+            self.list_keys()
+
+        # helper method for expiring managed keys
+        def expire(managedkey):
+            managedkey.expired = date.today()
+            managedkey.save()
+            self.stdout.write('Expired key with id: {0}'.format(rsakey))
+
         valid_keys = False
-        
         # loop through all the keys
         for rsakey in RSAKey.objects.all():
             # check key for expiration
@@ -23,25 +36,25 @@ class Command(BaseCommand):
                     if managedkey.expired + timedelta(days=settings.get('KEY_MANAGER_RSA_KEY_EXPIRATION_PERIOD')) < date.today():
                         managedkey.delete()
                         rsakey.delete()
+                        self.stdout.write('Removed key with id: {0}'.format(rsakey))
                 else:
                     # expire keys past max age
                     if managedkey.created + timedelta(days=settings.get('KEY_MANAGER_RSA_KEY_MAX_AGE')) < date.today():
-                        managedkey.expired = date.today()
-                        managedkey.save()
+                        expire(managedkey)
                     else:
                         valid_keys = True
             # if key is not managed start managing it and expire it immediately
             except ObjectDoesNotExist:
                 managedkey = self.manage_rsa_key(rsakey)
-                managedkey.expired = date.today()
-                managedkey.save()
-
+                expire(managedkey)
+        
         # create a new key if there are no unexpired ones
         if not valid_keys:
             self.create_managed_rsa_key()
 
         # Show key summary
-        self.list_keys()
+        if options['list_after']:
+            self.list_keys()
 
     def create_managed_rsa_key(self):
         """

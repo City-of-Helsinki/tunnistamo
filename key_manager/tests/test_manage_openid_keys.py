@@ -1,7 +1,9 @@
 import pytest
+from unittest.mock import Mock, patch
 
 from datetime import date, timedelta
-from django.core.management import call_command
+import re
+from django.core.management import call_command, CommandError
 from oidc_provider.models import RSAKey
 
 from key_manager import settings
@@ -120,6 +122,36 @@ class TestManageOpenidKeys(object):
             managed_key = ManagedRsaKey.objects.get(pk=RSAKey.objects.all().last())
             self.check_managed_key_ages(managed_key, expired, None)
 
+    @pytest.mark.parametrize("param, line_patterns", [
+        ('--list-before', [(0, r'Unmanaged.*'), (-1, r'(?!Managed).*')]),
+        ('--list-after',  [(0, r'(?!Unmanaged).*'), (-1, r'Managed.*')]),
+    ])
+    def test_list_keys(self, capsys, param, line_patterns):
+        # create one unmanaged key
+        self.create_rsa_key('KEYDATA')
+        self.check_key_counts(1, 0)
+
+        call_command('manage_openid_keys', param)
+
+        # check output
+        output = capsys.readouterr().out.splitlines()
+        for line_pattern in line_patterns:
+            assert re.match(line_pattern[1], output[line_pattern[0]])
+
+    @patch('Cryptodome.PublicKey.RSA.generate')
+    def test_key_generation_failure(self, mock):
+        # there are no keys at the beginning
+        self.check_key_counts(0, 0)
+        
+        # when RSA key generation fails
+        def mock_generate(bits):
+            raise Exception('TEST')
+        mock.side_effect = mock_generate
+
+        # an exception rises
+        with pytest.raises(CommandError, match='TEST'):
+            call_command('manage_openid_keys')
+        
     @staticmethod
     def check_key_counts(keys, managed_keys):
         assert RSAKey.objects.count() == keys
