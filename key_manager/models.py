@@ -1,8 +1,9 @@
 from django.db import models
 
+
 class ManagedRsaKey(models.Model):
     key_id = models.CharField(
-        max_length=256, 
+        max_length=256,
         primary_key=True)
     created = models.DateField()
     expired = models.DateField(
