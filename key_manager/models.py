@@ -5,8 +5,8 @@ class ManagedRsaKey(models.Model):
     key_id = models.CharField(
         max_length=256,
         primary_key=True)
-    created = models.DateField()
-    expired = models.DateField(
+    created = models.DateTimeField()
+    expired = models.DateTimeField(
         null=True)
 
     def __str__(self):

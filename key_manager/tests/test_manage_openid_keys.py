@@ -1,9 +1,10 @@
 import re
-from datetime import date, timedelta
+from datetime import timedelta
 from unittest.mock import patch
 
 import pytest
-from django.core.management import CommandError, call_command
+from django.core.management import call_command
+from django.utils import timezone
 from oidc_provider.models import RSAKey
 
 from key_manager import settings
@@ -21,11 +22,11 @@ class TestManageOpenidKeys(object):
         # there should be one managed, unexpired key, created today
         self.check_key_counts(1, 1)
         managed_key = ManagedRsaKey.objects.get(pk=RSAKey.objects.all().first())
-        self.check_managed_key_ages(managed_key, date.today(), None)
+        self.check_managed_key_ages(managed_key, timezone.now(), None)
 
     def test_no_managed_keys(self):
         # create one unmanaged key
-        self.create_rsa_key('KEYDATA')
+        RSAKey.objects.create(key='KEYDATA')
         self.check_key_counts(1, 0)
 
         call_command('manage_openid_keys')
@@ -34,17 +35,17 @@ class TestManageOpenidKeys(object):
         self.check_key_counts(2, 2)
         # first one is created and expired today
         managed_key = ManagedRsaKey.objects.get(pk=RSAKey.objects.all().first())
-        self.check_managed_key_ages(managed_key, date.today(), date.today())
+        self.check_managed_key_ages(managed_key, timezone.now(), timezone.now())
         # second one is unexpired and created today
         managed_key = ManagedRsaKey.objects.get(pk=RSAKey.objects.all().last())
-        self.check_managed_key_ages(managed_key, date.today(), None)
+        self.check_managed_key_ages(managed_key, timezone.now(), None)
 
     def test_only_expired_keys(self):
         # create one expired key
-        key = self.create_rsa_key('KEYDATA')
-        self.create_managed_key(key, date.today(), date.today())
+        key = RSAKey.objects.create(key='KEYDATA')
+        ManagedRsaKey.objects.create(key_id=key, created=timezone.now(), expired=timezone.now())
         self.check_key_counts(1, 1)
-        self.check_managed_key_ages(ManagedRsaKey.objects.get(pk=key), date.today(), date.today())
+        self.check_managed_key_ages(ManagedRsaKey.objects.get(pk=key), timezone.now(), timezone.now())
 
         call_command('manage_openid_keys')
 
@@ -52,21 +53,21 @@ class TestManageOpenidKeys(object):
         self.check_key_counts(2, 2)
         # first one is created and expired today
         managed_key = ManagedRsaKey.objects.get(pk=RSAKey.objects.all().first())
-        self.check_managed_key_ages(managed_key, date.today(), date.today())
+        self.check_managed_key_ages(managed_key, timezone.now(), timezone.now())
         # second one is unexpired and created today
         managed_key = ManagedRsaKey.objects.get(pk=RSAKey.objects.all().last())
-        self.check_managed_key_ages(managed_key, date.today(), None)
+        self.check_managed_key_ages(managed_key, timezone.now(), None)
 
     @pytest.mark.parametrize("age, expire", [
         (settings.get('KEY_MANAGER_RSA_KEY_MAX_AGE') - 1, False),
-        (settings.get('KEY_MANAGER_RSA_KEY_MAX_AGE'),     False),
+        (settings.get('KEY_MANAGER_RSA_KEY_MAX_AGE'),     True),
         (settings.get('KEY_MANAGER_RSA_KEY_MAX_AGE') + 1, True)
     ])
     def test_key_past_max_age(self, age, expire):
-        created = date.today() - timedelta(days=age)
+        created = timezone.now() - timedelta(days=age)
         # create key with given age
-        key = self.create_rsa_key('KEYDATA')
-        managed_key = self.create_managed_key(key, created, None)
+        key = RSAKey.objects.create(key='KEYDATA')
+        managed_key = ManagedRsaKey.objects.create(key_id=key, created=created)
         self.check_key_counts(1, 1)
         self.check_managed_key_ages(ManagedRsaKey.objects.get(pk=key), created, None)
 
@@ -77,10 +78,10 @@ class TestManageOpenidKeys(object):
             self.check_key_counts(2, 2)
             # first one is created with given age and expired today
             managed_key = ManagedRsaKey.objects.get(pk=RSAKey.objects.all().first())
-            self.check_managed_key_ages(managed_key, created, date.today())
+            self.check_managed_key_ages(managed_key, created, timezone.now())
             # second one is unexpired and created today
             managed_key = ManagedRsaKey.objects.get(pk=RSAKey.objects.all().last())
-            self.check_managed_key_ages(managed_key, date.today(), None)
+            self.check_managed_key_ages(managed_key, timezone.now(), None)
         else:
             # there should be one unexpired key, created with given age
             self.check_key_counts(1, 1)
@@ -89,17 +90,17 @@ class TestManageOpenidKeys(object):
 
     @pytest.mark.parametrize("age, remove", [
         (settings.get('KEY_MANAGER_RSA_KEY_EXPIRATION_PERIOD') - 1, False),
-        (settings.get('KEY_MANAGER_RSA_KEY_EXPIRATION_PERIOD'),     False),
+        (settings.get('KEY_MANAGER_RSA_KEY_EXPIRATION_PERIOD'),     True),
         (settings.get('KEY_MANAGER_RSA_KEY_EXPIRATION_PERIOD') + 1, True)
     ])
     def test_key_past_expiration_period(self, age, remove):
-        expired = date.today() - timedelta(days=age)
+        expired = timezone.now() - timedelta(days=age)
         # create key with given expiration age
-        key = self.create_rsa_key('KEYDATA')
-        self.create_managed_key(key, expired, expired)
+        key = RSAKey.objects.create(key='KEYDATA')
+        ManagedRsaKey.objects.create(key_id=key, created=expired, expired=expired)
         # and an unexpired key to complement it
-        key = self.create_rsa_key('KEYDATA-2')
-        self.create_managed_key(key, expired, None)
+        key = RSAKey.objects.create(key='KEYDATA-2')
+        ManagedRsaKey.objects.create(key_id=key, created=expired)
 
         self.check_key_counts(2, 2)
         managed_key = ManagedRsaKey.objects.get(pk=RSAKey.objects.all().first())
@@ -126,10 +127,11 @@ class TestManageOpenidKeys(object):
     @pytest.mark.parametrize("param, line_patterns", [
         ('--list-before', [(0, r'Unmanaged.*'), (-1, r'(?!Managed).*')]),
         ('--list-after',  [(0, r'(?!Unmanaged).*'), (-1, r'Managed.*')]),
+        ('--list-only',  [(0, r'Unmanaged.*'), (-1, r'Unmanaged.*')]),
     ])
     def test_list_keys(self, capsys, param, line_patterns):
         # create one unmanaged key
-        self.create_rsa_key('KEYDATA')
+        RSAKey.objects.create(key='KEYDATA')
         self.check_key_counts(1, 0)
 
         call_command('manage_openid_keys', param)
@@ -150,7 +152,7 @@ class TestManageOpenidKeys(object):
         mock.side_effect = mock_generate
 
         # an exception rises
-        with pytest.raises(CommandError, match='TEST'):
+        with pytest.raises(Exception, match='TEST'):
             call_command('manage_openid_keys')
 
     @staticmethod
@@ -160,16 +162,5 @@ class TestManageOpenidKeys(object):
 
     @staticmethod
     def check_managed_key_ages(key, created, expired):
-        assert key.created == created
-        assert key.expired == expired
-
-    @staticmethod
-    def create_rsa_key(data):
-        key = RSAKey.objects.create(key=data)
-        key.save()
-        return key
-
-    @staticmethod
-    def create_managed_key(rsa_key, created, expired):
-        key = ManagedRsaKey.objects.create(key_id=rsa_key.kid, created=created, expired=expired)
-        return key
+        assert key.created.date() == created.date()
+        assert key.expired == expired or key.expired.date() == expired.date()
