@@ -10,6 +10,7 @@ from django.views.defaults import permission_denied
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import SimpleRouter
 from rest_framework.schemas import SchemaGenerator
+from oidc_provider.views import ProviderInfoView as OIDCProviderInfoView
 
 from devices.api import UserDeviceViewSet
 from identities.api import UserIdentityViewSet
@@ -66,6 +67,7 @@ urlpatterns = [
     path('oauth2/', include(oauth2_provider.urls, namespace='oauth2_provider')),
     re_path(r'^openid/authorize/?$', TunnistamoOidcAuthorizeView.as_view(), name='authorize'),
     path('openid/', include(oidc_provider.urls, namespace='oidc_provider')),
+    re_path(r'^\.well-known/openid-configuration/?$', OIDCProviderInfoView.as_view(), name='root-provider-info'),
     re_path(r'^user/(?P<username>[\w.@+-]+)/?$', UserView.as_view()),
     path('user/', UserView.as_view()),
     path('jwt-token/', GetJWTView.as_view()),
