@@ -7,10 +7,10 @@ from django.http import HttpResponse
 from django.urls import include, path, re_path
 from django.utils import translation
 from django.views.defaults import permission_denied
+from oidc_provider.views import ProviderInfoView as OIDCProviderInfoView
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import SimpleRouter
 from rest_framework.schemas import SchemaGenerator
-from oidc_provider.views import ProviderInfoView as OIDCProviderInfoView
 
 from devices.api import UserDeviceViewSet
 from identities.api import UserIdentityViewSet
