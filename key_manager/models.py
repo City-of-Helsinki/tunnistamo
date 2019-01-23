@@ -1,16 +1,15 @@
 from django.db import models
+from oidc_provider.models import RSAKey
 
 
-class ManagedRsaKey(models.Model):
-    key_id = models.CharField(
-        max_length=256,
-        primary_key=True)
-    created = models.DateTimeField()
-    expired = models.DateTimeField(
+class ManagedRSAKey(models.Model):
+    rsakey = models.OneToOneField(RSAKey, on_delete=models.CASCADE)
+    created_at = models.DateTimeField()
+    expired_at = models.DateTimeField(
         null=True)
 
     def __str__(self):
-        str = 'key: {0}, created {1}'.format(self.key_id, self.created)
-        if self.expired:
-            str = str + ', expired {0}'.format(self.expired)
-        return str
+        res = 'key: {0}, created {1}'.format(self.rsakey.kid, self.created_at)
+        if self.expired_at:
+            res = res + ', expired {0}'.format(self.expired_at)
+        return res

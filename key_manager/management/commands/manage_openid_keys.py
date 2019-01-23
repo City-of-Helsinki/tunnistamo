@@ -7,7 +7,7 @@ from django.utils import timezone
 from oidc_provider.models import RSAKey
 
 from key_manager import settings
-from key_manager.models import ManagedRsaKey
+from key_manager.models import ManagedRSAKey
 
 
 class Command(BaseCommand):
@@ -25,27 +25,25 @@ class Command(BaseCommand):
         if options['list_only']:
             return
 
+        now = timezone.now()
         valid_keys = False
         # loop through all the keys
         for rsakey in RSAKey.objects.all():
             # check if key is managed, and if not, create it
-            managedkey, created = ManagedRsaKey.objects.get_or_create(
-                key_id=rsakey,
-                defaults={'created': timezone.now(), 'expired': timezone.now()})
+            managedkey, created = ManagedRSAKey.objects.get_or_create(
+                rsakey=rsakey,
+                defaults={'created_at': now, 'expired_at': now})
             if created:
                 # if key was not managed it is now considered expired
                 self.stdout.write('Expired key with id: {0}'.format(rsakey))
-            elif managedkey.expired:
+            elif managedkey.expired_at:
                 # remove expired key after hold period
-                if managedkey.expired + timedelta(
-                        days=settings.get('KEY_MANAGER_RSA_KEY_EXPIRATION_PERIOD')) < timezone.now():
-                    managedkey.delete()
+                if managedkey.expired_at + timedelta(days=settings.get('KEY_MANAGER_RSA_KEY_EXPIRATION_PERIOD')) < now:
                     rsakey.delete()
                     self.stdout.write('Removed key with id: {0}'.format(rsakey))
-            elif managedkey.created + timedelta(
-                        days=settings.get('KEY_MANAGER_RSA_KEY_MAX_AGE')) < timezone.now():
+            elif managedkey.created_at + timedelta(days=settings.get('KEY_MANAGER_RSA_KEY_MAX_AGE')) < now:
                 # expire key older than maximum age
-                managedkey.expired = timezone.now()
+                managedkey.expired_at = now
                 managedkey.save()
                 self.stdout.write('Expired key with id: {0}'.format(rsakey))
             else:
@@ -67,7 +65,7 @@ class Command(BaseCommand):
         """
         key = RSA.generate(length)
         rsakey = RSAKey.objects.create(key=key.exportKey('PEM').decode('utf8'))
-        ManagedRsaKey.objects.create(key_id=rsakey, created=timezone.now())
+        ManagedRSAKey.objects.create(rsakey=rsakey, created_at=timezone.now())
         self.stdout.write('Created new key of length {0} with id: {1}'.format(length, rsakey))
 
     def list_keys(self):
@@ -76,6 +74,6 @@ class Command(BaseCommand):
         """
         for rsakey in RSAKey.objects.all():
             try:
-                self.stdout.write('Managed {0}'.format(ManagedRsaKey.objects.get(pk=rsakey)))
+                self.stdout.write('Managed {0}'.format(ManagedRSAKey.objects.get(rsakey=rsakey)))
             except ObjectDoesNotExist:
                 self.stdout.write('Unmanaged key: {0}'.format(rsakey))
