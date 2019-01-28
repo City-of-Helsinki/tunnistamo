@@ -66,6 +66,7 @@ INSTALLED_APPS = (
     'devices',
     'identities',
     'services',
+    'key_manager',
 )
 
 MIDDLEWARE = (
@@ -285,6 +286,11 @@ OIDC_IDTOKEN_INCLUDE_CLAIMS = True
 OIDC_IDTOKEN_SUB_GENERATOR = 'tunnistamo.oidc.sub_generator'
 OIDC_EXTRA_SCOPE_CLAIMS = 'oidc_apis.scopes.CombinedScopeClaims'
 OIDC_AFTER_USERLOGIN_HOOK = 'oidc_apis.utils.after_userlogin_hook'
+
+# key_manager settings for RSA Key
+KEY_MANAGER_RSA_KEY_LENGTH = 4096
+KEY_MANAGER_RSA_KEY_MAX_AGE = 3 * 30
+KEY_MANAGER_RSA_KEY_EXPIRATION_PERIOD = 7
 
 SASS_PROCESSOR_INCLUDE_DIRS = [
     os.path.join(BASE_DIR, 'node_modules'),

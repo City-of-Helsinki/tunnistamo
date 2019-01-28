@@ -18,7 +18,11 @@
 4. Create superuser if needed:
    * `docker exec -it tunnistamo-backend python manage.py createsuperuser`
    
-5. Run the server:
+5. Create RSA keys:
+   * `docker exec -it tunnistamo-backend python manage.py manage_openid_keys`
+   * In order to automatically rotate the server RSA key at set intervals this command should be added to `cron.daily`
+
+6. Run the server:
    * `docker exec tunnistamo-backend python manage.py runserver 0:8000`
    
 The project is now running at [localhost:8000](http://localhost:8000)
@@ -85,6 +89,12 @@ Create admin user:
 python manage.py createsuperuser
 ```
 
+Create RSA keys:
+```
+python manage.py manage_openid_keys
+```
+> In order to automatically rotate the server RSA key at set intervals the above command should be added to `cron.daily`.
+
 Run dev server:
 ```
 python manage.py runserver
@@ -132,6 +142,19 @@ is in `.gitignore`), and add setting `GEOIP_PATH` pointing to that directory.
 
 See [Django docs](https://docs.djangoproject.com/en/1.11/ref/contrib/gis/geoip2/)
 for more info.
+
+### Rotating server RSA keys with Key Manager
+
+For added security the server RSA keys, used to sign/encrypt ID tokens, should be rotated at regular intervals. This can be done automatically with the Django admin utility `manage_openid_keys` provided in the Key Manager module. This utility performs the following tasks:
+
+1. If there are no server RSA keys one is created with `KEY_MANAGER_RSA_KEY_LENGTH` bits (default 4096).
+2. If an RSA key is older than `KEY_MANAGER_RSA_KEY_MAX_AGE` days the key is expired and a new one is created.
+   * This happens also for all existing keys not recognized by the Key Manager
+3. If an RSA key has been expired over `KEY_MANAGER_RSA_KEY_EXPIRATION_PERIOD` days ago it is removed from the system.
+
+This command should be run on production servers at regular intervals, e.g. once a day, using `cron` or similar tool.
+
+See [OIDC_provider docs](https://django-oidc-provider.readthedocs.io/en/latest/sections/serverkeys.html) for more information about server RSA keys.
 
 ## API documentation
 
