@@ -6,6 +6,7 @@ from oauth2_provider.views import AuthorizationView
 from rest_framework import filters, mixins, serializers, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.schemas import AutoSchema
+from django.contrib.auth import logout as django_user_logout
 from django.contrib.auth.mixins import UserPassesTestMixin
 
 from scopes.api import ScopeDataBuilder
@@ -133,6 +134,7 @@ class TunnistamoAuthorizationView(AuthorizationView, UserPassesTestMixin):
 
             if ((last_login_backend is None and user is not None)
                     or (active_backend.exists() and active_backend.first().provider not in allowed_providers)):
+                django_user_logout(request)
                 return False
 
         return True
