@@ -1,9 +1,12 @@
 import coreapi
 import coreschema
 from oidc_provider.models import UserConsent
+from oauth2_provider.models import get_application_model
+from oauth2_provider.views import AuthorizationView
 from rest_framework import filters, mixins, serializers, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.schemas import AutoSchema
+from django.contrib.auth.mixins import UserPassesTestMixin
 
 from scopes.api import ScopeDataBuilder
 from tunnistamo.api_common import OidcTokenAuthentication, ScopePermission
@@ -108,3 +111,28 @@ class UserConsentViewSet(mixins.ListModelMixin, mixins.RetrieveModelMixin, mixin
         context = super().get_serializer_context()
         context['expanded_fields'] = [s.strip() for s in self.request.GET.get('include', '').split(',')]
         return context
+
+
+class TunnistamoAuthorizationView(AuthorizationView, UserPassesTestMixin):
+    def test_func(self):
+        request = self.request
+        client_id = request.GET.get('client_id', request.POST.get('client_id', None))
+        Application = get_application_model()
+        user = request.user
+        if user.is_authenticated:
+            last_login_backend = request.session.get('social_auth_last_login_backend')
+            application = Application.objects.get(client_id=client_id)
+
+            allowed_methods = application.login_methods.all()
+            if allowed_methods is None:
+                return False
+
+            allowed_providers = set((x.provider_id for x in allowed_methods))
+            if last_login_backend is not None:
+                active_backend = user.social_auth.filter(provider=last_login_backend)
+
+            if ((last_login_backend is None and user is not None)
+                    or (active_backend.exists() and active_backend.first().provider not in allowed_providers)):
+                return False
+
+        return True
