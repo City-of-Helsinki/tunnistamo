@@ -1,6 +1,5 @@
 import unittest
 
-import pytest
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount, SocialApp
 from django.contrib.auth import get_user_model
@@ -8,6 +7,7 @@ from django.utils.crypto import get_random_string
 from oidc_provider.models import Client
 from rest_framework.test import APIClient
 
+import pytest
 from services.factories import ServiceFactory
 from users.factories import UserFactory
 from users.models import Application, LoginMethod, OidcClientOptions

@@ -1,6 +1,7 @@
-import pytest
 from django.contrib import auth
 from django.utils.crypto import get_random_string
+
+import pytest
 
 
 @pytest.mark.django_db

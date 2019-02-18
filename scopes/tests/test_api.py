@@ -1,8 +1,8 @@
-import pytest
 from parler.utils.context import switch_language
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
 
+import pytest
 from oidc_apis.factories import ApiDomainFactory, ApiFactory, ApiScopeFactory
 
 LIST_URL = reverse('v1:scope-list')

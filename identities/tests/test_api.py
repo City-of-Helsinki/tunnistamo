@@ -4,13 +4,13 @@ import time
 import uuid
 from unittest import mock
 
-import pytest
 from django.contrib.auth import get_user_model
 from django.urls import reverse
 from jwcrypto import jwe, jwk, jws
 from jwcrypto.common import json_encode
 from rest_framework.test import APIClient
 
+import pytest
 from devices.factories import InterfaceDeviceFactory, UserDeviceFactory
 from identities.factories import UserIdentityFactory
 from identities.helmet_requests import HelmetConnectionException

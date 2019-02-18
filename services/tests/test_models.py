@@ -1,6 +1,6 @@
-import pytest
 from django.core.exceptions import ValidationError
 
+import pytest
 from services.factories import ServiceFactory
 from users.factories import ApplicationFactory, OIDCClientFactory
 

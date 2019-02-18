@@ -2,11 +2,11 @@ import re
 from datetime import timedelta
 from unittest.mock import patch
 
-import pytest
 from django.core.management import call_command
 from django.utils import timezone
 from oidc_provider.models import RSAKey
 
+import pytest
 from key_manager import settings
 from key_manager.models import ManagedRSAKey
 

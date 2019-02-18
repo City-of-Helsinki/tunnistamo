@@ -1,8 +1,8 @@
 from unittest import mock
 
-import pytest
 from requests.exceptions import RequestException
 
+import pytest
 from identities.helmet_requests import HelmetConnectionException, HelmetImproperlyConfiguredException, validate_patron
 
 

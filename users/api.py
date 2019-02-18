@@ -1,13 +1,13 @@
 import coreapi
 import coreschema
-from oidc_provider.models import UserConsent
+from django.contrib.auth import logout as django_user_logout
+from django.contrib.auth.mixins import UserPassesTestMixin
 from oauth2_provider.models import get_application_model
 from oauth2_provider.views import AuthorizationView
+from oidc_provider.models import UserConsent
 from rest_framework import filters, mixins, serializers, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.schemas import AutoSchema
-from django.contrib.auth import logout as django_user_logout
-from django.contrib.auth.mixins import UserPassesTestMixin
 
 from scopes.api import ScopeDataBuilder
 from tunnistamo.api_common import OidcTokenAuthentication, ScopePermission

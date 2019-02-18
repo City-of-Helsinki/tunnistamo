@@ -18,7 +18,7 @@ from oidc_apis.views import get_api_tokens_view
 from scopes.api import ScopeListView
 from services.api import ServiceViewSet
 from tunnistamo import social_auth_urls
-from users.api import UserConsentViewSet, UserLoginEntryViewSet, TunnistamoAuthorizationView
+from users.api import TunnistamoAuthorizationView, UserConsentViewSet, UserLoginEntryViewSet
 from users.views import EmailNeededView, LoginView, LogoutView, TunnistamoOidcAuthorizeView
 
 from .api import GetJWTView, UserView

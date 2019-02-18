@@ -1,7 +1,7 @@
-import pytest
 from rest_framework.reverse import reverse
 from rest_framework.test import APIClient
 
+import pytest
 from services.factories import ServiceFactory
 from tunnistamo.utils import assert_objects_in_response
 from users.factories import OAuth2AccessTokenFactory, UserConsentFactory, UserFactory, access_token_factory

@@ -1,13 +1,13 @@
 import json
 from urllib.parse import parse_qs, urlparse
 
-import pytest
 from django.conf import settings
 from django.urls import reverse
-from freezegun import freeze_time
 from jwt import DecodeError
 
+import pytest
 from auth_backends.adfs.helsinki import HelsinkiADFS
+from freezegun import freeze_time
 
 ACCESS_TOKEN = ("""
 eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6InpmU1lDZThYTnpNY

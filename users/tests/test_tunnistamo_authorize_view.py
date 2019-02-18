@@ -1,7 +1,7 @@
-import pytest
 from django.urls import reverse
 from oidc_provider.models import UserConsent
 
+import pytest
 from oidc_apis.factories import ApiFactory, ApiScopeFactory
 from users.factories import OIDCClientFactory, UserFactory
 from users.views import TunnistamoOidcAuthorizeView
