@@ -1,9 +1,9 @@
+import pytest
 from django.utils.dateparse import parse_datetime
 from oidc_provider.models import UserConsent
 from parler.utils.context import switch_language
 from rest_framework.reverse import reverse
 
-import pytest
 from oidc_apis.factories import ApiDomainFactory, ApiFactory, ApiScopeFactory
 from users.factories import OIDCClientFactory, UserConsentFactory, UserFactory, access_token_factory
 

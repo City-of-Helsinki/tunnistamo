@@ -1,8 +1,7 @@
+import pytest
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.http import urlquote
-
-import pytest
 
 
 @pytest.mark.django_db

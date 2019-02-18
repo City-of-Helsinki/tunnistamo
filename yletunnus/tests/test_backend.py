@@ -2,12 +2,11 @@ import datetime
 import json
 from calendar import timegm
 
+from httpretty import HTTPretty
 from jwkest.jwk import SYMKey
 from jwkest.jws import JWS
 from jwkest.jwt import b64encode_item
 from social_core.tests.backends.oauth import OAuth2Test
-
-from httpretty import HTTPretty
 
 
 class YleTunnusOAuth2Test(OAuth2Test):

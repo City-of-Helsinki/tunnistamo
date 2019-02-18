@@ -1,4 +1,5 @@
 import factory
+
 from users.factories import OIDCClientFactory
 
 from .models import Api, ApiDomain, ApiScope

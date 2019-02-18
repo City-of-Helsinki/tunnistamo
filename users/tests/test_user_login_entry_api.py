@@ -1,9 +1,9 @@
 from datetime import timedelta
 
+import pytest
 from django.utils.timezone import now
 from rest_framework.reverse import reverse
 
-import pytest
 from users.factories import UserFactory, UserLoginEntryFactory, access_token_factory
 
 from .utils import check_datetimes_somewhat_equal

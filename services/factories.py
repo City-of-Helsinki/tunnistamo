@@ -1,6 +1,6 @@
+import factory
 from django.contrib.auth import get_user_model
 
-import factory
 from services.models import Service
 from users.factories import ApplicationFactory, OIDCClientFactory
 

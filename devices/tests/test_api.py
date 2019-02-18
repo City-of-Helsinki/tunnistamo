@@ -1,7 +1,7 @@
+import pytest
 from django.urls import reverse
 from rest_framework.test import APIClient
 
-import pytest
 from devices.factories import UserDeviceFactory
 from devices.models import UserDevice
 from users.factories import UserFactory, access_token_factory

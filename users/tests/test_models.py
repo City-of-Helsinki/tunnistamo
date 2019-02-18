@@ -4,6 +4,7 @@ from datetime import timedelta
 from urllib.parse import parse_qs, urlparse
 
 import jwt
+import pytest
 from Cryptodome.PublicKey import RSA
 from django.urls import reverse
 from django.utils.crypto import get_random_string
@@ -11,7 +12,6 @@ from django.utils.timezone import now
 from oauth2_provider.admin import Grant
 from oidc_provider.models import Code, RSAKey
 
-import pytest
 from services.models import Service
 from users.factories import ApplicationFactory, OIDCClientFactory
 from users.models import User, UserLoginEntry

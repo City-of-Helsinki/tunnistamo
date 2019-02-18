@@ -1,4 +1,5 @@
 import factory
+
 from devices.models import InterfaceDevice, UserDevice
 from users.factories import UserFactory
 

@@ -1,7 +1,6 @@
+import pytest
 from django.urls import reverse
 from social_django.utils import load_backend, load_strategy
-
-import pytest
 
 
 @pytest.mark.parametrize('backend_name, expected_url', (

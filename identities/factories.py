@@ -1,4 +1,5 @@
 import factory
+
 from identities.models import UserIdentity
 from users.factories import UserFactory
 

@@ -1,13 +1,13 @@
 from datetime import timedelta
 
+import factory
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now
+from faker import Faker
 from oauth2_provider.models import AccessToken
 from oidc_provider.models import Client, UserConsent
 from oidc_provider.tests.app.utils import create_fake_client, create_fake_token
 
-import factory
-from faker import Faker
 from users.models import Application, UserLoginEntry
 
 User = get_user_model()
