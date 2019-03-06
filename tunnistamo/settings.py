@@ -400,6 +400,8 @@ SOCIAL_AUTH_SUOMIFI_SUPPORT_CONTACT = {'givenName': '', 'surName': '', 'emailAdd
 SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS = {'suomifi': {'entity_id': '', 'url': '', 'x509cert': ''}}
 SOCIAL_AUTH_SUOMIFI_CALLBACK_MATCH = r'^/openid/authorize?.*'
 SOCIAL_AUTH_SUOMIFI_SECURITY_CONFIG = {'authnRequestsSigned': True,
+                                       'logoutRequestSigned': True,
+                                       'logoutResponseSigned': True,
                                        'wantAssertionsSigned': True}
 SOCIAL_AUTH_SUOMIFI_SP_EXTRA = {
     'NameIDFormat': 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient',
@@ -501,7 +503,6 @@ SOCIAL_AUTH_SUOMIFI_UI_LOGO = {'url': '', 'height': None, 'width': None}
 
 
 IPWARE_META_PRECEDENCE_ORDER = ('REMOTE_ADDR',)
-
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.

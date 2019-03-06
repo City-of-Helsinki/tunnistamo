@@ -150,7 +150,8 @@ class TunnistamoOidcEndSessionView(EndSessionView):
         user = request.user
         social_user = None
         if request.user.is_authenticated:
-            # social_auth creates a new user for each (provider, uid) pair
+            # social_auth creates a new user for each (provider, uid) pair so
+            # we don't need to worry about duplicates
             try:
                 social_user = UserSocialAuth.objects.get(user=user, provider='suomifi')
             except ObjectDoesNotExist:
@@ -194,10 +195,6 @@ class TunnistamoOidcEndSessionView(EndSessionView):
                 token.delete()
 
         return response
-
-    @staticmethod
-    def _remove_oidc_tokens(user, client_id):
-        """Remove all tokens for the given user and audience (client_id)."""
 
 
 def _extend_scope_in_query_params(query_params):

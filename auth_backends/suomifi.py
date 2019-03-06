@@ -291,8 +291,11 @@ class SuomiFiSAMLAuth(SAMLAuth):
     @staticmethod
     def parse_return_token(token):
         """Returns client and index associated with given token"""
-        token_dict = json.loads(token)
-        return token_dict.get('cli'), token_dict.get('idx')
+        try:
+            token_dict = json.loads(token)
+            return token_dict.get('cli'), token_dict.get('idx')
+        except (json.JSONDecodeError, KeyError):
+            return None, None
 
     def create_logout_redirect(self, social_user, token=''):
         """Returns a SP initiated SLO redirect message for given user.

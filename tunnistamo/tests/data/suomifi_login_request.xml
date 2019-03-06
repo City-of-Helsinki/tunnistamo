@@ -1,0 +1,17 @@
+<samlp:AuthnRequest
+  xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+  xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+  ID="MESSAGE_ID_FOR_TEST"
+  Version="2.0"
+    ProviderName="Tunnistamo Test"
+  IssueInstant="2019-01-01T12:00:00Z"
+  Destination="https://suomi.fi.test/SSO"
+  ProtocolBinding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST"
+  AssertionConsumerServiceURL="http://tunnistamo.test/accounts/suomifi/login/callback/"
+    AttributeConsumingServiceIndex="1">
+    <saml:Issuer>https://tunnistamo.test/SP</saml:Issuer>
+    <samlp:NameIDPolicy
+        Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient"
+        AllowCreate="true" />
+     <samlp:RequestedAuthnContext Comparison="exact"><saml:AuthnContextClassRef>http://ftn.ficora.fi/2017/loa3</saml:AuthnContextClassRef><saml:AuthnContextClassRef>http://eidas.europa.eu/LoA/high</saml:AuthnContextClassRef><saml:AuthnContextClassRef>http://ftn.ficora.fi/2017/loa2</saml:AuthnContextClassRef><saml:AuthnContextClassRef>http://eidas.europa.eu/LoA/substantial</saml:AuthnContextClassRef><saml:AuthnContextClassRef>urn:oid:1.2.246.517.3002.110.5</saml:AuthnContextClassRef><saml:AuthnContextClassRef>urn:oid:1.2.246.517.3002.110.6</saml:AuthnContextClassRef>    </samlp:RequestedAuthnContext>
+</samlp:AuthnRequest>

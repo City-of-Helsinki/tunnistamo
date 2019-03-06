@@ -68,7 +68,7 @@ urlpatterns = [
     path('accounts/', include(auth_backends.urls, namespace='auth_backends')),
     path('accounts/', include(social_auth_urls, namespace='social')),
     path('oauth2/applications/', permission_denied),
-    path('oauth2/authorize/', TunnistamoAuthorizationView.as_view(), name="authorize"),
+    path('oauth2/authorize/', TunnistamoAuthorizationView.as_view(), name="oauth2_authorize"),
     path('oauth2/', include(oauth2_provider.urls, namespace='oauth2_provider')),
     re_path(r'^openid/authorize/?$', TunnistamoOidcAuthorizeView.as_view(), name='authorize'),
     re_path(r'^openid/end-session/?$', TunnistamoOidcEndSessionView.as_view(), name='end-session'),
