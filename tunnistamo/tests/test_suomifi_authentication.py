@@ -329,9 +329,8 @@ def test_suomifi_logout_sp_response_invalid_relaystate(django_client):
 def test_suomifi_idp_logout(django_client, fixed_saml_id):
     '''Suomi.fi use cases #4 and #6'''
     create_test_oidc_client()
-    saml_request = load_file('suomifi_idp_logout_request.xml')
     args = {
-        'SAMLRequest': SAMLUtils.deflate_and_base64_encode(saml_request),
+        'SAMLRequest': load_file('suomifi_idp_logout_request_encoded.b64').decode(),
         'RelayState': RELAY_STATE,
         'SigAlg': 'http://www.w3.org/2001/04/xmldsig-more#rsa-sha256',
         'Signature': load_file('suomifi_idp_logout_signature.b64').decode()
