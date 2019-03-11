@@ -96,7 +96,7 @@ def test_suomifi_metadata(django_client):
 @pytest.mark.django_db
 @freeze_time('2019-01-01 12:00:00', tz_offset=2)
 def test_suomifi_login_request(django_client, fixed_saml_id):
-    '''Suomi.fi use case #1'''
+    '''Suomi.fi use case #1: sending authentication request'''
     create_test_oidc_client()
     args = {
         'client_id': CLIENT_ID,
@@ -122,7 +122,7 @@ def test_suomifi_login_request(django_client, fixed_saml_id):
 @pytest.mark.django_db
 @freeze_time('2019-01-01 12:00:00', tz_offset=2)
 def test_suomifi_login_response(django_client, django_user_model):
-    '''Suomi.fi use case #2'''
+    '''Suomi.fi use case #2: receiving authentication response'''
     create_test_oidc_client()
     session = django_client.session
     session['next'] = REDIRECT_URI
@@ -190,7 +190,7 @@ def test_suomifi_login_noncompliant_provider(django_client):
 @pytest.mark.django_db
 @freeze_time('2019-01-01 12:00:00', tz_offset=2)
 def test_suomifi_logout_sp_request(django_client, django_user_model, fixed_saml_id):
-    '''Suomi.fi use case #3'''
+    '''Suomi.fi use case #3: sending logout request'''
     oidc_client = create_test_oidc_client()
     user = django_user_model.objects.create_user(username='testuser', password='testpassword')
     extra_data = {'name_id': 'SUOMIFI_SESSION_IDENTIFIER',
@@ -289,7 +289,7 @@ def test_suomifi_logout_sp_request_invalid_token(django_client, django_user_mode
 
 @pytest.mark.django_db
 def test_suomifi_logout_sp_response(django_client):
-    '''Suomi.fi use case #5'''
+    '''Suomi.fi use case #5: receiving logout response'''
     create_test_oidc_client()
     saml_response = load_file('suomifi_logout_response.xml')
     args = {
@@ -327,7 +327,7 @@ def test_suomifi_logout_sp_response_invalid_relaystate(django_client):
 @pytest.mark.django_db
 @freeze_time('2019-01-01 12:00:00', tz_offset=2)
 def test_suomifi_idp_logout(django_client, fixed_saml_id):
-    '''Suomi.fi use cases #4 and #6'''
+    '''Suomi.fi use cases #4: receiving logout request, and #6: sending logout response'''
     create_test_oidc_client()
     args = {
         'SAMLRequest': load_file('suomifi_idp_logout_request_encoded.b64').decode(),
