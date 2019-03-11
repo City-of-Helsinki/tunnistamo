@@ -1,0 +1,13 @@
+<samlp:LogoutResponse
+  xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+  xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+  ID="MESSAGE_ID_FOR_TEST"
+  Version="2.0"
+  IssueInstant="2019-01-01T12:00:00Z"
+  Destination="https://suomi.fi.test/SLO"
+  InResponseTo="SUOMIFI_MESSAGE_ID">
+    <saml:Issuer>https://tunnistamo.test/SP</saml:Issuer>
+    <samlp:Status>
+        <samlp:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success" />
+    </samlp:Status>
+</samlp:LogoutResponse>

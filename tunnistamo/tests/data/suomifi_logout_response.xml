@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<saml2p:LogoutResponse Destination="http://tunnistamo.test/accounts/suomifi/logout/callback/" ID="SUOMIFI_RESPONSE_ID" InResponseTo="MESSAGE_ID_FOR_TEST" IssueInstant="2019-01-01T12:00:00.000Z" Version="2.0" xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol"><saml2:Issuer xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">https://suomi.fi.test/IdP</saml2:Issuer><saml2p:Status><saml2p:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></saml2p:Status></saml2p:LogoutResponse>

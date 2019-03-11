@@ -68,6 +68,10 @@ def require_email(details, backend, user=None, *args, **kwargs):
     if user:
         return
 
+    # Suomi.fi returns PRC(VRK) information, which often doesn't inclue email address
+    if backend.name == 'suomifi':
+        return
+
     email = details.get('email')
     if not email:
         get_params = urlencode({

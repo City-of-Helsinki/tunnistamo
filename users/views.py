@@ -3,14 +3,18 @@ from urllib.parse import parse_qs, urlparse
 
 from django.conf import settings
 from django.contrib.auth import logout as auth_logout
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import translation
 from django.utils.http import quote
 from django.views.generic.base import TemplateView
 from oauth2_provider.models import get_application_model
-from oidc_provider.models import Client
-from oidc_provider.views import AuthorizeView
+from oidc_provider.lib.utils.token import client_id_from_id_token
+from oidc_provider.models import Client, Token
+from oidc_provider.views import AuthorizeView, EndSessionView
+from social_django.models import UserSocialAuth
+from social_django.utils import load_backend, load_strategy
 
 from oidc_apis.models import ApiScope
 
@@ -69,6 +73,12 @@ class LoginView(TemplateView):
             m.login_url = reverse('social:begin', kwargs={'backend': m.provider_id})
             if next_url:
                 m.login_url += '?next=' + next_url
+
+            if m.provider_id in getattr(settings, 'SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS'):
+                # This check is used to exclude Suomi.fi auth method when using non-compliant auth provider
+                if re.match(getattr(settings, 'SOCIAL_AUTH_SUOMIFI_CALLBACK_MATCH'), next_url) is None:
+                    continue
+                m.login_url += '&amp;idp=' + m.provider_id
 
             methods.append(m)
 
@@ -132,6 +142,59 @@ class TunnistamoOidcAuthorizeView(AuthorizeView):
     def post(self, request, *args, **kwargs):
         request.POST = _extend_scope_in_query_params(request.POST)
         return super().post(request, *args, **kwargs)
+
+
+class TunnistamoOidcEndSessionView(EndSessionView):
+    def get(self, request, *args, **kwargs):
+        # check if the authenticated user has active Suomi.fi login
+        user = request.user
+        social_user = None
+        if request.user.is_authenticated:
+            # social_auth creates a new user for each (provider, uid) pair so
+            # we don't need to worry about duplicates
+            try:
+                social_user = UserSocialAuth.objects.get(user=user, provider='suomifi')
+            except ObjectDoesNotExist:
+                pass
+        # clear Django session and get redirect URL
+        response = super().get(request, *args, **kwargs)
+        # create Suomi.fi logout redirect if needed
+        if social_user is not None:
+            response = self._create_suomifi_logout_response(social_user, user, request, response.url)
+        return response
+
+    @staticmethod
+    def _create_suomifi_logout_response(social_user, user, request, redirect_url):
+        """Creates Suomi.fi logout redirect response for given social_user
+        and removes all related OIDC tokens. The user is directed to redirect_url
+        after succesful Suomi.fi logout.
+        """
+        token = ''
+        saml_backend = load_backend(
+            load_strategy(request),
+            'suomifi',
+            redirect_uri=getattr(settings, 'LOGIN_URL')
+        )
+
+        id_token_hint = request.GET.get('id_token_hint')
+        if id_token_hint:
+            client_id = client_id_from_id_token(id_token_hint)
+            try:
+                client = Client.objects.get(client_id=client_id)
+                if redirect_url in client.post_logout_redirect_uris:
+                    token = saml_backend.create_return_token(
+                        client_id,
+                        client.post_logout_redirect_uris.index(redirect_url))
+            except Client.DoesNotExist:
+                pass
+
+        response = saml_backend.create_logout_redirect(social_user, token)
+
+        for token in Token.objects.filter(user=user):
+            if token.id_token.get('aud') == client_id:
+                token.delete()
+
+        return response
 
 
 def _extend_scope_in_query_params(query_params):

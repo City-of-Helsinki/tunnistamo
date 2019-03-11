@@ -12,6 +12,7 @@ from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import SimpleRouter
 from rest_framework.schemas import SchemaGenerator
 
+import auth_backends.urls
 from devices.api import UserDeviceViewSet
 from identities.api import UserIdentityViewSet
 from oidc_apis.views import get_api_tokens_view
@@ -19,7 +20,9 @@ from scopes.api import ScopeListView
 from services.api import ServiceViewSet
 from tunnistamo import social_auth_urls
 from users.api import TunnistamoAuthorizationView, UserConsentViewSet, UserLoginEntryViewSet
-from users.views import EmailNeededView, LoginView, LogoutView, TunnistamoOidcAuthorizeView
+from users.views import (
+    EmailNeededView, LoginView, LogoutView, TunnistamoOidcAuthorizeView, TunnistamoOidcEndSessionView
+)
 
 from .api import GetJWTView, UserView
 
@@ -62,11 +65,13 @@ urlpatterns = [
     path('accounts/profile/', show_login),
     path('accounts/login/', LoginView.as_view()),
     path('accounts/logout/', LogoutView.as_view()),
+    path('accounts/', include(auth_backends.urls, namespace='auth_backends')),
     path('accounts/', include(social_auth_urls, namespace='social')),
     path('oauth2/applications/', permission_denied),
-    path('oauth2/authorize/', TunnistamoAuthorizationView.as_view(), name="authorize"),
+    path('oauth2/authorize/', TunnistamoAuthorizationView.as_view(), name="oauth2_authorize"),
     path('oauth2/', include(oauth2_provider.urls, namespace='oauth2_provider')),
     re_path(r'^openid/authorize/?$', TunnistamoOidcAuthorizeView.as_view(), name='authorize'),
+    re_path(r'^openid/end-session/?$', TunnistamoOidcEndSessionView.as_view(), name='end-session'),
     path('openid/', include(oidc_provider.urls, namespace='oidc_provider')),
     re_path(r'^\.well-known/openid-configuration/?$', OIDCProviderInfoView.as_view(), name='root-provider-info'),
     re_path(r'^user/(?P<username>[\w.@+-]+)/?$', UserView.as_view()),

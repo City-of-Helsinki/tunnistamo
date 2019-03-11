@@ -67,6 +67,7 @@ INSTALLED_APPS = (
     'identities',
     'services',
     'key_manager',
+    'auth_backends',
 )
 
 MIDDLEWARE = (
@@ -78,6 +79,7 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'crequest.middleware.CrequestMiddleware',
+    'tunnistamo.error_handlers.TunnistamoSocialAuthExceptionMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -90,7 +92,7 @@ AUTHENTICATION_BACKENDS = (
     'social_core.backends.facebook.FacebookOAuth2',
     'social_core.backends.github.GithubOAuth2',
     'django.contrib.auth.backends.ModelBackend',
-    'allauth.account.auth_backends.AuthenticationBackend',
+    'auth_backends.suomifi.SuomiFiSAMLAuth',
 )
 
 ROOT_URLCONF = 'tunnistamo.urls'
@@ -245,6 +247,7 @@ REST_FRAMEWORK = {
     ),
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
+
 CSRF_COOKIE_NAME = 'sso-csrftoken'
 SESSION_COOKIE_NAME = 'sso-sessionid'
 
@@ -320,6 +323,7 @@ SOCIAL_AUTH_PIPELINE = (
     # Checks if the current social-account is already associated in the site.
     'social_core.pipeline.social_auth.social_user',
 
+
     # Add `new_uuid` argument to the pipeline.
     'users.pipeline.get_user_uuid',
     # Sets the `username` argument.
@@ -383,8 +387,165 @@ SOCIAL_AUTH_HELSINKI_ADFS_SECRET = None
 SOCIAL_AUTH_ESPOO_ADFS_KEY = ''
 SOCIAL_AUTH_ESPOO_ADFS_SECRET = None
 
-IPWARE_META_PRECEDENCE_ORDER = ('REMOTE_ADDR',)
+###
+# The following section contains values required by Social Auth Suomi.fi
+# authentication.
 
+# Suomi.fi common values.
+# Values for these come from Suomi.fi requirements and/or service metadata.
+
+# Suomi.fi requires that all SAML messages and assertions are signed.
+SOCIAL_AUTH_SUOMIFI_SECURITY_CONFIG = {'authnRequestsSigned': True,
+                                       'logoutRequestSigned': True,
+                                       'logoutResponseSigned': True,
+                                       'wantAssertionsSigned': True}
+# A list of user attributes Suomi.fi provides on concise level.
+SOCIAL_AUTH_SUOMIFI_SP_EXTRA = {
+    'NameIDFormat': 'urn:oasis:names:tc:SAML:2.0:nameid-format:transient',
+    'attributeConsumingService': {
+        'serviceName': 'Tunnistamo',
+        'requestedAttributes': [{'friendlyName': 'electronicIdentificationNumber',
+                                 'name': 'urn:oid:1.2.246.22'},
+                                {'friendlyName': 'nationalIdentificationNumber',
+                                 'name': 'urn:oid:1.2.246.21'},
+                                {'friendlyName': 'cn',
+                                 'name': 'urn:oid:2.5.4.3'},
+                                {'friendlyName': 'displayName',
+                                 'name': 'urn:oid:2.16.840.1.113730.3.1.241'},
+                                {'friendlyName': 'givenName',
+                                 'name': 'urn:oid:2.5.4.42'},
+                                {'friendlyName': 'sn',
+                                 'name': 'urn:oid:2.5.4.4'},
+                                {'friendlyName': 'FirstName',
+                                 'name': 'http://eidas.europa.eu/attributes/naturalperson/CurrentGivenName'},
+                                {'friendlyName': 'KotikuntaKuntanumero',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.18'},
+                                {'friendlyName': 'KotikuntaKuntaS',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.19'},
+                                {'friendlyName': 'KotikuntaKuntaR',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.20'},
+                                {'friendlyName': 'VakinainenKotimainenLahiosoiteS',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.4'},
+                                {'friendlyName': 'VakinainenKotimainenLahiosoiteR',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.5'},
+                                {'friendlyName': 'VakinainenKotimainenLahiosoitePostinumero',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.6'},
+                                {'friendlyName': 'VakinainenKotimainenLahiosoitePostitoimipaikkaS',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.7'},
+                                {'friendlyName': 'VakinainenKotimainenLahiosoitePostitoimipaikkaR',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.8'},
+                                {'friendlyName': 'VakinainenUlkomainenLahiosoite',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.11'},
+                                {'friendlyName': 'VakinainenUlkomainenLahiosoitePaikkakuntaJaValtioS',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.12'},
+                                {'friendlyName': 'VakinainenUlkomainenLahiosoitePaikkakuntaJaValtioR',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.13'},
+                                {'friendlyName': 'VakinainenUlkomainenLahiosoitePaikkakuntaJaValtioSelvakielinen',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.14'},
+                                {'friendlyName': 'VakinainenUlkomainenLahiosoiteValtiokoodi',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.15'},
+                                {'friendlyName': 'TilapainenKotimainenLahiosoiteS',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.31'},
+                                {'friendlyName': 'TilapainenKotimainenLahiosoiteR',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.32'},
+                                {'friendlyName': 'TilapainenKotimainenLahiosoitePostinumero',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.33'},
+                                {'friendlyName': 'TilapainenKotimainenLahiosoitePostitoimipaikkaS',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.34'},
+                                {'friendlyName': 'TilapainenKotimainenLahiosoitePostitoimipaikkaR',
+                                 'name': 'urn:oid:1.2.246.517.2002.2.35'},
+                                {'friendlyName': 'mail',
+                                 'name': 'urn:oid:0.9.2342.19200300.100.1.3'}]
+    },
+}
+# Accepted Suomi.fi authentication methods.
+SOCIAL_AUTH_SUOMIFI_ENTITY_ATTRIBUTES = [
+    {
+        'name': 'FinnishAuthMethod',
+        'nameFormat': 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri',
+        'values': [
+            'http://ftn.ficora.fi/2017/loa3',
+            'http://eidas.europa.eu/LoA/high',
+            'http://ftn.ficora.fi/2017/loa2',
+            'http://eidas.europa.eu/LoA/substantial',
+            'urn:oid:1.2.246.517.3002.110.5',
+            'urn:oid:1.2.246.517.3002.110.6',
+            # 'urn:oid:1.2.246.517.3002.110.999'  # Test authentication service
+        ]
+    },
+    {
+        'friendlyName': 'VthVerificationRequired',
+        'name': 'urn:oid:1.2.246.517.3003.111.3',
+        'nameFormat': 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri',
+        'values': ['false']
+    },
+    {
+        'friendlyName': 'SkipEndpointValidationWhenSigned',
+        'name': 'urn:oid:1.2.246.517.3003.111.4',
+        'nameFormat': 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri',
+        'values': ['true']
+    },
+    {
+        'friendlyName': 'EidasSupport',
+        'name': 'urn:oid:1.2.246.517.3003.111.14',
+        'nameFormat': 'urn:oasis:names:tc:SAML:2.0:attrname-format:uri',
+        'values': ['full']
+    },
+]
+
+# The following regexp match is used to allow Suomi.fi authentication only when
+# using OpenId Connect provider.
+SOCIAL_AUTH_SUOMIFI_CALLBACK_MATCH = r'^/openid/authorize?.*'
+
+
+# Suomi.fi instance specific values.
+# These should be overwritten in local settings.
+
+# Service provider (Tunnistamo) entity ID and certificates.
+SOCIAL_AUTH_SUOMIFI_SP_ENTITY_ID = ''
+SOCIAL_AUTH_SUOMIFI_SP_PUBLIC_CERT = ''
+SOCIAL_AUTH_SUOMIFI_SP_PRIVATE_KEY = ''
+
+# Organization (hel.fi/tunnistamo) details must be given for languages fi/sv/en.
+SOCIAL_AUTH_SUOMIFI_ORG_INFO = {'fi': {'name': '', 'displayname': '', 'url': ''},
+                                'sv': {'name': '', 'displayname': '', 'url': ''},
+                                'en': {'name': '', 'displayname': '', 'url': ''}}
+# Both technical and support contact information are required.
+# First name and surname must be given separately.
+SOCIAL_AUTH_SUOMIFI_TECHNICAL_CONTACT = {'givenName': '', 'surName': '', 'emailAddress': ''}
+SOCIAL_AUTH_SUOMIFI_SUPPORT_CONTACT = {'givenName': '', 'surName': '', 'emailAddress': ''}
+
+# Suomi.fi identity provider information.
+# These values can be obtained from Suomi.fi IdP metadata.
+SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS = {
+    'suomifi': {
+        'entity_id': '',  # IdP URI
+        'url': '',  # SSO URL
+        'logout_url': '',  # SLO URL
+        'x509cert': '',  # IdP certificate
+        # Social Core attribute bindings
+        'attr_user_permanent_id': 'urn:oid:1.2.246.21',
+        'attr_full_name': 'urn:oid:2.5.4.3',
+        'attr_first_name': 'http://eidas.europa.eu/attributes/naturalperson/CurrentGivenName',
+        'attr_last_name': 'urn:oid:2.5.4.4',
+        'attr_username': 'urn:oid:1.2.246.21',
+        'attr_email': 'urn:oid:0.9.2342.19200300.100.1.3',
+    }
+}
+
+# UI configuration hints for Suomi.fi. Suomi.fi authentication selection page
+# uses this information for UI customization. Required languages are fi/sv/en.
+SOCIAL_AUTH_SUOMIFI_UI_INFO = {
+    'fi': {'DisplayName': '', 'Description': '', 'PrivacyStatementURL': ''},
+    'sv': {'DisplayName': '', 'Description': '', 'PrivacyStatementURL': ''},
+    'en': {'DisplayName': '', 'Description': '', 'PrivacyStatementURL': ''},
+}
+SOCIAL_AUTH_SUOMIFI_UI_LOGO = {'url': '', 'height': None, 'width': None}
+
+# End of Suomi.fi section
+###
+
+IPWARE_META_PRECEDENCE_ORDER = ('REMOTE_ADDR',)
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.

@@ -1,0 +1,11 @@
+<samlp:LogoutRequest
+  xmlns:samlp="urn:oasis:names:tc:SAML:2.0:protocol"
+  xmlns:saml="urn:oasis:names:tc:SAML:2.0:assertion"
+  ID="MESSAGE_ID_FOR_TEST"
+  Version="2.0"
+  IssueInstant="2019-01-01T12:00:00Z"
+  Destination="https://suomi.fi.test/SLO">
+    <saml:Issuer>https://tunnistamo.test/SP</saml:Issuer>
+    <saml:NameID SPNameQualifier="https://tunnistamo.test/SP" Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient" NameQualifier="https://suomi.fi.test/IdP">SUOMIFI_SESSION_IDENTIFIER</saml:NameID>
+    <samlp:SessionIndex>SUOMIFI_SESSION_INDEX</samlp:SessionIndex>
+</samlp:LogoutRequest>

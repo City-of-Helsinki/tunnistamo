@@ -84,3 +84,20 @@ $fa-font-path: "../fonts/font-awesome";
   background-position: center;
   background-size: 85%;
 }
+
+// create bootstrap-social styles for service suomifi
+@mixin suomifi-logo($_color) {
+  background-image: url("data:image/svg+xml,%3Csvg%20viewBox%3D%220%200%2055%2055%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%3Cg%3E%3Cg%3E%3Cpath%20fill%3D%22%23#{str-slice(inspect($_color), 2)}%22%20d%3D%22M14%2C20v-5c0-1.1%2C0.9-2%2C2-2h5v7%22%3E%3C%2Fpath%3E%3Cpath%20fill%3D%22%23#{str-slice(inspect($_color), 2)}%22%20d%3D%22M14%2C27h7v14c0%2C0.5-0.4%2C1-1%2C1h-5c-0.6%2C0-1-0.5-1-1%22%3E%3C%2Fpath%3E%3Cpath%20fill%3D%22%23#{str-slice(inspect($_color), 2)}%22%20d%3D%22M28%2C13h13c0.5%2C0%2C1%2C0.4%2C1%2C1v6H28%22%3E%3C%2Fpath%3E%3Cpath%20fill%3D%22%23#{str-slice(inspect($_color), 2)}%22%20d%3D%22M41%2C34H28v-7h14v6C42%2C33.6%2C41.6%2C34%2C41%2C34z%22%3E%3C%2Fpath%3E%3C%2Fg%3E%3C%2Fg%3E%3C%2Fsvg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+
+.btn-suomifi {
+  @include btn-social(#003479);
+}
+
+.fa-suomifi {
+  @include suomifi-logo($white);
+  background-position: center;
+  background-size: 85%;
+}

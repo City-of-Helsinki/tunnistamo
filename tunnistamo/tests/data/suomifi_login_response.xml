@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<saml2p:Response xmlns:saml2p="urn:oasis:names:tc:SAML:2.0:protocol" Destination="http://tunnistamo.test/accounts/suomifi/login/callback/" ID="pfxf9f50917-49db-4f55-0296-c08a0e81daae" InResponseTo="MESSAGE_ID_FOR_TEST" IssueInstant="2019-01-01T12:00:00.000Z" Version="2.0">
+    <saml2:Issuer xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion">https://suomi.fi.test/IdP</saml2:Issuer><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+  <ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+    <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+  <ds:Reference URI="#pfxf9f50917-49db-4f55-0296-c08a0e81daae"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>mdFf7lSwvPgUb3UIoMDTG00MJ7o=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>0HxF7r1+eOUxls461iQtt4VOJ1TjDm25NUiSzC2mAMtUIXaS2srnpyprp+yXMI3d8jIN9HqRrR9JDw/jkIdXPGN/1KroCCRmTpIbgLrDyQfuPx6dwKWYUZ+vlVbWwUzb0AFTyWboV6SQ5LnpF2J/X1Hqu6+bEUsa+w9BsxoKrTs0t8qfCPG0Qtv0cTTXJYEF2BiOX9EhbRE/1SwIA9dsE41mE/PgkBYCz0BDvJHAIBYA1iPlWMPhZ7IeCdJNNXRYodmZFCtkeUzuZ4BK9Iwe2gj2RSxYMI/4SV+0i7FRM9B3Y5uUIh8fkbbJ8Bk6yWBX/oD4l/Rtkiv75S0SuEZjog==</ds:SignatureValue>
+<ds:KeyInfo><ds:X509Data><ds:X509Certificate>MIID0jCCArqgAwIBAgIJAJ4gztLllz7uMA0GCSqGSIb3DQEBCwUAMH4xCzAJBgNVBAYTAkZJMRAwDgYDVQQIDAdVdXNpbWFhMREwDwYDVQQHDAhIZWxzaW5raTEbMBkGA1UECgwSSGVsc2luZ2luIGthdXB1bmtpMRMwEQYDVQQLDApkZXYuaGVsLmZpMRgwFgYDVQQDDA9UdW5uaXN0YW1vIFRlc3QwHhcNMTkwMTMwMTAzMDMyWhcNMjkwMTI3MTAzMDMyWjB+MQswCQYDVQQGEwJGSTEQMA4GA1UECAwHVXVzaW1hYTERMA8GA1UEBwwISGVsc2lua2kxGzAZBgNVBAoMEkhlbHNpbmdpbiBrYXVwdW5raTETMBEGA1UECwwKZGV2LmhlbC5maTEYMBYGA1UEAwwPVHVubmlzdGFtbyBUZXN0MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4S2yjyZJuDBKApY+1dFiGPrbXG8mF9xwB2IKY8sUjFCxf7IXiVcOqEzjMq6AsVtx+GGg+MTQy1PAkTY+E7hW60NDOacly0uTBwTYHeikEtEPRK1DyQxlk+3rUy08Zj5UzE/epPpNof7l+wuj1VNYIcevig0NzairZKHDHUOkP74j1Uu8Vid6nFKIU0pXPK8vQRuTgJwL20IBW7iewnDgaTJHVpAtrIz4AZWGSCx/1z+qb1v29YT3g/R7jfZ7/4Kph1bi0I3BquWcx+x2m0w5nIgjdvJNTtXGkUb6PYDCqj4SwQ+eNUN4pIhQTzQ13bwiz442MLqOaIdFq7nah62FaQIDAQABo1MwUTAdBgNVHQ4EFgQU5mLmF8Tcgv7aDvIUr272ztnI9Y0wHwYDVR0jBBgwFoAU5mLmF8Tcgv7aDvIUr272ztnI9Y0wDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAMAlLZ49gEwfx/U1DsmJAS6Itz3DE/QMj2owmPAxXgaHgiOtgiokc1TD9WKRa+IwLmAcrVnCDhxpIzu8vTHEgMETO5b+ndrCMFr2TeFbT0311ihUee/C++cWvu+1eZhS7/y9mByUysXRORfN/Al8sf46SjRXYKlp56EuWPK34wrSWkudBgUvL5xIpTmzaxxbsd/KmJQ/TBxaH82y/JK31yduIHM+YHdfBdDNkZmgZbjId8NxjBIt5y9dmrxpEZU0g7t+G+UldfkaHrTZ21eeMTYaZjtrlgXLxtMNQJ/VF8hl3IQE5Gh4AV3eiYqQgAlroGlYp+oJcGv52/K1n2mcIXg==</ds:X509Certificate></ds:X509Data></ds:KeyInfo></ds:Signature>
+    <saml2p:Status><saml2p:StatusCode Value="urn:oasis:names:tc:SAML:2.0:status:Success"/></saml2p:Status>
+    <saml2:Assertion xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" ID="pfx703f0d85-8899-8a8f-b208-18082c9de883" IssueInstant="2019-01-01T12:00:00.000Z" Version="2.0">
+        <saml2:Issuer>https://suomi.fi.test/IdP</saml2:Issuer><ds:Signature xmlns:ds="http://www.w3.org/2000/09/xmldsig#">
+  <ds:SignedInfo><ds:CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/>
+    <ds:SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/>
+  <ds:Reference URI="#pfx703f0d85-8899-8a8f-b208-18082c9de883"><ds:Transforms><ds:Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/><ds:Transform Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#"/></ds:Transforms><ds:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><ds:DigestValue>DjH322JQ6F7q0d+9K0NWu+XSdJs=</ds:DigestValue></ds:Reference></ds:SignedInfo><ds:SignatureValue>YSe0iwwyhuAQQpthh9OBEzGY84DTePlqpQHIpPa7PaNFWimoJXtpjyqvR1BeyzMFHpn2fX+kljXKZlxeff4HWaF7OmfVIn0OKqhrbtvP+GvKFYO0+YuiK5CAzRAFKP3hrD+O5PtLuAKcdU73Qu4oCGP8+gjPre9yGxmQYvfin7cx/HR/CsSwZCWOByR7Xl3Gk7/XfPq7wx1FH/1AWTSXhaL5TgliDXysB1hRWadk3o4pLIn7bJ7YvvDYrqZcW6YR6BgeZDz3rYtxypEE++Y7q793YxxGctJv3kjxSXtYOtCQk/TIUZUaXZ+y6jpDrcNjdFpy4whT78ZX40DPctkGNA==</ds:SignatureValue>
+<ds:KeyInfo><ds:X509Data><ds:X509Certificate>MIID0jCCArqgAwIBAgIJAJ4gztLllz7uMA0GCSqGSIb3DQEBCwUAMH4xCzAJBgNVBAYTAkZJMRAwDgYDVQQIDAdVdXNpbWFhMREwDwYDVQQHDAhIZWxzaW5raTEbMBkGA1UECgwSSGVsc2luZ2luIGthdXB1bmtpMRMwEQYDVQQLDApkZXYuaGVsLmZpMRgwFgYDVQQDDA9UdW5uaXN0YW1vIFRlc3QwHhcNMTkwMTMwMTAzMDMyWhcNMjkwMTI3MTAzMDMyWjB+MQswCQYDVQQGEwJGSTEQMA4GA1UECAwHVXVzaW1hYTERMA8GA1UEBwwISGVsc2lua2kxGzAZBgNVBAoMEkhlbHNpbmdpbiBrYXVwdW5raTETMBEGA1UECwwKZGV2LmhlbC5maTEYMBYGA1UEAwwPVHVubmlzdGFtbyBUZXN0MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA4S2yjyZJuDBKApY+1dFiGPrbXG8mF9xwB2IKY8sUjFCxf7IXiVcOqEzjMq6AsVtx+GGg+MTQy1PAkTY+E7hW60NDOacly0uTBwTYHeikEtEPRK1DyQxlk+3rUy08Zj5UzE/epPpNof7l+wuj1VNYIcevig0NzairZKHDHUOkP74j1Uu8Vid6nFKIU0pXPK8vQRuTgJwL20IBW7iewnDgaTJHVpAtrIz4AZWGSCx/1z+qb1v29YT3g/R7jfZ7/4Kph1bi0I3BquWcx+x2m0w5nIgjdvJNTtXGkUb6PYDCqj4SwQ+eNUN4pIhQTzQ13bwiz442MLqOaIdFq7nah62FaQIDAQABo1MwUTAdBgNVHQ4EFgQU5mLmF8Tcgv7aDvIUr272ztnI9Y0wHwYDVR0jBBgwFoAU5mLmF8Tcgv7aDvIUr272ztnI9Y0wDwYDVR0TAQH/BAUwAwEB/zANBgkqhkiG9w0BAQsFAAOCAQEAMAlLZ49gEwfx/U1DsmJAS6Itz3DE/QMj2owmPAxXgaHgiOtgiokc1TD9WKRa+IwLmAcrVnCDhxpIzu8vTHEgMETO5b+ndrCMFr2TeFbT0311ihUee/C++cWvu+1eZhS7/y9mByUysXRORfN/Al8sf46SjRXYKlp56EuWPK34wrSWkudBgUvL5xIpTmzaxxbsd/KmJQ/TBxaH82y/JK31yduIHM+YHdfBdDNkZmgZbjId8NxjBIt5y9dmrxpEZU0g7t+G+UldfkaHrTZ21eeMTYaZjtrlgXLxtMNQJ/VF8hl3IQE5Gh4AV3eiYqQgAlroGlYp+oJcGv52/K1n2mcIXg==</ds:X509Certificate></ds:X509Data></ds:KeyInfo></ds:Signature>
+        <saml2:Subject>
+            <saml2:NameID xmlns:saml2="urn:oasis:names:tc:SAML:2.0:assertion" Format="urn:oasis:names:tc:SAML:2.0:nameid-format:transient" NameQualifier="https://suomi.fi.test/IdP" SPNameQualifier="https://tunnistamo.test/SP">SUOMIFI_SESSION_IDENTIFIER</saml2:NameID>
+            <saml2:SubjectConfirmation Method="urn:oasis:names:tc:SAML:2.0:cm:bearer"><saml2:SubjectConfirmationData Address="172.17.0.1" InResponseTo="MESSAGE_ID_FOR_TEST" NotOnOrAfter="2019-01-01T12:10:00.000Z" Recipient="http://tunnistamo.test/accounts/suomifi/login/callback/"/></saml2:SubjectConfirmation>
+        </saml2:Subject>
+        <saml2:Conditions NotBefore="2019-01-01T12:00:00.000Z" NotOnOrAfter="2019-01-01T12:10:00.000Z">
+            <saml2:AudienceRestriction>
+                <saml2:Audience>https://tunnistamo.test/SP</saml2:Audience>
+            </saml2:AudienceRestriction>
+        </saml2:Conditions>
+        <saml2:AuthnStatement AuthnInstant="2019-01-01T12:00:00.000Z" SessionIndex="SUOMIFI_SESSION_INDEX"><saml2:SubjectLocality Address="172.17.0.1"/>
+            <saml2:AuthnContext>
+                <saml2:AuthnContextClassRef>urn:oid:1.2.246.517.3002.110.999</saml2:AuthnContextClassRef>
+            </saml2:AuthnContext>
+        </saml2:AuthnStatement>
+        <saml2:AttributeStatement>
+            <saml2:Attribute FriendlyName="firstName" Name="http://eidas.europa.eu/attributes/naturalperson/CurrentGivenName" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml2:AttributeValue>Teppo</saml2:AttributeValue>
+            </saml2:Attribute>
+            <saml2:Attribute FriendlyName="VakinainenKotimainenLahiosoitePostitoimipaikkaS" Name="urn:oid:1.2.246.517.2002.2.7" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml2:AttributeValue>MUUALA</saml2:AttributeValue>
+            </saml2:Attribute>
+            <saml2:Attribute FriendlyName="displayName" Name="urn:oid:2.16.840.1.113730.3.1.241" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml2:AttributeValue>Teppo Testi</saml2:AttributeValue>
+            </saml2:Attribute>
+            <saml2:Attribute Name="urn:oid:1.2.246.517.3002.111.2" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml2:AttributeValue>true</saml2:AttributeValue>
+            </saml2:Attribute>
+            <saml2:Attribute FriendlyName="VakinainenKotimainenLahiosoitePostinumero" Name="urn:oid:1.2.246.517.2002.2.6" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml2:AttributeValue>99999</saml2:AttributeValue>
+            </saml2:Attribute>
+            <saml2:Attribute FriendlyName="givenName" Name="urn:oid:2.5.4.42" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml2:AttributeValue>Teppo</saml2:AttributeValue>
+            </saml2:Attribute>
+            <saml2:Attribute FriendlyName="KotikuntaKuntaS" Name="urn:oid:1.2.246.517.2002.2.19" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml2:AttributeValue>Muuala</saml2:AttributeValue>
+            </saml2:Attribute>
+            <saml2:Attribute FriendlyName="cn" Name="urn:oid:2.5.4.3" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml2:AttributeValue>Testi Teppo</saml2:AttributeValue>
+            </saml2:Attribute>
+            <saml2:Attribute FriendlyName="sn" Name="urn:oid:2.5.4.4" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml2:AttributeValue>Testi</saml2:AttributeValue>
+            </saml2:Attribute>
+            <saml2:Attribute FriendlyName="KotikuntaKuntanumero" Name="urn:oid:1.2.246.517.2002.2.18" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml2:AttributeValue>888</saml2:AttributeValue>
+            </saml2:Attribute>
+            <saml2:Attribute FriendlyName="VakinainenKotimainenLahiosoiteS" Name="urn:oid:1.2.246.517.2002.2.4" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml2:AttributeValue>Katukuja 1</saml2:AttributeValue>
+            </saml2:Attribute>
+            <saml2:Attribute FriendlyName="nationalIdentificationNumber" Name="urn:oid:1.2.246.21" NameFormat="urn:oasis:names:tc:SAML:2.0:attrname-format:uri">
+                <saml2:AttributeValue>010101-0101</saml2:AttributeValue>
+            </saml2:Attribute>
+        </saml2:AttributeStatement>
+    </saml2:Assertion>
+</saml2p:Response>
