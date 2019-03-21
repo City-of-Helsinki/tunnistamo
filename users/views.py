@@ -76,6 +76,8 @@ class LoginView(TemplateView):
 
             if m.provider_id in getattr(settings, 'SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS'):
                 # This check is used to exclude Suomi.fi auth method when using non-compliant auth provider
+                if next_url is None:
+                    continue
                 if re.match(getattr(settings, 'SOCIAL_AUTH_SUOMIFI_CALLBACK_MATCH'), next_url) is None:
                     continue
                 m.login_url += '&amp;idp=' + m.provider_id
