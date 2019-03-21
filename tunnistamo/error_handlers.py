@@ -9,7 +9,7 @@ class TunnistamoSocialAuthExceptionMiddleware(SocialAuthExceptionMiddleware):
     def get_redirect_uri(self, request, exception):
         strategy = getattr(request, 'social_strategy', None)
         if strategy.session.get('next') is None:
-            return super().get_redirect_uri(self, request, exception)
+            return super().get_redirect_uri(request, exception)
         url = '/login/?next=' + quote(strategy.session.get('next'))
         return url
 
