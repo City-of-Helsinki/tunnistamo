@@ -79,7 +79,8 @@ MIDDLEWARE = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'crequest.middleware.CrequestMiddleware',
-    'tunnistamo.error_handlers.TunnistamoSocialAuthExceptionMiddleware',
+    'tunnistamo.middleware.TunnistamoSocialAuthExceptionMiddleware',
+    'tunnistamo.middleware.TunnistamoOIDCExceptionMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (

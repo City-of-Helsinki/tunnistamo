@@ -3,7 +3,6 @@ from urllib.parse import parse_qs, urlparse
 
 from django.conf import settings
 from django.contrib.auth import logout as auth_logout
-from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import translation
@@ -156,7 +155,7 @@ class TunnistamoOidcEndSessionView(EndSessionView):
             # we don't need to worry about duplicates
             try:
                 social_user = UserSocialAuth.objects.get(user=user, provider='suomifi')
-            except ObjectDoesNotExist:
+            except UserSocialAuth.DoesNotExist:
                 pass
         # clear Django session and get redirect URL
         response = super().get(request, *args, **kwargs)

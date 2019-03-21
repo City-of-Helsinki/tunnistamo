@@ -1,0 +1,33 @@
+attributes:
+  Basic: &basic
+  - name: Henkilötunnus, hetu
+    friendly_name: nationalIdentificationNumber
+    uri: urn:oid:1.2.246.21
+    description: Henkilötunnus, joka yksilöi tunnistetun käyttäjän.
+  - name: Nimi, common name
+    friendly_name: cn
+    uri: urn:oid:2.5.4.3
+    description: Henkilön nimi muodossa sukunimi + kaikki etunimet. Jos kyseessä on
+      Katso-tunnistaja, palautetaan Katso-tunnisteeseen liitetty nimitieto.
+  Extended: &extended
+  - name: Kotikunta suomeksi
+    friendly_name: KotikuntaKuntaS
+    uri: urn:oid:1.2.246.517.2002.2.19
+    description: Henkilön kotikunnan suomenkielinen nimi.
+
+access_levels:
+  basic:
+    name:
+      fi: Basic attributes
+    description:
+      fi: Limited set of attributes
+    fields:
+    - *basic
+  extended:
+    name:
+      fi: Extended attributes
+    description:
+      fi: Set of all attributes
+    fields:
+    - *basic
+    - *extended

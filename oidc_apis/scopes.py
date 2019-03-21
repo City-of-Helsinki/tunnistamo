@@ -1,5 +1,11 @@
+import re
+
 from django.utils.translation import ugettext_lazy as _
 from oidc_provider.lib.claims import ScopeClaims, StandardScopeClaims
+from oidc_provider.lib.errors import BearerTokenError
+from social_django.models import UserSocialAuth
+
+from auth_backends.models import SuomiFiAccessLevel
 
 from .models import ApiScope
 
@@ -97,6 +103,45 @@ class CustomInfoTextStandardScopeClaims(StandardScopeClaims):
         return super().scope_address()
 
 
+class SuomiFiUserAttributeScopeClaimsMeta(type):
+    def __dir__(cls):
+        names = super().__dir__()
+        for level in SuomiFiAccessLevel.objects.all():
+            names.append('info_suomifi_' + level.shorthand)
+        return names
+
+    def __getattr__(cls, name):
+        match = re.match(r'^info_suomifi_(.*)', name)
+        if match:
+            try:
+                level = SuomiFiAccessLevel.objects.get(shorthand=match.group(1))
+                return (level.name, level.description)
+            except SuomiFiAccessLevel.DoesNotExist:
+                raise AttributeError()
+        return super().__getattr__(name)
+
+
+class SuomiFiUserAttributeScopeClaims(ScopeClaims, metaclass=SuomiFiUserAttributeScopeClaimsMeta):
+    def create_response_dic(self):
+        dic = {}
+        try:
+            social_user = UserSocialAuth.objects.get(user=self.user)
+        except UserSocialAuth.DoesNotExist:
+            return dic
+        for level in SuomiFiAccessLevel.objects.all():
+            scope = 'suomifi_' + level.shorthand
+            if scope in self.scopes:
+                if scope not in self.client.scope:
+                    raise BearerTokenError('insufficient_scope')
+                dic[scope] = {}
+                for attribute in level.attributes.all():
+                    if attribute.friendly_name in social_user.extra_data['suomifi_attributes']:
+                        dic[scope][attribute.friendly_name] = \
+                            social_user.extra_data['suomifi_attributes'][attribute.friendly_name]
+        dic = self._clean_dic(dic)
+        return dic
+
+
 class CombinedScopeClaims(ScopeClaims):
     combined_scope_claims = [
         CustomInfoTextStandardScopeClaims,
@@ -106,6 +151,7 @@ class CombinedScopeClaims(ScopeClaims):
         IdentitiesScopeClaims,
         LoginEntriesScopeClaims,
         AdGroupsScopeClaims,
+        SuomiFiUserAttributeScopeClaims,
     ]
 
     @classmethod

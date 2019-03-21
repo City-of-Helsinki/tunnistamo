@@ -1,3 +1,5 @@
+import logging
+
 import coreapi
 import coreschema
 from django.contrib.auth import logout as django_user_logout
@@ -13,6 +15,8 @@ from scopes.api import ScopeDataBuilder
 from tunnistamo.api_common import OidcTokenAuthentication, ScopePermission
 from tunnistamo.pagination import DefaultPagination
 from users.models import UserLoginEntry
+
+logger = logging.getLogger(__name__)
 
 
 class UserLoginEntrySerializer(serializers.ModelSerializer):
@@ -122,7 +126,11 @@ class TunnistamoAuthorizationView(AuthorizationView, UserPassesTestMixin):
         user = request.user
         if user.is_authenticated:
             last_login_backend = request.session.get('social_auth_last_login_backend')
-            application = Application.objects.get(client_id=client_id)
+            try:
+                application = Application.objects.get(client_id=client_id)
+            except Application.DoesNotExist:
+                logger.info("Application with id '{}' does not exist".format(client_id))
+                return False
 
             allowed_methods = application.login_methods.all()
             if allowed_methods is None:

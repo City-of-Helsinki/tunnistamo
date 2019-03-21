@@ -1,10 +1,13 @@
 import json
+import logging
 
 from defusedxml.lxml import fromstring, tostring
 from django.urls import reverse
 from lxml import etree
 from oidc_provider.models import Client
 from social_core.backends.saml import SAMLAuth, SAMLIdentityProvider
+
+from auth_backends.models import SuomiFiUserAttribute
 
 NSMAP = {
     'alg': 'urn:oasis:names:tc:SAML:metadata:algsupport',
@@ -18,6 +21,9 @@ NSMAP = {
 }
 
 OID_USERID = 'urn:oid:1.2.246.21'
+
+
+logger = logging.getLogger(__name__)
 
 
 class SuomiFiSAMLIdentityProvider(SAMLIdentityProvider):
@@ -281,7 +287,15 @@ class SuomiFiSAMLAuth(SAMLAuth):
         Extends the base class method by including session index to extra_data."""
         data = super().extra_data(user, uid, response, details=details, *args, **kwargs)
         data['session_index'] = response.get('session_index')
+        data['suomifi_attributes'] = self._extract_suomifi_attributes(response)
         return data
+
+    def _extract_suomifi_attributes(self, response):
+        attributes = {}
+        for attribute in SuomiFiUserAttribute.objects.all():
+            if attribute.uri in response.get('attributes'):
+                attributes[attribute.friendly_name] = response.get('attributes')[attribute.uri][0]
+        return attributes
 
     @staticmethod
     def create_return_token(client, index):
@@ -295,6 +309,7 @@ class SuomiFiSAMLAuth(SAMLAuth):
             token_dict = json.loads(token)
             return token_dict.get('cli'), token_dict.get('idx')
         except (json.JSONDecodeError, KeyError):
+            logger.info('Invalid return token: {}'.format(token))
             return None, None
 
     def create_logout_redirect(self, social_user, token=''):
@@ -307,6 +322,8 @@ class SuomiFiSAMLAuth(SAMLAuth):
                                name_id=social_user.extra_data['name_id'],
                                name_id_format='urn:oasis:names:tc:SAML:2.0:nameid-format:transient',
                                session_index=social_user.extra_data['session_index'])
+        social_user.extra_data = {}
+        social_user.save()
         return self.strategy.redirect(redirect)
 
     def process_logout_message(self):
@@ -321,5 +338,6 @@ class SuomiFiSAMLAuth(SAMLAuth):
                 client = Client.objects.get(client_id=client_id)
                 redirect = client.post_logout_redirect_uris[index]
             except (Client.DoesNotExist, IndexError):
+                logger.info('Could not deduce return URI, using default value: {}'.format(self.redirect_uri))
                 redirect = self.redirect_uri
         return self.strategy.redirect(redirect)

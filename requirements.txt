@@ -60,6 +60,7 @@ requests==2.21.0
 requests-oauthlib==1.0.0  # via django-allauth, social-auth-core
 rjsmin==1.0.12            # via django-compressor
 rsa==4.0                  # via python-jose
+ruamel.yaml==0.15.89
 six==1.11.0               # via cryptography, isodate, libsass, pyjwkest, python-jose, social-auth-app-django, social-auth-core
 social-auth-app-django==2.1.0
 social-auth-core[openidconnect,saml]==3.0.0
