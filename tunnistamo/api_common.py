@@ -161,6 +161,7 @@ class DeviceGeneratedJWTAuthentication(BaseAuthentication):
         try:
             interface_device = InterfaceDevice.objects.get(id=interface_device_id)
         except InterfaceDevice.DoesNotExist:
+            logger.info("Interface device {} in 'azp' not found".format(interface_device_id))
             raise AuthenticationFailed("Interface device in 'azp' not found")
 
         interface_secret = request.META.get('HTTP_X_INTERFACE_DEVICE_SECRET', '')

@@ -156,6 +156,16 @@ This command should be run on production servers at regular intervals, e.g. once
 
 See [OIDC_provider docs](https://django-oidc-provider.readthedocs.io/en/latest/sections/serverkeys.html) for more information about server RSA keys.
 
+
+### Configuring Suomi.fi access levels
+
+Suomi.fi authentication provider has dynamic scopes and claims based on access levels and attributes configured in a YAML file. The default YAML file, `suomifi_fields.yaml`, has configurations for _suppea_, _keskilaaja_ and _laaja_ access levels. The resulting OIDC scopes will be _suomifi_suppea_, _suomifi_keskilaaja_ and _suomifi_laaja_, respectively. The claims these scopes provide are maps with the _friendlyName_ of the Suomi.fi attribute as key and the value of that attribute as value.
+
+The YAML file can be processed using command:
+```
+python manage.py populate_suomifi_attributes --load suomifi_fields.yaml
+```
+
 ## API documentation
 
 When the dev server is running, auto-generated API documentation is available at [http://localhost:8000/docs/](http://localhost:8000/docs/)

@@ -1,9 +1,12 @@
+import json
 import os
 from base64 import b64encode
+from datetime import timedelta
 from urllib.parse import parse_qs, urlencode, urlparse
 
 import pytest
 from django.conf import settings
+from django.core.management import call_command
 from django.urls import reverse
 from django.utils import timezone
 from freezegun import freeze_time
@@ -23,6 +26,9 @@ ID_TOKEN_JWT = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJ0ZXN0X2NsaWVudCJ
 ID_TOKEN_JWT_INVALID = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJJTlZBTElEIn0'
 RELAY_STATE = 'SUOMIFI_RELAY_STATE'
 
+TEST_USER = 'testuser'
+TEST_PASSWORD = 'testpassword'
+
 
 @pytest.fixture
 def django_client(request):
@@ -35,14 +41,21 @@ def fixed_saml_id(monkeypatch):
     monkeypatch.setattr(SAMLUtils, 'generate_unique_id', lambda: 'MESSAGE_ID_FOR_TEST')
 
 
-def create_test_oidc_client():
-    test_client = Client.objects.create(
+def get_testfile_path(filename):
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                        'data',
+                        filename)
+
+
+def create_oidc_client():
+    oidc_client = Client.objects.create(
         name=CLIENT_NAME,
         client_id=CLIENT_ID
     )
-    test_client.redirect_uris = (REDIRECT_URI,)
-    test_client.post_logout_redirect_uris = (REDIRECT_URI,)
-    test_client.save()
+    oidc_client.scope = ['suomifi_basic']
+    oidc_client.redirect_uris = (REDIRECT_URI,)
+    oidc_client.post_logout_redirect_uris = (REDIRECT_URI,)
+    oidc_client.save()
 
     login_method = LoginMethod.objects.create(
         provider_id='suomifi',
@@ -50,12 +63,52 @@ def create_test_oidc_client():
     )
 
     client_options = OidcClientOptions.objects.create(
-        oidc_client=test_client
+        oidc_client=oidc_client
     )
     client_options.login_methods.add(login_method)
     client_options.save()
 
-    return test_client
+    return oidc_client
+
+
+def create_user(user_model):
+    return user_model.objects.create_user(
+        username=TEST_USER,
+        password=TEST_PASSWORD)
+
+
+def create_social_user(user):
+    extra_data = {
+        'name_id': 'SUOMIFI_SESSION_IDENTIFIER',
+        'session_index': 'SUOMIFI_SESSION_INDEX',
+        'suomifi_attributes': {
+            'KotikuntaKuntaS': 'Muuala',
+            'cn': 'Testi Teppo',
+            'nationalIdentificationNumber': '010101-0101'
+        }
+    }
+    social_user = UserSocialAuth.objects.create(
+        user=user,
+        provider='suomifi',
+        uid='test_uid',
+        extra_data=extra_data)
+    return social_user
+
+
+def create_oidc_token(user, oidc_client, additional_scopes=None):
+    expire_at = timezone.now() + timedelta(hours=1)
+    token = Token.objects.create(user=user,
+                                 client=oidc_client,
+                                 expires_at=expire_at,
+                                 access_token='_AT_',
+                                 refresh_token='_RT_')
+    token.id_token = ID_TOKEN
+    scopes = ['openid', 'profile']
+    if additional_scopes:
+        scopes += additional_scopes
+    token.scope = scopes
+    token.save()
+    return token
 
 
 def create_noncompliant_test_provider():
@@ -74,17 +127,21 @@ def create_noncompliant_test_provider():
     test_provider.save()
 
 
+def populate_suomifi_attributes():
+    call_command('populate_suomifi_attributes',
+                 '--load',
+                 get_testfile_path('suomifi_fields.yaml'))
+
+
 def load_file(filename):
-    with open(os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                           'data',
-                           filename), 'rb') as xmlfile:
+    with open(get_testfile_path(filename), 'rb') as xmlfile:
         return xmlfile.read()
 
 
 @pytest.mark.django_db
 @freeze_time('2019-01-01 12:00:00', tz_offset=2)
 def test_suomifi_metadata(django_client):
-    create_test_oidc_client()
+    create_oidc_client()
     metadata_url = reverse('auth_backends:suomifi_metadata')
     metadata_response = django_client.get(metadata_url)
     expected_metadata = load_file('suomifi_metadata.xml')
@@ -97,7 +154,7 @@ def test_suomifi_metadata(django_client):
 @freeze_time('2019-01-01 12:00:00', tz_offset=2)
 def test_suomifi_login_request(django_client, fixed_saml_id):
     '''Suomi.fi use case #1: sending authentication request'''
-    create_test_oidc_client()
+    create_oidc_client()
     args = {
         'client_id': CLIENT_ID,
         'redirect_uri': REDIRECT_URI,
@@ -123,7 +180,8 @@ def test_suomifi_login_request(django_client, fixed_saml_id):
 @freeze_time('2019-01-01 12:00:00', tz_offset=2)
 def test_suomifi_login_response(django_client, django_user_model):
     '''Suomi.fi use case #2: receiving authentication response'''
-    create_test_oidc_client()
+    create_oidc_client()
+    populate_suomifi_attributes()
     session = django_client.session
     session['next'] = REDIRECT_URI
     session.save()
@@ -136,17 +194,22 @@ def test_suomifi_login_response(django_client, django_user_model):
     callback_response = django_client.post(callback_url, data=post_data)
 
     # Successful Suomi.fi authentication creates a new user, "Teppo Testi",
-    # and redirects to address found from session['next']
+    # and redirects to address found from session['next']. The user extra data
+    # includes basic set of attributes from 'suomifi_fields.yaml'.
     assert callback_response.status_code == 302
     assert callback_response.url == REDIRECT_URI
     user = django_user_model.objects.first()
     assert user.first_name == 'Teppo'
     assert user.last_name == 'Testi'
+    social_user = UserSocialAuth.objects.get(user=user)
+    assert social_user.extra_data['suomifi_attributes']['nationalIdentificationNumber'] == '010101-0101'
+    assert social_user.extra_data['suomifi_attributes']['cn'] == 'Testi Teppo'
+    assert social_user.extra_data['suomifi_attributes']['KotikuntaKuntaS'] == 'Muuala'
 
 
 @pytest.mark.django_db
 def test_suomifi_login_interrupt(django_client):
-    create_test_oidc_client()
+    create_oidc_client()
     session = django_client.session
     session['next'] = REDIRECT_URI
     session.save()
@@ -191,19 +254,11 @@ def test_suomifi_login_noncompliant_provider(django_client):
 @freeze_time('2019-01-01 12:00:00', tz_offset=2)
 def test_suomifi_logout_sp_request(django_client, django_user_model, fixed_saml_id):
     '''Suomi.fi use case #3: sending logout request'''
-    oidc_client = create_test_oidc_client()
-    user = django_user_model.objects.create_user(username='testuser', password='testpassword')
-    extra_data = {'name_id': 'SUOMIFI_SESSION_IDENTIFIER',
-                  'session_index': 'SUOMIFI_SESSION_INDEX'}
-    UserSocialAuth.objects.create(user=user, provider='suomifi', uid='test_uid', extra_data=extra_data)
-    token = Token.objects.create(user=user,
-                                 client=oidc_client,
-                                 expires_at=timezone.now(),
-                                 access_token='_AT_',
-                                 refresh_token='_RT_')
-    token.id_token = ID_TOKEN
-    token.save()
-    django_client.login(username='testuser', password='testpassword')
+    oidc_client = create_oidc_client()
+    user = create_user(django_user_model)
+    create_social_user(user)
+    create_oidc_token(user, oidc_client)
+    django_client.login(username=TEST_USER, password=TEST_PASSWORD)
     args = {
         'id_token_hint': ID_TOKEN_JWT,
         'post_logout_redirect_uri': REDIRECT_URI,
@@ -229,9 +284,9 @@ def test_suomifi_logout_sp_request(django_client, django_user_model, fixed_saml_
 
 @pytest.mark.django_db
 def test_suomifi_logout_sp_request_no_social_user(django_client, django_user_model, fixed_saml_id):
-    create_test_oidc_client()
-    django_user_model.objects.create_user(username='testuser', password='testpassword')
-    django_client.login(username='testuser', password='testpassword')
+    create_oidc_client()
+    create_user(django_user_model)
+    django_client.login(username=TEST_USER, password=TEST_PASSWORD)
     args = {
         'id_token_hint': ID_TOKEN_JWT,
         'post_logout_redirect_uri': REDIRECT_URI,
@@ -248,19 +303,11 @@ def test_suomifi_logout_sp_request_no_social_user(django_client, django_user_mod
 @pytest.mark.django_db
 @freeze_time('2019-01-01 12:00:00', tz_offset=2)
 def test_suomifi_logout_sp_request_invalid_token(django_client, django_user_model, fixed_saml_id):
-    oidc_client = create_test_oidc_client()
-    user = django_user_model.objects.create_user(username='testuser', password='testpassword')
-    extra_data = {'name_id': 'SUOMIFI_SESSION_IDENTIFIER',
-                  'session_index': 'SUOMIFI_SESSION_INDEX'}
-    UserSocialAuth.objects.create(user=user, provider='suomifi', uid='test_uid', extra_data=extra_data)
-    token = Token.objects.create(user=user,
-                                 client=oidc_client,
-                                 expires_at=timezone.now(),
-                                 access_token='_AT_',
-                                 refresh_token='_RT_')
-    token.id_token = ID_TOKEN
-    token.save()
-    django_client.login(username='testuser', password='testpassword')
+    oidc_client = create_oidc_client()
+    user = create_user(django_user_model)
+    create_social_user(user)
+    create_oidc_token(user, oidc_client)
+    django_client.login(username=TEST_USER, password=TEST_PASSWORD)
     args = {
         'id_token_hint': ID_TOKEN_JWT_INVALID,
         'post_logout_redirect_uri': REDIRECT_URI,
@@ -290,7 +337,7 @@ def test_suomifi_logout_sp_request_invalid_token(django_client, django_user_mode
 @pytest.mark.django_db
 def test_suomifi_logout_sp_response(django_client):
     '''Suomi.fi use case #5: receiving logout response'''
-    create_test_oidc_client()
+    create_oidc_client()
     saml_response = load_file('suomifi_logout_response.xml')
     args = {
         'SAMLResponse': SAMLUtils.deflate_and_base64_encode(saml_response),
@@ -308,7 +355,7 @@ def test_suomifi_logout_sp_response(django_client):
 
 @pytest.mark.django_db
 def test_suomifi_logout_sp_response_invalid_relaystate(django_client):
-    create_test_oidc_client()
+    create_oidc_client()
     saml_response = load_file('suomifi_logout_response.xml')
     args = {
         'SAMLResponse': SAMLUtils.deflate_and_base64_encode(saml_response),
@@ -328,7 +375,7 @@ def test_suomifi_logout_sp_response_invalid_relaystate(django_client):
 @freeze_time('2019-01-01 12:00:00', tz_offset=2)
 def test_suomifi_idp_logout(django_client, fixed_saml_id):
     '''Suomi.fi use cases #4: receiving logout request, and #6: sending logout response'''
-    create_test_oidc_client()
+    create_oidc_client()
     args = {
         'SAMLRequest': load_file('suomifi_idp_logout_request_encoded.b64').decode(),
         'RelayState': RELAY_STATE,
@@ -351,3 +398,43 @@ def test_suomifi_idp_logout(django_client, fixed_saml_id):
     assert suomifi_saml_response == expected_logout_response
     assert suomifi_query_params['RelayState'][0] == RELAY_STATE
     assert suomifi_query_params['Signature'][0] == expected_logout_signature
+
+
+@pytest.mark.django_db
+@freeze_time('2019-01-01 12:00:00', tz_offset=2)
+@pytest.mark.parametrize('suomifi_scope', ('suomifi_basic', 'suomifi_extended'))
+def test_suomifi_access_levels(django_client, django_user_model, suomifi_scope):
+    oidc_client = create_oidc_client()
+    populate_suomifi_attributes()
+    user = create_user(django_user_model)
+    create_social_user(user)
+    token = create_oidc_token(user, oidc_client, additional_scopes=[suomifi_scope])
+    django_client.login(username=TEST_USER, password=TEST_PASSWORD)
+    userinfo_url = reverse('oidc_provider:userinfo')
+    userinfo_response = django_client.get(
+        userinfo_url,
+        HTTP_AUTHORIZATION='Bearer {}'.format(token.access_token))
+
+    if suomifi_scope == 'suomifi_basic':
+        assert userinfo_response.status_code == 200
+        suomifi_basic = json.loads(userinfo_response.content)['suomifi_basic']
+        assert suomifi_basic['nationalIdentificationNumber'] == '010101-0101'
+        assert suomifi_basic['cn'] == 'Testi Teppo'
+        assert 'KotikuntaKuntaS' not in suomifi_basic
+    if suomifi_scope == 'suomifi_extended':
+        assert userinfo_response.status_code == 403
+        auth_header = userinfo_response.__getitem__('WWW-Authenticate')
+        auth_fields = {i.split('=')[0]: i.split('=')[1] for i in auth_header.split(',')}
+        assert auth_fields['error'] == '"insufficient_scope"'
+
+
+@pytest.mark.django_db
+def test_suomifi_scopes(django_client):
+    populate_suomifi_attributes()
+    scopes_url = reverse('v1:scope-list')
+    scopes_response = django_client.get(scopes_url)
+    assert scopes_response.status_code == 200
+    scopes_content = json.loads(scopes_response.content)
+    scopes = {r['id']: r for r in scopes_content['results']}
+    assert 'suomifi_basic' in scopes
+    assert 'suomifi_extended' in scopes

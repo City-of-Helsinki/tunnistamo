@@ -1,0 +1,191 @@
+attributes:
+  Suppea: &suppea
+  - name: Sähköinen asiointitunnus, satu
+    friendly_name: electronicIdentificationNumber
+    uri: urn:oid:1.2.246.22
+    description: Sähköinen asiointitunnus, joka yksilöi tunnistetun käyttäjän.
+  - name: Henkilötunnus, hetu
+    friendly_name: nationalIdentificationNumber
+    uri: urn:oid:1.2.246.21
+    description: Henkilötunnus, joka yksilöi tunnistetun käyttäjän.
+  - name: Nimi, common name
+    friendly_name: cn
+    uri: urn:oid:2.5.4.3
+    description: Henkilön nimi muodossa sukunimi + kaikki etunimet. Jos kyseessä on
+      Katso-tunnistaja, palautetaan Katso-tunnisteeseen liitetty nimitieto.
+  - name: Koko nimi
+    friendly_name: displayName
+    uri: urn:oid:2.16.840.1.113730.3.1.241
+    description: Henkilön koko nimi muodossa "kutsumanimi sukunimi", jos henkilö on
+      rekisteröinyt väestötietojärjestelmään kutsumanimen. Muussa tapauksessa "etunimi
+      sukunimi".
+  - name: Kutsumanimi
+    friendly_name: givenName
+    uri: urn:oid:2.5.4.42
+    description: Kutsumanimi tai ensimmäinen etunimi, jos väestötietojärjestelmään
+      ei ole rekisteröity kutsumanimeä.
+  - name: Sukunimi
+    friendly_name: sn
+    uri: urn:oid:2.5.4.4
+    description: Henkilön sukunimi.
+  - name: Etunimet
+    friendly_name: FirstName
+    uri: http://eidas.europa.eu/attributes/naturalperson/CurrentGivenName
+    description: Henkilön kaikki etunimet.
+  Ei vaadita: &ei-vaadita
+  - name: Katso-ID
+    friendly_name: kid
+    uri: urn:oid:1.2.246.517.3003.113.4
+    description: Katso-tunnisteeseen liitetty käyttäjätunnus, joka yksilöi tunnistetun
+      käyttäjän.
+  Keskilaaja: &keskilaaja
+  - name: Kotikunnan kuntanumero
+    friendly_name: KotikuntaKuntanumero
+    uri: urn:oid:1.2.246.517.2002.2.18
+    description: Henkilön kotikunnan kuntanumero. Muoto kolme numeroa, voi olla myös
+      tyhjä.
+  - name: Kotikunta suomeksi
+    friendly_name: KotikuntaKuntaS
+    uri: urn:oid:1.2.246.517.2002.2.19
+    description: Henkilön kotikunnan suomenkielinen nimi.
+  - name: Kotikunta ruotsiksi
+    friendly_name: KotikuntaKuntaR
+    uri: urn:oid:1.2.246.517.2002.2.20
+    description: Henkilön kotikunnan ruotsinkielinen nimi.
+  - name: Vakinainen kotimainen lähiosoite, katuosoite suomeksi
+    friendly_name: VakinainenKotimainenLahiosoiteS
+    uri: urn:oid:1.2.246.517.2002.2.4
+    description: Vakinaisen kotimaisen lähiosoitteen suomenkielinen kadunnimi, katunumero
+      ja huoneistotunniste. Esitetään yhdessä merkkijonossa. Muoto 0–100 merkkiä.
+  - name: Vakinainen kotimainen lähiosoite, katuosoite ruotsiksi
+    friendly_name: VakinainenKotimainenLahiosoiteR
+    uri: urn:oid:1.2.246.517.2002.2.5
+    description: Vakinaisen kotimaisen lähiosoitteen ruotsinkielinen kadunnimi, katunumero
+      ja huoneistotunniste. Esitetään yhdessä merkkijonossa. Muoto 0–100 merkkiä.
+  - name: Vakinainen kotimainen lähiosoite, postinumero
+    friendly_name: VakinainenKotimainenLahiosoitePostinumero
+    uri: urn:oid:1.2.246.517.2002.2.6
+    description: Vakinaisen kotimaisen lähiosoitteen postinumero. Muoto viisi numeroa,
+      voi olla myös tyhjä.
+  - name: Vakinainen kotimainen lähiosoite, postitoimipaikka suomeksi
+    friendly_name: VakinainenKotimainenLahiosoitePostitoimipaikkaS
+    uri: urn:oid:1.2.246.517.2002.2.7
+    description: Vakinaisen kotimaisen lähiosoitteen suomenkielinen postitoimipaikka.
+      Muoto 0–50 merkkiä.
+  - name: Vakinainen kotimainen lähiosoite, postitoimipaikka ruotsiksi
+    friendly_name: VakinainenKotimainenLahiosoitePostitoimipaikkaR
+    uri: urn:oid:1.2.246.517.2002.2.8
+    description: Vakinaisen kotimaisen lähiosoitteen ruotsinkielinen postitoimipaikka.
+      Muoto 0–50 merkkiä.
+  - name: Vakinainen ulkomainen lähiosoite, katuosoite
+    friendly_name: VakinainenUlkomainenLahiosoite
+    uri: urn:oid:1.2.246.517.2002.2.11
+    description: Vakinaisen ulkomaisen osoitteen lähiosoite siten kuin henkilö on
+      ilmoittanut sen väestötietojärjestelmään.
+  - name: Vakinainen ulkomainen lähiosoite, paikkakunta ja valtio suomeksi
+    friendly_name: VakinainenUlkomainenLahiosoitePaikkakuntaJaValtioS
+    uri: urn:oid:1.2.246.517.2002.2.12
+    description: Vakinaisen ulkomaisen lähiosoitteen postinumero, paikkakunta ja valtio.
+      Valtio on erotettu pilkulla paikkakunnasta ja postinumerosta. Valtion nimi suomeksi.
+      Elementissä on tietoa, kun henkilön ilmoittama asuinvaltion koodi löytyy ISO3166-koodistosta.
+  - name: Vakinainen ulkomainen lähiosoite, paikkakunta ja valtio ruotsiksi
+    friendly_name: VakinainenUlkomainenLahiosoitePaikkakuntaJaValtioR
+    uri: urn:oid:1.2.246.517.2002.2.13
+    description: Vakinaisen ulkomaisen lähiosoitteen postinumero, paikkakunta ja valtio.
+      Valtio on erotettu pilkulla paikkakunnasta ja postinumerosta. Valtion nimi ruotsiksi.
+      Elementissä on tietoa, kun henkilön ilmoittama asuinvaltion koodi löytyy ISO3166-koodistosta.
+  - name: Vakinainen ulkomainen lähiosoite, paikkakunta ja valtio selväkielinen
+    friendly_name: VakinainenUlkomainenLahiosoitePaikkakuntaJaValtioSelvakielinen
+    uri: urn:oid:1.2.246.517.2002.2.14
+    description: Vakinaisen ulkomaisen lähiosoitteen postinumero, paikkakunta ja valtio
+      siinä tapauksessa, ettei asuinvaltio löydy ISO3166-koodistosta.
+  - name: Vakinainen ulkomainen lähiosoite, valtiokoodi
+    friendly_name: VakinainenUlkomainenLahiosoiteValtiokoodi
+    uri: urn:oid:1.2.246.517.2002.2.15
+    description: Vakinaisen ulkomaisen osoitteen valtiokoodi.
+  - name: Tilapäinen kotimainen lähiosoite, katuosoite suomeksi
+    friendly_name: TilapainenKotimainenLahiosoiteS
+    uri: urn:oid:1.2.246.517.2002.2.31
+    description: Tilapäisen kotimaisen lähiosoitteen suomenkielinen kadunnimi, katunumero
+      ja huoneistotunniste. Esitetään yhdessä merkkijonossa. Muoto 0–100 merkkiä.
+  - name: Tilapäinen kotimainen lähiosoite, katuosoite ruotsiksi
+    friendly_name: TilapainenKotimainenLahiosoiteR
+    uri: urn:oid:1.2.246.517.2002.2.32
+    description: Tilapäisen kotimaisen lähiosoitteen ruotsinkielinen kadunnimi, katunumero
+      ja huoneistotunniste. Esitetään yhdessä merkkijonossa. Muoto 0–100 merkkiä.
+  - name: Tilapäinen kotimainen lähiosoite, postinumero
+    friendly_name: TilapainenKotimainenLahiosoitePostinumero
+    uri: urn:oid:1.2.246.517.2002.2.33
+    description: Tilapäisen kotimaisen lähiosoitteen postinumero. Muoto viisi numeroa,
+      voi olla myös tyhjä.
+  - name: Tilapäinen kotimainen lähiosoite, postitoimipaikka suomeksi
+    friendly_name: TilapainenKotimainenLahiosoitePostitoimipaikkaS
+    uri: urn:oid:1.2.246.517.2002.2.34
+    description: Tilapäisen kotimaisen lähiosoitteen suomenkielinen postitoimipaikka.
+      Muoto 0–50 merkkiä.
+  - name: Tilapäinen kotimainen lähiosoite, postitoimipaikka ruotsiksi
+    friendly_name: TilapainenKotimainenLahiosoitePostitoimipaikkaR
+    uri: urn:oid:1.2.246.517.2002.2.35
+    description: Tilapäisen kotimaisen lähiosoitteen ruotsinkielinen postitoimipaikka.
+      Muoto 0–50 merkkiä.
+  Laaja: &laaja
+  - &email
+    name: Sähköpostiosoite
+    friendly_name: mail
+    uri: urn:oid:0.9.2342.19200300.100.1.3
+    description: Sähköpostiosoite, jonka kansalainen on ilmoittanut väestötietojärjestelmään.
+  - name: Turvakielto
+    friendly_name: TurvakieltoTieto
+    uri: urn:oid:1.2.246.517.2002.2.27
+    description: Turvakielto olemassa, kun arvo on 1. Jos kansalaisella on turvakielto,
+      osoitetietoja ei välitetä tunnistustapahtuman yhteydessä.
+  - name: Suomen kansalaisuus
+    friendly_name: SuomenKansalaisuusTietokoodi
+    uri: urn:oid:1.2.246.517.2002.2.26
+    description: Tieto siitä, onko Suomen kansalainen.
+
+# TODO: Add proper translations for names and descriptions
+access_levels:
+  suppea:
+    name:
+      fi: Suppeat henkilötiedot
+      sv: Begränsad personlig information
+      en: Limited personal information
+    description:
+      fi: Suppeat henkilötiedot sisältävät henkilötunnuksen, nimen ja sähköpostiosoitteen.
+      sv: Begränsad personlig information innehåller personligt ID, namn och e-postadress.
+      en: Limited personal information includes personal ID, name, and e-mail address.
+    fields:
+    - *ei-vaadita
+    - *suppea
+    - # list of additional fields
+      - *email
+  keskilaaja:
+    name:
+      fi: Keskilaajat henkilötiedot
+      sv: Genomsnittlig personlig information
+      en: Medium level personal information
+    description:
+      fi: Keskilaajat henkilötiedot sisältävät henkilötunnuksen, nimen, osoitteen ja sähköpostiosoitteen.
+      sv: Genomsnittlig personlig information innehåller personligt ID, namn, adress och e-postadress.
+      en: Medium level personal information includes personal ID, name, address and e-mail address.
+    fields:
+    - *ei-vaadita
+    - *suppea
+    - *keskilaaja
+    - # list of additional fields
+      - *email
+  laaja:
+    name:
+      fi: Laajat henkilötiedot
+      sv: Omfattande personlig information
+      en: Extensive personal information
+    description:
+      fi: Laajat henkilötiedot sisältävät henkilötunnuksen, nimen, osoitteen, sähköpostiosoitteen, kansalaisuuden ja tiedon turvakiellosta.
+      sv: Omfattande personlig information innehåller personligt ID, namn, adress, e-postadress, medborgarskap och säkerhetsförbud.
+      en: Extensive personal information includes personal ID, name, address, e-mail address, citizenship, and security bans.
+    fields:
+    - *ei-vaadita
+    - *suppea
+    - *keskilaaja
+    - *laaja
