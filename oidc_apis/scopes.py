@@ -125,7 +125,7 @@ class SuomiFiUserAttributeScopeClaims(ScopeClaims, metaclass=SuomiFiUserAttribut
     def create_response_dic(self):
         dic = {}
         try:
-            social_user = UserSocialAuth.objects.get(user=self.user)
+            social_user = UserSocialAuth.objects.get(user=self.user, provider='suomifi')
         except UserSocialAuth.DoesNotExist:
             return dic
         for level in SuomiFiAccessLevel.objects.all():
