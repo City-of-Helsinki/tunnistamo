@@ -77,12 +77,13 @@ MIDDLEWARE = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'tunnistamo.middleware.RestrictedAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'crequest.middleware.CrequestMiddleware',
-    'tunnistamo.middleware.TunnistamoSocialAuthExceptionMiddleware',
-    'tunnistamo.middleware.TunnistamoOIDCExceptionMiddleware',
+    'tunnistamo.middleware.InterruptedSocialAuthMiddleware',
+    'tunnistamo.middleware.OIDCExceptionMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -97,6 +98,11 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
     'auth_backends.suomifi.SuomiFiSAMLAuth',
 )
+
+RESTRICTED_AUTHENTICATION_BACKENDS = (
+    'auth_backends.suomifi.SuomiFiSAMLAuth',
+)
+RESTRICTED_AUTHENTICATION_TIMEOUT = 60 * 60
 
 ROOT_URLCONF = 'tunnistamo.urls'
 
@@ -365,6 +371,9 @@ SOCIAL_AUTH_PIPELINE = (
 
     # Update AD groups
     'users.pipeline.update_ad_groups',
+
+    # Save last login backend to user data
+    'users.pipeline.save_social_auth_backend'
 )
 
 SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['email', 'first_name', 'last_name']

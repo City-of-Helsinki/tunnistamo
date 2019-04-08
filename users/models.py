@@ -20,6 +20,7 @@ logger = logging.getLogger(__name__)
 
 class User(AbstractUser):
     primary_sid = models.CharField(max_length=100, unique=True)
+    last_login_backend = models.CharField(max_length=100, null=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.primary_sid:
