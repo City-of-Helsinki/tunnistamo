@@ -140,3 +140,13 @@ def update_ad_groups(details, backend, user=None, *args, **kwargs):
         return
 
     user.update_ad_groups(details['ad_groups'])
+
+
+def check_existing_social_associations(backend, strategy, user=None, social=None, *args, **kwargs):
+    if user and not social:
+        social_set = user.social_auth.all()
+        providers = [a.provider for a in social_set]
+        if providers and backend.name not in providers:
+            strategy.request.other_logins = LoginMethod.objects.filter(provider_id__in=providers)
+            error_view = AuthenticationErrorView(request=strategy.request)
+            return error_view.get(strategy.request)
