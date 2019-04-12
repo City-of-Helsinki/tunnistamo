@@ -30,3 +30,4 @@ django-filter
 coreapi
 git+git://github.com/City-of-Helsinki/python3-saml.git@v1.5.0-tunnistamo
 ruamel.yaml
+git+git://github.com/City-of-Helsinki/django-translation-checker.git@master
