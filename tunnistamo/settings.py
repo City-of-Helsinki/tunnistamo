@@ -348,6 +348,9 @@ SOCIAL_AUTH_PIPELINE = (
     # Create a user account if we haven't found one yet.
     'social_core.pipeline.user.create_user',
 
+    # Verify that the user doesn't have existing social account with another provider.
+    'users.pipeline.check_existing_social_associations',
+
     # Create the record that associated the social account with this user.
     'social_core.pipeline.social_auth.associate_user',
 
