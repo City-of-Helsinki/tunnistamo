@@ -1,7 +1,6 @@
 from django.conf import settings
 from django.utils import translation
 from django.utils.functional import cached_property
-from django.utils.translation.trans_real import translation as trans_real_translation
 from rest_framework import serializers
 from rest_framework.schemas import AutoSchema
 from rest_framework.views import APIView
@@ -84,30 +83,25 @@ class ScopeDataBuilder:
             for name in dir(claim_cls):
                 if name.startswith('info_'):
                     scope_identifier = name.split('info_')[1]
-                    scope_data = getattr(claim_cls, name)
-                    ret.append({
+                    result = {
                         'id': scope_identifier,
-                        'name': cls._create_translated_field_from_string(scope_data[0]),
-                        'description': cls._create_translated_field_from_string(scope_data[1]),
-                    })
-
-        ret.sort(key=lambda x: x['id'])
+                        'name': {},
+                        'description': {},
+                    }
+                    # The following loop produces scope name and description strings for every language
+                    # listed in LANGUAGE_CODES regardless whether the string is translated or not. If
+                    # translation is not found the string fallbacks to default language.
+                    initial_language = translation.get_language()
+                    for language in LANGUAGE_CODES:
+                        translation.activate(language)
+                        scope_data = getattr(claim_cls, name)
+                        result['name'][language] = str(scope_data[0])
+                        result['description'][language] = str(scope_data[1])
+                    translation.activate(initial_language)
+                    ret.append(result)
+            ret.sort(key=lambda x: x['id'])
         return ret
 
     @classmethod
     def _get_api_scopes_data(cls):
         return ApiScopeSerializer(ApiScope.objects.order_by('identifier'), many=True).data
-
-    @classmethod
-    def _create_translated_field_from_string(cls, field):
-        with translation.override(ENGLISH_LANGUAGE_CODE):
-            value_in_english = str(field)
-
-        ret = {ENGLISH_LANGUAGE_CODE: value_in_english}
-
-        for language in [lc for lc in LANGUAGE_CODES if lc != ENGLISH_LANGUAGE_CODE]:
-            translated_value = trans_real_translation(language)._catalog.get(value_in_english)
-            if translated_value:
-                ret[language] = translated_value
-
-        return ret
