@@ -75,7 +75,7 @@ class AdGroupsScopeClaims(ScopeClaims):
 class ReducedStandardScopeClaims(StandardScopeClaims):
     info_profile = (
         _('Basic profile'),
-        _('Access to your basic information. Includes names, nickname and possible user picture.'),
+        _('Access to your basic information. Includes names and possibly a user picture.'),
     )
     info_email = (
         _('Email'),
