@@ -72,10 +72,10 @@ class AdGroupsScopeClaims(ScopeClaims):
         }
 
 
-class CustomInfoTextStandardScopeClaims(StandardScopeClaims):
+class ReducedStandardScopeClaims(StandardScopeClaims):
     info_profile = (
         _('Basic profile'),
-        _('Access to your basic information. Includes names, gender, birthdate and other information.'),
+        _('Access to your basic information. Includes names and possibly a user picture.'),
     )
     info_email = (
         _('Email'),
@@ -91,7 +91,20 @@ class CustomInfoTextStandardScopeClaims(StandardScopeClaims):
     )
 
     def scope_profile(self):
-        return super().scope_profile()
+        dic = {
+            'name': self.userinfo.get('name'),
+            'given_name': (self.userinfo.get('given_name') or
+                           getattr(self.user, 'first_name', None)),
+            'family_name': (self.userinfo.get('family_name') or
+                            getattr(self.user, 'last_name', None)),
+            'middle_name': self.userinfo.get('middle_name'),
+            'nickname': self.userinfo.get('nickname'),
+            'preferred_username': self.userinfo.get('preferred_username'),
+            'picture': self.userinfo.get('picture'),
+            'updated_at': self.userinfo.get('updated_at'),
+        }
+
+        return dic
 
     def scope_email(self):
         return super().scope_email()
@@ -144,7 +157,7 @@ class SuomiFiUserAttributeScopeClaims(ScopeClaims, metaclass=SuomiFiUserAttribut
 
 class CombinedScopeClaims(ScopeClaims):
     combined_scope_claims = [
-        CustomInfoTextStandardScopeClaims,
+        ReducedStandardScopeClaims,
         GithubUsernameScopeClaims,
         ApiScopeClaims,
         DevicesScopeClaims,
