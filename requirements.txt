@@ -35,7 +35,7 @@ geoip2==2.9.0
 idna==2.6                 # via cryptography, requests
 isodate==0.6.0            # via python3-saml
 itypes==1.1.0             # via coreapi
-jinja2==2.10              # via coreschema
+jinja2==2.10.1            # via coreschema
 jwcrypto==0.6.0
 libsass==0.14.5
 lxml==4.2.6               # via xmlsec
