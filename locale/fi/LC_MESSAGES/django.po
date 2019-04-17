@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-17 06:46+0000\n"
+"POT-Creation-Date: 2019-04-17 07:26+0000\n"
 "PO-Revision-Date: 2019-04-17 09:47+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -273,7 +273,8 @@ msgstr "Perustiedot"
 #: oidc_apis/scopes.py:78
 msgid ""
 "Access to your basic information. Includes names and possibly a user picture."
-msgstr "Lupa lukea perustiedot, jotka sisältävät nimet ja mahdollisen profiilikuvan."
+msgstr ""
+"Lupa lukea perustiedot, jotka sisältävät nimet ja mahdollisen profiilikuvan."
 
 #: oidc_apis/scopes.py:82
 msgid "Access to your email address."
@@ -340,7 +341,7 @@ msgstr ""
 
 #: tunnistamo/utils.py:54
 #, python-format
-msgid "%(lang)s is not a supported languages (%(allowed)s)"
+msgid "%(lang)s is not a supported language (%(allowed)s)"
 msgstr ""
 
 #: users/apps.py:7

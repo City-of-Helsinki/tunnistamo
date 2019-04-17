@@ -51,7 +51,7 @@ class TranslatableSerializer(serializers.Serializer):
                                     {'data': data}))
         for lang in data:
             if lang not in self.Meta.translation_lang:
-                raise ValidationError(_('%(lang)s is not a supported languages (%(allowed)s)' % {
+                raise ValidationError(_('%(lang)s is not a supported language (%(allowed)s)' % {
                     'lang': lang,
                     'allowed': self.Meta.translation_lang,
                 }))
