@@ -150,3 +150,9 @@ def check_existing_social_associations(backend, strategy, user=None, social=None
             strategy.request.other_logins = LoginMethod.objects.filter(provider_id__in=providers)
             error_view = AuthenticationErrorView(request=strategy.request)
             return error_view.get(strategy.request)
+
+
+def save_social_auth_backend(backend, user=None, *args, **kwargs):
+    if user:
+        user.last_login_backend = backend.name
+        user.save()

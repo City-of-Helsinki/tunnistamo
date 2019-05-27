@@ -6,6 +6,7 @@ from django.contrib import admin
 from django.http import HttpResponse
 from django.urls import include, path, re_path
 from django.utils import translation
+from django.views.decorators.csrf import csrf_exempt
 from django.views.defaults import permission_denied
 from oidc_provider.views import ProviderInfoView as OIDCProviderInfoView
 from rest_framework.documentation import include_docs_urls
@@ -21,7 +22,8 @@ from services.api import ServiceViewSet
 from tunnistamo import social_auth_urls
 from users.api import TunnistamoAuthorizationView, UserConsentViewSet, UserLoginEntryViewSet
 from users.views import (
-    EmailNeededView, LoginView, LogoutView, TunnistamoOidcAuthorizeView, TunnistamoOidcEndSessionView
+    EmailNeededView, LoginView, LogoutView, TunnistamoOidcAuthorizeView, TunnistamoOidcEndSessionView,
+    TunnistamoOidcTokenView
 )
 
 from .api import GetJWTView, UserView
@@ -72,6 +74,7 @@ urlpatterns = [
     path('oauth2/', include(oauth2_provider.urls, namespace='oauth2_provider')),
     re_path(r'^openid/authorize/?$', TunnistamoOidcAuthorizeView.as_view(), name='authorize'),
     re_path(r'^openid/end-session/?$', TunnistamoOidcEndSessionView.as_view(), name='end-session'),
+    re_path(r'^openid/token/?$', csrf_exempt(TunnistamoOidcTokenView.as_view()), name='token'),
     path('openid/', include(oidc_provider.urls, namespace='oidc_provider')),
     re_path(r'^\.well-known/openid-configuration/?$', OIDCProviderInfoView.as_view(), name='root-provider-info'),
     re_path(r'^user/(?P<username>[\w.@+-]+)/?$', UserView.as_view()),

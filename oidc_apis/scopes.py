@@ -155,6 +155,11 @@ class SuomiFiUserAttributeScopeClaims(ScopeClaims, metaclass=SuomiFiUserAttribut
         return dic
 
 
+class OptionalOpenIDScopeClaims(ScopeClaims):
+    def scope_openid(self):
+        return {'amr': self.user.last_login_backend} if self.user.last_login_backend else {}
+
+
 class CombinedScopeClaims(ScopeClaims):
     combined_scope_claims = [
         ReducedStandardScopeClaims,
@@ -165,6 +170,7 @@ class CombinedScopeClaims(ScopeClaims):
         LoginEntriesScopeClaims,
         AdGroupsScopeClaims,
         SuomiFiUserAttributeScopeClaims,
+        OptionalOpenIDScopeClaims,
     ]
 
     @classmethod
