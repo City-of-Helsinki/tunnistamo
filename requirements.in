@@ -3,7 +3,7 @@ django-multiselectfield
 django-oauth-toolkit
 django-parler
 django-cors-headers
-django-oidc-provider
+django-oidc-provider>=0.7
 djangorestframework
 pyjwt
 django-helusers

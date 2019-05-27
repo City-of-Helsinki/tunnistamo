@@ -151,7 +151,7 @@ class TunnistamoOidcAuthorizeView(AuthorizeView):
 
 
 class TunnistamoOidcEndSessionView(EndSessionView):
-    def get(self, request, *args, **kwargs):
+    def dispatch(self, request, *args, **kwargs):
         # check if the authenticated user has active Suomi.fi login
         user = request.user
         social_user = None
@@ -163,7 +163,7 @@ class TunnistamoOidcEndSessionView(EndSessionView):
             except UserSocialAuth.DoesNotExist:
                 pass
         # clear Django session and get redirect URL
-        response = super().get(request, *args, **kwargs)
+        response = super().dispatch(request, *args, **kwargs)
         # create Suomi.fi logout redirect if needed
         if social_user is not None:
             response = self._create_suomifi_logout_response(social_user, user, request, response.url)

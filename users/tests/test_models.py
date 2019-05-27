@@ -38,7 +38,7 @@ def application():
 
 @pytest.fixture
 def oidc_client():
-    return OIDCClientFactory(response_type='id_token token')
+    return OIDCClientFactory(response_types=['id_token token'])
 
 
 @pytest.fixture

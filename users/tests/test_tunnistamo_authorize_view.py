@@ -84,6 +84,5 @@ def test_api_scopes_are_added_to_user_consent_after_authorization(client, api_sc
         'allow': True,
     })
     assert response.status_code == 302
-
     user_consent = UserConsent.objects.get(user=user, client=oidc_client)
     assert 'github_username' in user_consent.scope
