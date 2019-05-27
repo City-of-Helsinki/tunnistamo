@@ -4,7 +4,7 @@
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
 # Translators:
-# Timo Tuominen <dev@hel.fi>, 2019
+# Henrik Andersson <dev@hel.fi>, 2019
 # 
 #, fuzzy
 msgid ""
@@ -12,13 +12,13 @@ msgstr ""
 "Project-Id-Version: Tunnistamo\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-17 07:26+0000\n"
-"PO-Revision-Date: 2019-04-17 07:55+0000\n"
-"Last-Translator: Timo Tuominen <dev@hel.fi>, 2019\n"
-"Language-Team: Finnish (https://www.transifex.com/city-of-helsinki-1/teams/98217/fi/)\n"
+"PO-Revision-Date: 2019-05-27 09:45+0300\n"
+"Last-Translator: Henrik Andersson <dev@hel.fi>, 2019\n"
+"Language-Team: Swedish (https://www.transifex.com/city-of-helsinki-1/teams/98217/sv/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fi\n"
+"Language: sv\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: adfs_provider/models.py:18
@@ -31,63 +31,63 @@ msgstr ""
 
 #: adfs_provider/models.py:20 oidc_apis/scopes.py:81
 msgid "Email"
-msgstr "Sähköposti"
+msgstr "E-post"
 
 #: adfs_provider/models.py:21
 msgid "Username"
-msgstr "Käyttäjätunnus"
+msgstr "Användarnamn"
 
 #: adfs_provider/models.py:22 oidc_apis/models.py:25 oidc_apis/scopes.py:67
 msgid "AD Groups"
-msgstr "AD-ryhmät"
+msgstr "AD-grupper"
 
 #: adfs_provider/models.py:23
 msgid "First name"
-msgstr "Etunimi"
+msgstr "Förnamn"
 
 #: adfs_provider/models.py:24
 msgid "Last name"
-msgstr "Sukunimi"
+msgstr "Efternamn"
 
 #: devices/models.py:17 identities/models.py:11 users/models.py:105
 msgid "user"
-msgstr "käyttäjä"
+msgstr "användare"
 
 #: devices/models.py:18
 msgid "public key"
-msgstr "julkinen avain"
+msgstr "öppen nyckel"
 
 #: devices/models.py:19 devices/models.py:37
 msgid "secret key"
-msgstr "salainen avain"
+msgstr "hemlig nyckel"
 
 #: devices/models.py:20
 msgid "app version"
-msgstr "sovelluksen versio"
+msgstr "Version av applikationen"
 
 #: devices/models.py:21
 msgid "OS"
-msgstr "Käyttöjärjestelmä"
+msgstr "Operativsystem"
 
 #: devices/models.py:22
 msgid "OS version"
-msgstr "Käyttöjärjestelmän versio"
+msgstr "Version av operativsystemet"
 
 #: devices/models.py:23
 msgid "device model"
-msgstr "laitteen malli"
+msgstr "Enhetsmodell"
 
 #: devices/models.py:24
 msgid "last used at"
-msgstr "viimeksi käytetty"
+msgstr "användes senast"
 
 #: devices/models.py:28
 msgid "user device"
-msgstr "käyttäjän laite"
+msgstr "användarens enhet"
 
 #: devices/models.py:29
 msgid "user devices"
-msgstr "käyttäjien laitteet"
+msgstr "användarens enheter"
 
 #: devices/models.py:38
 msgid "allowed OAuth scopes"
@@ -95,7 +95,7 @@ msgstr ""
 
 #: identities/models.py:12 services/models.py:29 users/models.py:107
 msgid "service"
-msgstr "palvelu"
+msgstr "tjänst"
 
 #: identities/models.py:12
 msgid "Helmet"
@@ -103,15 +103,15 @@ msgstr ""
 
 #: identities/models.py:13 oidc_apis/models.py:32 oidc_apis/models.py:127
 msgid "identifier"
-msgstr "tunniste"
+msgstr "identifierare"
 
 #: identities/models.py:16
 msgid "user identity"
-msgstr "käyttäjän identiteetti"
+msgstr "användaridentitet"
 
 #: identities/models.py:17
 msgid "user identities"
-msgstr "käyttäjän identiteetit"
+msgstr "användaridentiteter"
 
 #: oidc_apis/mixins.py:46
 msgid "Value of field \"{}\" cannot be changed"
@@ -123,19 +123,19 @@ msgstr ""
 
 #: oidc_apis/models.py:21
 msgid "E-mail"
-msgstr "Sähköposti"
+msgstr "E-post"
 
 #: oidc_apis/models.py:22
 msgid "Profile"
-msgstr "Profiili"
+msgstr "Profil"
 
 #: oidc_apis/models.py:23
 msgid "Address"
-msgstr "Osoite"
+msgstr "Adress"
 
 #: oidc_apis/models.py:24 oidc_apis/scopes.py:33
 msgid "GitHub username"
-msgstr "GitHub käyttäjätunnus"
+msgstr "användarnamn på GitHub"
 
 #: oidc_apis/models.py:33
 msgid "API domain identifier, e.g. https://api.hel.fi/auth"
@@ -151,7 +151,7 @@ msgstr ""
 
 #: oidc_apis/models.py:52 oidc_apis/models.py:192 services/models.py:12
 msgid "name"
-msgstr "nimi"
+msgstr "namn"
 
 #: oidc_apis/models.py:56 oidc_apis/models.py:84
 msgid "required scopes"
@@ -233,82 +233,82 @@ msgstr ""
 
 #: oidc_apis/scopes.py:33
 msgid "Access to your GitHub username."
-msgstr "Lupa lukea GitHub-käyttäjätunnus."
+msgstr "Åtkomst till ditt användarnamn på GitHub."
 
 #: oidc_apis/scopes.py:48
 msgid "Devices"
-msgstr "Laitteet"
+msgstr "Enheter"
 
 #: oidc_apis/scopes.py:48
 msgid "Permission to link devices to your user account identities."
-msgstr "Lupa lukea laitetietoja ja yhdistää uusia laitteita käyttäjätiliisi."
+msgstr "Tillstånd att länka enheter till identiteterna på ditt användarkonto."
 
 #: oidc_apis/scopes.py:53
 msgid "Identities"
-msgstr "Identiteetit"
+msgstr "Identiteter"
 
 #: oidc_apis/scopes.py:53
 msgid "Access to cards and other identity information."
-msgstr "Lupa lukea korttitietoja ja lisätä kortteja käyttäjätilillesi"
+msgstr "Åtkomst till kort och annan identitetsinformation."
 
 #: oidc_apis/scopes.py:58
 msgid "Login history"
-msgstr "Kirjautumishistoria"
+msgstr "Inloggningshistorik"
 
 #: oidc_apis/scopes.py:58
 msgid "Access to your login history."
-msgstr "Lupa lukea kirjautumishistoria."
+msgstr "Åtkomst till din inloggningshistorik."
 
 #: oidc_apis/scopes.py:63
 msgid "Consents"
-msgstr "Luvitukset"
+msgstr "Medgivanden"
 
 #: oidc_apis/scopes.py:63
 msgid "Permission to view and delete your consents for services."
-msgstr "Lupa lukea luvitukset palveluille ja poistaa niitä."
+msgstr "Tillstånd att granska och stryka dina medgivanden till tjänster."
 
 #: oidc_apis/scopes.py:67
 msgid "Access to your AD Group memberships."
-msgstr "Lupa lukea jäsenyydet AD-ryhmissä."
+msgstr "Åtkomst till dina AD gruppmedlemskaper."
 
 #: oidc_apis/scopes.py:77
 msgid "Basic profile"
-msgstr "Perustiedot"
+msgstr "Grundläggande profil"
 
 #: oidc_apis/scopes.py:78
 msgid ""
 "Access to your basic information. Includes names and possibly a user "
 "picture."
 msgstr ""
-"Lupa lukea perustiedot, jotka sisältävät nimet ja mahdollisen profiilikuvan."
+"Åtkomst till din grundläggande information. Innehåller namn och eventuellt "
+"en användarbild."
 
 #: oidc_apis/scopes.py:82
 msgid "Access to your email address."
-msgstr "Lupa lukea sähköpostiosoite."
+msgstr "Åtkomst till din e-postadress"
 
 #: oidc_apis/scopes.py:85
 msgid "Phone number"
-msgstr "Puhelinnumero"
+msgstr "Telefonnummer"
 
 #: oidc_apis/scopes.py:86
 msgid "Access to your phone number."
-msgstr "Lupa lukea puhelinnumero."
+msgstr "Åtkomst till ditt telefonnummer"
 
 #: oidc_apis/scopes.py:89
 msgid "Address information"
-msgstr "Osoitetiedot"
+msgstr "Adressinformation"
 
 #: oidc_apis/scopes.py:90
 msgid ""
 "Access to your address. Includes country, locality, street and other "
 "information."
 msgstr ""
-"Lupa lukea osoitetiedot, jotka sisältävät muun muassa valtion, paikkakunnan "
-"ja katuosoitteen."
+"Åtkomst till din adress. Innehåller land, ort, gata och annan information."
 
 #: services/admin.py:16
 msgid "Not translatable fields"
-msgstr "Kentät joita ei käännetä"
+msgstr "Fält som inte kan översättas"
 
 #: services/api.py:37
 msgid ""
@@ -322,7 +322,7 @@ msgstr ""
 
 #: services/models.py:16
 msgid "image"
-msgstr "kuva"
+msgstr "bild"
 
 #: services/models.py:20
 msgid "application"
@@ -334,16 +334,16 @@ msgstr ""
 
 #: services/models.py:30
 msgid "services"
-msgstr "palvelut"
+msgstr "tjänster"
 
 #: services/models.py:38
 msgid "Cannot set both application and client."
-msgstr "Molempia \"application\" ja \"client\" ei voi asettaa."
+msgstr ""
 
 #: tunnistamo/utils.py:50
 #, python-format
 msgid "Not a valid translation format. Expecting {\"lang_code\": %(data)s}"
-msgstr ""
+msgstr "Ej giltigt översättningsformat. {\"lang_code\": %(data)s}förväntas"
 
 #: tunnistamo/utils.py:54
 #, python-format
@@ -352,7 +352,7 @@ msgstr ""
 
 #: users/apps.py:7
 msgid "Users"
-msgstr "Käyttäjät"
+msgstr "Användare"
 
 #: users/models.py:76
 msgid "OIDC Client"
@@ -364,27 +364,27 @@ msgstr ""
 
 #: users/models.py:109
 msgid "timestamp"
-msgstr "aikaleima"
+msgstr "tidsstämpel"
 
 #: users/models.py:110
 msgid "IP address"
-msgstr "IP-osoite"
+msgstr "IP-adress"
 
 #: users/models.py:111
 msgid "geo location"
-msgstr "sijaintitiedot"
+msgstr "geolokaliseringsdata"
 
 #: users/models.py:116
 msgid "user login entry"
-msgstr "kirjautumismerkintä"
+msgstr "inloggningspost"
 
 #: users/models.py:117
 msgid "user login entries"
-msgstr "kirjautumismerkinnät"
+msgstr "inloggningposter"
 
 #: users/templates/oidc_provider/authorize.html:4
 msgid "Permission request"
-msgstr "Lupapyyntö"
+msgstr "Tillståndsförfrågan"
 
 #: users/templates/oidc_provider/authorize.html:6
 #, python-format
@@ -392,13 +392,13 @@ msgid ""
 "Service <strong>%(service_name)s</strong> is requesting access to the "
 "following information of your user account"
 msgstr ""
-"Palvelu <strong>%(service_name)s</strong> pyytää lupaa käyttää "
-"käyttäjätilisi seuraavia tietoja"
+"Tjänsten <strong>%(service_name)s</strong> begär följande information från "
+"ditt användarkonto"
 
 #: users/templates/oidc_provider/authorize.html:20
 msgid "Deny"
-msgstr "Älä anna lupaa"
+msgstr "Avvisa"
 
 #: users/templates/oidc_provider/authorize.html:21
 msgid "Allow"
-msgstr "Anna lupa"
+msgstr "Godkänn"
