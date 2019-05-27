@@ -31,7 +31,7 @@ msgstr ""
 
 #: adfs_provider/models.py:20 oidc_apis/scopes.py:81
 msgid "Email"
-msgstr "E-post"
+msgstr "E-postadress"
 
 #: adfs_provider/models.py:21
 msgid "Username"
