@@ -10,7 +10,7 @@ coreapi==2.3.3
 coreschema==0.0.4         # via coreapi
 cryptography==2.3.1
 defusedxml==0.5.0         # via python3-openid, python3-saml, social-auth-core
-django==2.0.13
+django==2.1.8
 django-allauth==0.36.0
 django-appconf==1.0.2     # via django-compressor
 django-bootstrap3==10.0.1
