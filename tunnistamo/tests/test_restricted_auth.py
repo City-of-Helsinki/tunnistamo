@@ -8,7 +8,7 @@ from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
 from freezegun import freeze_time
-from oidc_provider.models import Client, Code, UserConsent
+from oidc_provider.models import Client, Code, ResponseType, UserConsent
 
 SERVER_NAME = 'tunnistamo.test'
 CLIENT_NAME = 'Test Client'
@@ -33,12 +33,12 @@ def create_oidc_client(response_type):
     oidc_client = Client.objects.create(
         name=CLIENT_NAME,
         client_id=CLIENT_ID,
-        client_secret=CLIENT_SECRET,
-        response_type=response_type
+        client_secret=CLIENT_SECRET
     )
     oidc_client.redirect_uris = (REDIRECT_URI,)
     oidc_client.post_logout_redirect_uris = (REDIRECT_URI,)
     oidc_client.save()
+    oidc_client.response_types.add(ResponseType.objects.get(value=response_type))
     return oidc_client
 
 
@@ -122,7 +122,7 @@ def test_restricted_auth_timeout(django_client, django_user_model, tick_minutes,
         auth_url = reverse('authorize')
         query_params = {
             'client_id': oidc_client.client_id,
-            'response_type': oidc_client.response_type,
+            'response_type': oidc_client.response_types.first().value,
             'redirect_uri': REDIRECT_URI,
             'scope': ' '.join(SCOPES),
             'state': '_state',

@@ -38,7 +38,7 @@ def application():
 
 @pytest.fixture
 def oidc_client():
-    return OIDCClientFactory(response_type='id_token token')
+    return OIDCClientFactory(response_types=['id_token token'])
 
 
 @pytest.fixture
@@ -167,7 +167,7 @@ def test_implicit_oidc_login_id_token_content(
     exp = id_token_data['exp']
     assert auth_time <= time.time()
     assert auth_time >= time.time() - 30
-    assert iat == auth_time
+    assert abs(iat - auth_time) < 5
     assert exp == iat + 600  # ID token expires in 10 min
 
     # Requested claims

@@ -5,7 +5,7 @@ from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount, SocialApp
 from django.contrib.auth import get_user_model
 from django.utils.crypto import get_random_string
-from oidc_provider.models import Client
+from oidc_provider.models import Client, ResponseType
 from rest_framework.test import APIClient
 
 from services.factories import ServiceFactory
@@ -78,11 +78,14 @@ def oidcclient_factory():
         args.setdefault('name', get_random_string())
         args.setdefault('client_type', 'public')
         args.setdefault('client_id', get_random_string())
-        args.setdefault('response_type', 'id_token token')
         args.setdefault('redirect_uris', None)
 
+        response_types = args.pop('response_types', ['id_token token'])
         instance = Client.objects.create(**args)
+
         instance.save()
+        for response_type in response_types:
+            instance.response_types.add(ResponseType.objects.get(value=response_type))
 
         return instance
 

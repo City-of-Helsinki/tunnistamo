@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.utils.timezone import now
 from faker import Faker
 from oauth2_provider.models import AccessToken
-from oidc_provider.models import Client, UserConsent
+from oidc_provider.models import Client, ResponseType, UserConsent
 from oidc_provider.tests.app.utils import create_fake_client, create_fake_token
 
 from users.models import Application, UserLoginEntry
@@ -17,7 +17,7 @@ def access_token_factory(**kwargs):
     access_token = kwargs.pop('access_token', 'test_access_token')
     token = create_fake_token(
         user=kwargs.get('user', UserFactory()),
-        client=kwargs.get('client', create_fake_client('token')),
+        client=kwargs.get('client', create_fake_client('id_token')),
         scopes=kwargs.get('scopes', []),
     )
     token.access_token = access_token
@@ -51,9 +51,17 @@ class OIDCClientFactory(factory.django.DjangoModelFactory):
     client_id = factory.Faker('uuid4')
     client_secret = factory.Faker('uuid4')
     client_type = 'confidential'
-    response_type = 'code'
     redirect_uris = ['http://example.com']
     require_consent = False
+
+    @factory.post_generation
+    def response_types(self, create, extracted, **kwargs):
+        if not create:
+            return
+        if not extracted:
+            extracted = ['code']
+        for response_type in extracted:
+            self.response_types.add(ResponseType.objects.get(value=response_type))
 
     class Meta:
         model = Client
