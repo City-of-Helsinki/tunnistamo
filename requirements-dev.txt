@@ -12,22 +12,25 @@ faker==0.8.15             # via factory-boy
 flake8==3.7.5
 freezegun==0.3.10
 httpretty==0.9.5
+importlib-metadata==0.15  # via pluggy
 isort==4.3.4
 linecache2==1.0.0         # via traceback2
 mccabe==0.6.1             # via flake8
 more-itertools==4.2.0     # via pytest
-pluggy==0.6.0             # via pytest
+pluggy==0.12.0            # via pytest
 py==1.5.3                 # via pytest
 pycodestyle==2.5.0        # via flake8
 pyflakes==2.1.0           # via flake8
-pytest==3.6.1
-pytest-cov==2.5.1
-pytest-django==3.2.1
+pytest==4.5.0
+pytest-cov==2.7.1
+pytest-django==3.4.8
 python-dateutil==2.7.3    # via faker, freezegun
 six==1.11.0               # via faker, freezegun, httpretty, more-itertools, pytest, python-dateutil, unittest2
 text-unidecode==1.2       # via faker
 traceback2==1.4.0         # via unittest2
 unittest2==1.1.0
+wcwidth==0.1.7            # via pytest
+zipp==0.5.1               # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools                # via pytest
