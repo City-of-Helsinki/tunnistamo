@@ -22,7 +22,7 @@ from services.api import ServiceViewSet
 from tunnistamo import social_auth_urls
 from users.api import TunnistamoAuthorizationView, UserConsentViewSet, UserLoginEntryViewSet
 from users.views import (
-    EmailNeededView, LoginView, LogoutView, TunnistamoOidcAuthorizeView, TunnistamoOidcEndSessionView,
+    LoginView, LogoutView, TunnistamoOidcAuthorizeView, TunnistamoOidcEndSessionView,
     TunnistamoOidcTokenView
 )
 
@@ -82,7 +82,6 @@ urlpatterns = [
     path('jwt-token/', GetJWTView.as_view()),
     path('login/', LoginView.as_view()),
     path('logout/', LogoutView.as_view()),
-    path('email-needed/', EmailNeededView.as_view(), name='email_needed'),
     v1_api_path,
     path('docs/', include_docs_urls(title='Tunnistamo API v1', patterns=[v1_api_path],
                                     generator_class=AllEnglishSchemaGenerator)),

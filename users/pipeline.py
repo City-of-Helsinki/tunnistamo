@@ -2,7 +2,7 @@ import uuid
 from urllib.parse import urlencode
 
 from django.contrib.auth import get_user_model
-from django.shortcuts import redirect
+from django.shortcuts import render
 from django.urls import reverse
 from helusers.utils import uuid_to_username
 
@@ -58,29 +58,26 @@ def get_username(strategy, user=None, *args, **kwargs):
     }
 
 
-def require_email(details, backend, user=None, *args, **kwargs):
+def require_email(strategy, details, backend, user=None, *args, **kwargs):
     """Enforce email address.
 
-    Stop authentication and redirect to the `email_needed` view if the
+    Stop authentication and render the `email_needed` template if the
     `details` received from the social auth doesn't include an email
     address.
     """
     if user:
         return
-
     # Suomi.fi returns PRC(VRK) information, which often doesn't inclue email address
     if backend.name == 'suomifi':
         return
+    if details.get('email'):
+        return
 
-    email = details.get('email')
-    if not email:
-        get_params = urlencode({
-            'reauth_uri': reverse('social:begin', kwargs={'backend': backend.name}) + (
-                '?auth_type=rerequest' if backend.name == 'facebook' else '')
-        })
-        redirect_to = reverse('email_needed') + '?' + get_params
+    reauth_uri = reverse('social:begin', kwargs={'backend': backend.name})
+    if backend.name == 'facebook':
+        reauth_uri += '?auth_type=rerequest'
 
-        return redirect(redirect_to)
+    return render(strategy.request, 'email_needed.html', {'reauth_uri': reauth_uri}, status=401)
 
 
 def associate_by_email(strategy, details, user=None, *args, **kwargs):
