@@ -1,5 +1,7 @@
+from django import forms
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
+from django.core.validators import URLValidator
 from oauth2_provider.models import get_application_model
 
 from .models import LoginMethod, User
@@ -45,8 +47,25 @@ class LoginMethodAdmin(admin.ModelAdmin):
     model = LoginMethod
 
 
+class URLValidatingApplicationForm(forms.ModelForm):
+    def clean__post_logout_redirect_uris(self):
+        uris = self.cleaned_data["_post_logout_redirect_uris"]
+        if len(uris) == 0:
+            return
+        validate = URLValidator(schemes=['https', 'http'])
+        processed_uris = []
+        for uri in uris.split("\n"):
+            uri = uri.strip()
+            if len(uri) == 0:
+                continue
+            validate(uri)
+            processed_uris.append(uri)
+        return "\n".join(processed_uris)
+
+
 class ApplicationAdmin(admin.ModelAdmin):
-    list_display = ('name', 'site_type')
+    form = URLValidatingApplicationForm
+    list_display = ('name', 'site_type', '_post_logout_redirect_uris')
     list_filter = ('site_type',)
     exclude = ('user',)
     model = Application

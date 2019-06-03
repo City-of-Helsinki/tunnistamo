@@ -103,12 +103,33 @@ class LoginView(TemplateView):
 class LogoutView(TemplateView):
     template_name = 'logout_done.html'
 
+    def _validate_client_uri(self, uri):
+        """Valid post logout URIs are explicitly managed in the database via
+        the admin UI as linefeed-separated text fields of one or
+        several URIs.
+
+        This method treats all URIs of all OAuth apps and OIDC Clients
+        as valid for any logout request.
+        """
+        if uri is None or uri == '':
+            return False
+
+        uri_texts = list()
+        for manager in [get_application_model().objects, Client.objects]:
+            uri_texts += manager.values_list('_post_logout_redirect_uris', flat=True)
+
+        valid_uris = set((u for uri_text in uri_texts for u in uri_text.splitlines()))
+
+        if uri in valid_uris:
+            return True
+        return False
+
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated:
             auth_logout(self.request)
-        url = self.request.GET.get('next')
-        if url and re.match(r'http[s]?://', url):
-            return redirect(url)
+        uri = self.request.GET.get('next')
+        if self._validate_client_uri(uri):
+            return redirect(uri)
         return super(LogoutView, self).get(*args, **kwargs)
 
 

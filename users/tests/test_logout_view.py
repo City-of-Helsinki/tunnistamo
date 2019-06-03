@@ -25,7 +25,10 @@ def test_logout(client, user_factory):
     ('http://example.com/', 'http://example.com/'),
     ('https://example2.com/', 'https://example2.com/'),
 ))
-def test_logout_redirect_next(client, user_factory, next, expected):
+@pytest.mark.django_db
+def test_logout_redirect_next(client, user_factory, next, expected, application_factory):
+    app = application_factory(_post_logout_redirect_uris=expected, redirect_uris=['http://example.com/'])
+    app.save()
     response = client.get('/logout/', {
         'next': next,
     })
@@ -41,10 +44,12 @@ def test_logout_redirect_next(client, user_factory, next, expected):
     12345,
     '//example.com',
     '/foo',
+    'http://example.com',  # This is an invalid URL if it's not configured anywhere
     'ftp://example.com',
     'gopher://example.com:1234/test',
     'mailto:test@example.com',
 ))
+@pytest.mark.django_db
 def test_logout_no_redirect_on_invalid_next(client, user_factory, next):
     response = client.get('/logout/', {
         'next': next,
@@ -54,7 +59,10 @@ def test_logout_no_redirect_on_invalid_next(client, user_factory, next):
 
 
 @pytest.mark.django_db
-def test_logout_redirect_next_authenticated(client, user_factory):
+def test_logout_redirect_next_authenticated(client, user_factory, application_factory):
+    app = application_factory(_post_logout_redirect_uris='http://example.com/', redirect_uris=['http://example.com/'])
+    app.save()
+
     password = get_random_string()
     user = user_factory(password=password)
 

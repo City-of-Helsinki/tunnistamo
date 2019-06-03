@@ -68,6 +68,12 @@ class OptionsBase(models.Model):
 
 
 class Application(OptionsBase, AbstractApplication):
+    _post_logout_redirect_uris = models.TextField(
+        blank=True,
+        default='',
+        verbose_name=_(u'Post Logout Redirect URIs'),
+        help_text=_(u'Enter each URI on a new line.'))
+
     class Meta:
         ordering = ('site_type', 'name')
 
