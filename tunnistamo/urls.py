@@ -22,8 +22,7 @@ from services.api import ServiceViewSet
 from tunnistamo import social_auth_urls
 from users.api import TunnistamoAuthorizationView, UserConsentViewSet, UserLoginEntryViewSet
 from users.views import (
-    LoginView, LogoutView, TunnistamoOidcAuthorizeView, TunnistamoOidcEndSessionView,
-    TunnistamoOidcTokenView
+    LoginView, LogoutView, TunnistamoOidcAuthorizeView, TunnistamoOidcEndSessionView, TunnistamoOidcTokenView
 )
 
 from .api import GetJWTView, UserView
