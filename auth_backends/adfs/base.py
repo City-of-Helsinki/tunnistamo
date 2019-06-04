@@ -79,9 +79,9 @@ class BaseADFS(BaseOAuth2):
 
         cert_der = base64.b64decode(self.cert)
         x509_cert = x509.load_der_x509_certificate(cert_der, backend=x509_backend)
-        jwt_token = jwt.decode(response['access_token'], key=x509_cert.public_key(), leeway=leeway, options={
-            'verify_aud': False
-        })
+        jwt_token = jwt.decode(
+            response['access_token'], algorithms=['RS256'], key=x509_cert.public_key(), leeway=leeway,
+            options={'verify_aud': False})
 
         return self.clean_attributes(jwt_token)
 
