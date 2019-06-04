@@ -70,7 +70,6 @@ class LoginView(TemplateView):
 
         methods = []
         for m in allowed_methods:
-            assert isinstance(m, LoginMethod)
             if m.provider_id == 'saml':
                 continue  # SAML support removed
 
