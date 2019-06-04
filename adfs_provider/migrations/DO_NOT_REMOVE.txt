@@ -1,3 +1,0 @@
-Pytest will initialize models in this app even though they are not used.
-
-This empty migrations package and "adfs_provider" in TEST_NON_SERIALIZED_APPS-setting counter that.

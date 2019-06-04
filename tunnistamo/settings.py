@@ -60,7 +60,6 @@ INSTALLED_APPS = (
     'helusers',
 
     'yletunnus',
-    'adfs_provider',
     'hkijwt',
     'oidc_apis',
     'devices',
@@ -267,30 +266,8 @@ ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
 
-SOCIALACCOUNT_AUTO_SIGNUP = True
-SOCIALACCOUNT_QUERY_EMAIL = True
-SOCIALACCOUNT_ENABLED = True
 ACCOUNT_LOGOUT_ON_GET = True
-SOCIALACCOUNT_ADAPTER = 'users.adapter.SocialAccountAdapter'
 ACCOUNT_UNIQUE_EMAIL = True
-
-SOCIALACCOUNT_PROVIDERS = {
-    'facebook': {
-        'SCOPE': ['email', 'public_profile'],
-        'VERIFIED_EMAIL': True,
-        'VERSION': 'v2.4'
-    },
-    'github': {
-        'VERIFIED_EMAIL': True,
-    },
-    'google': {
-        'SCOPE': ['email'],
-        'VERIFIED_EMAIL': True,
-    },
-    'yletunnus': {
-        'VERIFIED_EMAIL': True,
-    },
-}
 
 # django-oidc-provider settings for OpenID Connect support
 OIDC_USERINFO = 'tunnistamo.oidc.get_userinfo'
