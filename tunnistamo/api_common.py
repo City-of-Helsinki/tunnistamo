@@ -141,10 +141,11 @@ class DeviceGeneratedJWTAuthentication(BaseAuthentication):
         sign_key = jwk.JWK(**device.public_key)
 
         try:
-            token = jwt.JWT()
+            token = jwt.JWT(algs=['A256KW', 'A128CBC-HS256'])
             token.deserialize(token_value, key=enc_key)
-            token.deserialize(token.claims, key=sign_key)
-            claims = json.loads(token.claims)
+            claims_token = jwt.JWT(algs=['ES256'])
+            claims_token.deserialize(token.claims, key=sign_key)
+            claims = json.loads(claims_token.claims)
         except (jwe.InvalidJWEData, ValueError, TypeError) as e:
             logger.info('[DeviceJWT]: %s' % e)
             raise AuthenticationFailed("Invalid encryption key or signature")
