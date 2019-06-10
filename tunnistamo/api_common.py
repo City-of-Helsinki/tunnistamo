@@ -1,7 +1,6 @@
 import datetime
 import json
 import logging
-import secrets
 
 import pytz
 from django.conf import settings
@@ -167,7 +166,7 @@ class DeviceGeneratedJWTAuthentication(BaseAuthentication):
             raise AuthenticationFailed("Interface device in 'azp' not found")
 
         interface_secret = request.META.get('HTTP_X_INTERFACE_DEVICE_SECRET', '')
-        if secrets.compare_digest(interface_secret, interface_device.secret_key) is False:
+        if interface_device.check_secret_key(interface_secret) is False:
             raise AuthenticationFailed("Incorrect interface device secret in X-Interface-Device-Secret HTTP header")
 
         nonce = claims.get('nonce', None)

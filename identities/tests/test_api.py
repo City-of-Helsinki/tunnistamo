@@ -1,7 +1,6 @@
 import json
 import random
 import time
-import uuid
 from unittest import mock
 
 import pytest
@@ -77,7 +76,12 @@ def interface_device_api_client(user):
         public_key=json.loads(sign_key.export_public()),
         user=user,
     )
-    interface_device = InterfaceDeviceFactory(secret_key=str(uuid.uuid4()), scopes='read:identities:helmet')
+
+    interface_device = InterfaceDeviceFactory(
+        secret_key='pbkdf2_sha256$120000$v9hq5sSdvA9Y$uPFvVNDvr1DFmJjkkXgykbdOC2Kjvmm9Shs00uBngw8=',
+        scopes='read:identities:helmet')
+    interface_device_raw_secret_key = 'a03f1a9c-9fa2-43c0-83cd-ab4233815669'
+    assert interface_device.check_secret_key(interface_device_raw_secret_key)
 
     header = {'alg': 'A256KW', 'enc': 'A128CBC-HS256', 'iss': str(user_device.id)}
     nonce = int(random.random()*1000000000000000)
@@ -92,7 +96,7 @@ def interface_device_api_client(user):
 
     token = create_jwe(header, payload, sign_key, enc_key)
     api_client.credentials(HTTP_AUTHORIZATION='Bearer {}'.format(token),
-                           HTTP_X_INTERFACE_DEVICE_SECRET=str(interface_device.secret_key))
+                           HTTP_X_INTERFACE_DEVICE_SECRET=str(interface_device_raw_secret_key))
 
     api_client.user_device = user_device
     api_client.interface_device = interface_device

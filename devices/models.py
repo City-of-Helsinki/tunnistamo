@@ -1,6 +1,7 @@
 import uuid
 
 from django.contrib.auth import get_user_model
+from django.contrib.auth.hashers import check_password, make_password
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.utils.timezone import now
@@ -34,8 +35,14 @@ class UserDevice(models.Model):
 
 class InterfaceDevice(models.Model):
     id = models.UUIDField(default=uuid.uuid4, primary_key=True)
-    secret_key = models.CharField(max_length=50, verbose_name=_('secret key'))
+    secret_key = models.CharField(max_length=128, verbose_name=_('secret key'))
     scopes = models.CharField(max_length=200, verbose_name=_('allowed OAuth scopes'))
 
     def __str__(self):
         return self.id
+
+    def set_secret_key(self, raw_secret_key):
+        self.secret_key = make_password(raw_secret_key)
+
+    def check_secret_key(self, raw_secret_key):
+        return check_password(raw_secret_key, self.secret_key)
