@@ -1,3 +1,4 @@
+import json
 import logging
 from datetime import timedelta
 
@@ -61,3 +62,37 @@ class RestrictedAuthenticationMiddleware(object):
                 request.session.delete()
                 return response
         return self.get_response(request)
+
+
+class ContentSecurityPolicyMiddleware(object):
+    HEADER_ENFORCING = 'Content-Security-Policy'
+    HEADER_REPORTING = 'Content-Security-Policy-Report-Only'
+
+    def __init__(self, get_response):
+        self.get_response = get_response
+
+    @staticmethod
+    def get_csp_settings(settings):
+        return getattr(settings, 'CONTENT_SECURITY_POLICY', None)
+
+    @staticmethod
+    def find_policy(csp_settings):
+        return csp_settings is not None and csp_settings.get('policy') is not None
+
+    def __call__(self, request):
+        response = self.get_response(request)
+        csp_settings = ContentSecurityPolicyMiddleware.get_csp_settings(settings)
+        if not ContentSecurityPolicyMiddleware.find_policy(csp_settings):
+            return response
+
+        if csp_settings.get('report_only') is True:
+            header = self.HEADER_REPORTING
+        else:
+            header = self.HEADER_ENFORCING
+        response[header] = csp_settings['policy']
+
+        if csp_settings.get('report_groups') and len(csp_settings.get('report_groups', {})) > 0:
+            response['Report-To'] = json.dumps(csp_settings['report_groups'])
+        return response
+
+
