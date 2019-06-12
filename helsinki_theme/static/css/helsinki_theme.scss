@@ -101,3 +101,28 @@ $fa-font-path: "../fonts/font-awesome";
   background-position: center;
   background-size: 85%;
 }
+
+.login-method.login-method-yletunnus a.btn.btn-social {
+  background-color: #00b4c8;
+  border-color: #00b4c8;
+}
+
+.login-method.login-method-helsinki_adfs a.btn.btn-social {
+  background-color: #003380;
+  border-color: #003380
+}
+
+.login-method.login-method-espoo a.btn.btn-social {
+  background-color: #0047b6;
+  border-color: #0047b6;
+}
+
+.login-method.login-method-eduhelfi a.btn.btn-social {
+  background-color: #00d7a7;
+  border-color: #00d7a7;
+}
+
+.login-method.login-method-helsinki_library_asko_adfs a.btn.btn-social {
+  background-color: #f5a3c7;
+  border-color: #f5a3c7;
+}

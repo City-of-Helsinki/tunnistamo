@@ -40,7 +40,6 @@ class LoginMethod(models.Model):
         max_length=50, unique=True,
         choices=sorted(get_provider_ids()))
     name = models.CharField(max_length=100)
-    background_color = models.CharField(max_length=50, null=True, blank=True)
     logo_url = models.URLField(null=True, blank=True)
     short_description = models.TextField(null=True, blank=True)
     order = models.PositiveIntegerField(null=True)
