@@ -22,6 +22,8 @@ TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = []
 
+X_FRAME_OPTIONS = 'DENY'
+
 
 # Application definition
 
