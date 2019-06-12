@@ -83,6 +83,7 @@ MIDDLEWARE = (
     'crequest.middleware.CrequestMiddleware',
     'tunnistamo.middleware.InterruptedSocialAuthMiddleware',
     'tunnistamo.middleware.OIDCExceptionMiddleware',
+    'tunnistamo.middleware.ContentSecurityPolicyMiddleware'
 )
 
 AUTHENTICATION_BACKENDS = (
@@ -538,6 +539,17 @@ SOCIAL_AUTH_SUOMIFI_UI_LOGO = {'url': '', 'height': None, 'width': None}
 ###
 
 IPWARE_META_PRECEDENCE_ORDER = ('REMOTE_ADDR',)
+
+CONTENT_SECURITY_POLICY = {
+    # The full policy including report-uri and/or report-to specification.
+    'policy': None,
+    # Whether to use the report only header instead of the enforcing header.
+    'report_only': False,
+    # If the policy contains a report-to specification, the corresponding
+    # group must be defined here
+    'report_groups': {},
+}
+
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.

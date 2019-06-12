@@ -202,7 +202,7 @@ class ScopePermission(BasePermission):
                 if request_perm in perm:
                     break
             else:
-                logger.warn("[ScopePermission] domain %s not found in token scopes (%s)" % (
+                logger.warning("[ScopePermission] domain %s not found in token scopes (%s)" % (
                     domain, request.auth.scopes
                 ))
                 return False
