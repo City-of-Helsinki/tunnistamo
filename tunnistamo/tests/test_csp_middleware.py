@@ -2,7 +2,6 @@ import pytest
 from django.conf import settings
 from django.test import override_settings
 
-
 DEFAULT_CSP_SETTINGS = {
     'policy': None,
     'report_only': False,
@@ -54,7 +53,6 @@ def test_no_policy(client):
     del settings.CONTENT_SECURITY_POLICY['policy']
     response = client.get('/login/')
     assert response_has_no_csp(response)
-
 
 
 @pytest.mark.django_db
