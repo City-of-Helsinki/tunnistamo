@@ -94,5 +94,3 @@ class ContentSecurityPolicyMiddleware(object):
         if csp_settings.get('report_groups') and len(csp_settings.get('report_groups', {})) > 0:
             response['Report-To'] = json.dumps(csp_settings['report_groups'])
         return response
-
-

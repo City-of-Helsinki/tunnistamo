@@ -1,1 +1,3 @@
 from .checks import csp_configuration_check
+
+csp_configuration_check
