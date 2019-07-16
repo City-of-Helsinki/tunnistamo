@@ -51,7 +51,7 @@ class URLValidatingApplicationForm(forms.ModelForm):
     def clean__post_logout_redirect_uris(self):
         uris = self.cleaned_data["_post_logout_redirect_uris"]
         if len(uris) == 0:
-            return
+            return ""
         validate = URLValidator(schemes=['https', 'http'])
         processed_uris = []
         for uri in uris.split("\n"):
