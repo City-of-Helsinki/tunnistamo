@@ -4,7 +4,7 @@ django-oauth-toolkit
 django-parler
 django-cors-headers
 django-oidc-provider>=0.7
-djangorestframework
+djangorestframework>=3.10
 pyjwt
 django-helusers
 django-allauth
