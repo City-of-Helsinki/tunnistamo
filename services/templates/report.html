@@ -1,0 +1,24 @@
+{% extends "admin/base.html" %}
+
+{% block title %}List of configured applications{% endblock %}
+{% block content_title %}List of configured applications{% endblock %}
+{% block content %}
+<table>
+    <thead>
+        <tr>
+            {% for key in headers %}
+            <th><strong>{{ key }}</strong></th>
+            {% endfor %}
+        </tr>
+    </thead>
+
+    {% for client in clients %}
+    <tr>
+        {% for value in client %}
+        <td>{{ value|safe }}</td>
+        {% endfor %}
+    </tr>
+    {% endfor %}
+</table>
+
+{% endblock %}

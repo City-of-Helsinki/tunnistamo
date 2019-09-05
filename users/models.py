@@ -78,7 +78,7 @@ class Application(OptionsBase, AbstractApplication):
 
 
 class OidcClientOptions(OptionsBase):
-    oidc_client = models.OneToOneField(Client, related_name='+', on_delete=models.CASCADE,
+    oidc_client = models.OneToOneField(Client, related_name='options', on_delete=models.CASCADE,
                                        verbose_name=_("OIDC Client"))
 
     def __str__(self):

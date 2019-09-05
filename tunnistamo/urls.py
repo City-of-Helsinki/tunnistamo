@@ -3,6 +3,7 @@ import oidc_provider.urls
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse
 from django.urls import include, path, re_path
 from django.utils import translation
@@ -19,6 +20,7 @@ from identities.api import UserIdentityViewSet
 from oidc_apis.views import get_api_tokens_view
 from scopes.api import ScopeListView
 from services.api import ServiceViewSet
+from services.views import ReportView
 from tunnistamo import social_auth_urls
 from users.api import TunnistamoAuthorizationView, UserConsentViewSet, UserLoginEntryViewSet
 from users.views import (
@@ -62,6 +64,7 @@ v1_api_path = path('v1/', include((router.urls + [v1_scope_path], 'v1')))
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('report/', staff_member_required(ReportView.as_view())),
     path('api-tokens/', get_api_tokens_view),
     path('accounts/profile/', show_login),
     path('accounts/login/', LoginView.as_view()),
