@@ -27,7 +27,7 @@ def test_logout(client, user_factory):
 ))
 @pytest.mark.django_db
 def test_logout_redirect_next(client, user_factory, next, expected, application_factory):
-    app = application_factory(_post_logout_redirect_uris=expected, redirect_uris=['http://example.com/'])
+    app = application_factory(post_logout_redirect_uris=expected, redirect_uris=['http://example.com/'])
     app.save()
     response = client.get('/logout/', {
         'next': next,
@@ -60,7 +60,7 @@ def test_logout_no_redirect_on_invalid_next(client, user_factory, next):
 
 @pytest.mark.django_db
 def test_logout_redirect_next_authenticated(client, user_factory, application_factory):
-    app = application_factory(_post_logout_redirect_uris='http://example.com/', redirect_uris=['http://example.com/'])
+    app = application_factory(post_logout_redirect_uris='http://example.com/', redirect_uris=['http://example.com/'])
     app.save()
 
     password = get_random_string()

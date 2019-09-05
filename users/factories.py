@@ -15,9 +15,12 @@ User = get_user_model()
 
 def access_token_factory(**kwargs):
     access_token = kwargs.pop('access_token', 'test_access_token')
+    oidc_client = create_fake_client('id_token')
+    oidc_client.redirect_uris = []
+    oidc_client.save()
     token = create_fake_token(
         user=kwargs.get('user', UserFactory()),
-        client=kwargs.get('client', create_fake_client('id_token')),
+        client=kwargs.get('client', oidc_client),
         scopes=kwargs.get('scopes', []),
     )
     token.access_token = access_token

@@ -24,7 +24,6 @@ ALLOWED_HOSTS = []
 
 X_FRAME_OPTIONS = 'DENY'
 
-
 # Application definition
 
 INSTALLED_APPS = (
@@ -81,7 +80,7 @@ MIDDLEWARE = (
     'tunnistamo.middleware.RestrictedAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'corsheaders.middleware.CorsMiddleware',
+    'users.middleware.CustomDatabaseWhitelistCorsMiddleware',
     'crequest.middleware.CrequestMiddleware',
     'tunnistamo.middleware.InterruptedSocialAuthMiddleware',
     'tunnistamo.middleware.OIDCExceptionMiddleware',
@@ -242,7 +241,9 @@ LOGGING = {
     }
 }
 
-CORS_ORIGIN_ALLOW_ALL = True
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_URLS_REGEX = r'.*/(\.well-known/openid-configuration|v1|openid|api-tokens|jwt-token)/.*'
+
 
 OAUTH2_PROVIDER_APPLICATION_MODEL = 'users.Application'
 OAUTH2_PROVIDER = {

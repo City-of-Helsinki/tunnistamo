@@ -48,8 +48,8 @@ class LoginMethodAdmin(admin.ModelAdmin):
 
 
 class URLValidatingApplicationForm(forms.ModelForm):
-    def clean__post_logout_redirect_uris(self):
-        uris = self.cleaned_data["_post_logout_redirect_uris"]
+    def clean_post_logout_redirect_uris(self):
+        uris = self.cleaned_data["post_logout_redirect_uris"]
         if len(uris) == 0:
             return ""
         validate = URLValidator(schemes=['https', 'http'])
@@ -65,7 +65,7 @@ class URLValidatingApplicationForm(forms.ModelForm):
 
 class ApplicationAdmin(admin.ModelAdmin):
     form = URLValidatingApplicationForm
-    list_display = ('name', 'site_type', '_post_logout_redirect_uris')
+    list_display = ('name', 'site_type', 'post_logout_redirect_uris')
     list_filter = ('site_type',)
     exclude = ('user',)
     model = Application

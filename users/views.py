@@ -99,6 +99,12 @@ class LoginView(TemplateView):
         return context
 
 
+def _process_uris(uris):
+    if isinstance(uris, list):
+        return uris
+    return uris.splitlines()
+
+
 class LogoutView(TemplateView):
     template_name = 'logout_done.html'
 
@@ -115,13 +121,13 @@ class LogoutView(TemplateView):
 
         uri_texts = list()
         for manager in [get_application_model().objects, Client.objects]:
-            uri_texts += manager.values_list('_post_logout_redirect_uris', flat=True)
+            for o in manager.all():
+                value = o.post_logout_redirect_uris
+                if value is None or len(value) == 0:
+                    continue
+                uri_texts.append(value)
 
-        valid_uris = set((u for uri_text in uri_texts for u in uri_text.splitlines()))
-
-        if uri in valid_uris:
-            return True
-        return False
+        return uri in (u for uri_text in uri_texts for u in _process_uris(uri_text))
 
     def get(self, *args, **kwargs):
         if self.request.user.is_authenticated:
