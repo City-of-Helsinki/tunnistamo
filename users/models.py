@@ -67,7 +67,7 @@ class OptionsBase(models.Model):
 
 
 class Application(OptionsBase, AbstractApplication):
-    _post_logout_redirect_uris = models.TextField(
+    post_logout_redirect_uris = models.TextField(
         blank=True,
         default='',
         verbose_name=_(u'Post Logout Redirect URIs'),
@@ -87,6 +87,10 @@ class OidcClientOptions(OptionsBase):
     class Meta:
         verbose_name = _("OIDC Client Options")
         verbose_name_plural = _("OIDC Client Options")
+
+
+class AllowedOrigin(models.Model):
+    key = models.CharField(max_length=300, null=False, primary_key=True)
 
 
 class UserLoginEntryManager(models.Manager):
