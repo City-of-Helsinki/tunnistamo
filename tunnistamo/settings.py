@@ -11,16 +11,60 @@ https://docs.djangoproject.com/en/1.7/ref/settings/
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
 
+import environ
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+
+env = environ.Env(
+    DEBUG=(bool, False),
+    SECRET_KEY=(str, ""),
+    DATABASE_URL=(str, ""),
+    ALLOWED_HOSTS=(list, []),
+
+    STATIC_URL=(str, "/sso/static/"),
+    STATIC_ROOT=(str, os.path.join(BASE_DIR, 'static')),
+    MEDIA_ROOT=(str, os.path.join(BASE_DIR, 'media')),
+    MEDIA_URL=(str, '/media/'),
+    NODE_MODULES_ROOT=(str, os.path.join(BASE_DIR, 'node_modules')),
+
+    # Authentication settings
+    SOCIAL_AUTH_FACEBOOK_KEY=(str, ""),
+    SOCIAL_AUTH_FACEBOOK_SECRET=(str, ""),
+
+    SOCIAL_AUTH_GITHUB_KEY=(str, ""),
+    SOCIAL_AUTH_GITHUB_SECRET=(str, ""),
+
+    SOCIAL_AUTH_GOOGLE_KEY=(str, ""),
+    SOCIAL_AUTH_GOOGLE_SECRET=(str, ""),
+
+    SOCIAL_AUTH_HELSINKI_ADFS_KEY=(str, ""),
+    SOCIAL_AUTH_HELSINKI_ADFS_SECRET=(str, ""),
+
+    SOCIAL_AUTH_ESPOO_ADFS_KEY=(str, ""),
+    SOCIAL_AUTH_ESPOO_ADFS_SECRET=(str, ""),
+
+    SOCIAL_AUTH_SUOMIFI_SP_ENTITY_ID=(str, ""),
+    SOCIAL_AUTH_SUOMIFI_SP_PUBLIC_CERT=(str, ""),
+    SOCIAL_AUTH_SUOMIFI_SP_PRIVATE_KEY=(str, ""),
+
+    # JSON values, default values can be found further down in the settings
+    SOCIAL_AUTH_SUOMIFI_ORG_INFO=(str, ""),
+    SOCIAL_AUTH_SUOMIFI_TECHNICAL_CONTACT=(str, ""),
+    SOCIAL_AUTH_SUOMIFI_SUPPORT_CONTACT=(str, ""),
+    SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS=(str, ""),
+    SOCIAL_AUTH_SUOMIFI_UI_INFO=(str, ""),
+    SOCIAL_AUTH_SUOMIFI_UI_LOGO=(str, ""),
+)
+
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/1.7/howto/deployment/checklist/
 
-DEBUG = False
+DEBUG = env("DEBUG")
 
 TEMPLATE_DEBUG = False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
 X_FRAME_OPTIONS = 'DENY'
 
@@ -70,6 +114,8 @@ INSTALLED_APPS = (
     'auth_backends',
 
     'translation_checker',
+
+    'utils',
 )
 
 MIDDLEWARE = (
@@ -130,12 +176,15 @@ WSGI_APPLICATION = 'tunnistamo.wsgi.application'
 #
 # Database
 #
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'tunnistamo',
+if env.db("DATABASE_URL"):
+    DATABASES = {"default": env.db("DATABASE_URL")}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'tunnistamo',
+        }
     }
-}
 
 #
 # Internationalization
@@ -176,14 +225,14 @@ STATICFILES_FINDERS = (
     'sass_processor.finders.CssFinder',
 )
 
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-STATIC_URL = '/sso/static/'
+STATIC_ROOT = env("STATIC_ROOT")
+STATIC_URL = env("STATIC_URL")
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-MEDIA_URL = '/media/'
+MEDIA_ROOT = env("MEDIA_ROOT")
+MEDIA_URL = env("MEDIA_URL")
 
 STATICFILES_DIRS = [
-    ('node_modules', os.path.join(BASE_DIR, 'node_modules')),
+    ('node_modules', env("NODE_MODULES_ROOT")),
 ]
 
 SITE_ID = 1
@@ -286,7 +335,7 @@ KEY_MANAGER_RSA_KEY_MAX_AGE = 3 * 30
 KEY_MANAGER_RSA_KEY_EXPIRATION_PERIOD = 7
 
 SASS_PROCESSOR_INCLUDE_DIRS = [
-    os.path.join(BASE_DIR, 'node_modules'),
+    env("NODE_MODULES_ROOT"),
 ]
 
 SASS_PRECISION = 8
@@ -359,8 +408,8 @@ SOCIAL_AUTH_PIPELINE = (
 
 SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['email', 'first_name', 'last_name']
 
-SOCIAL_AUTH_FACEBOOK_KEY = ''
-SOCIAL_AUTH_FACEBOOK_SECRET = ''
+SOCIAL_AUTH_FACEBOOK_KEY = env("SOCIAL_AUTH_FACEBOOK_KEY")
+SOCIAL_AUTH_FACEBOOK_SECRET = env("SOCIAL_AUTH_FACEBOOK_SECRET")
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email', 'public_profile']
 # Request that Facebook includes email address in the returned details
 SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
@@ -369,19 +418,19 @@ SOCIAL_AUTH_FACEBOOK_PROFILE_EXTRA_PARAMS = {
 # Allow setting the auth_type in GET parameters
 SOCIAL_AUTH_FACEBOOK_AUTH_EXTRA_ARGUMENTS = {'auth_type': ''}
 
-SOCIAL_AUTH_GITHUB_KEY = ''
-SOCIAL_AUTH_GITHUB_SECRET = ''
+SOCIAL_AUTH_GITHUB_KEY = env("SOCIAL_AUTH_GITHUB_KEY")
+SOCIAL_AUTH_GITHUB_SECRET = env("SOCIAL_AUTH_GITHUB_SECRET")
 SOCIAL_AUTH_GITHUB_SCOPE = ['user:email']
 
-SOCIAL_AUTH_GOOGLE_KEY = ''
-SOCIAL_AUTH_GOOGLE_SECRET = ''
+SOCIAL_AUTH_GOOGLE_KEY = env("SOCIAL_AUTH_GOOGLE_KEY")
+SOCIAL_AUTH_GOOGLE_SECRET = env("SOCIAL_AUTH_GOOGLE_SECRET")
 SOCIAL_AUTH_GOOGLE_SCOPE = ['email']
 
-SOCIAL_AUTH_HELSINKI_ADFS_KEY = ''
-SOCIAL_AUTH_HELSINKI_ADFS_SECRET = None
+SOCIAL_AUTH_HELSINKI_ADFS_KEY = env("SOCIAL_AUTH_HELSINKI_ADFS_KEY")
+SOCIAL_AUTH_HELSINKI_ADFS_SECRET = env("SOCIAL_AUTH_HELSINKI_ADFS_SECRET")
 
-SOCIAL_AUTH_ESPOO_ADFS_KEY = ''
-SOCIAL_AUTH_ESPOO_ADFS_SECRET = None
+SOCIAL_AUTH_ESPOO_ADFS_KEY = env("SOCIAL_AUTH_ESPOO_ADFS_KEY")
+SOCIAL_AUTH_ESPOO_ADFS_SECRET = env("SOCIAL_AUTH_ESPOO_ADFS_SECRET")
 
 ###
 # The following section contains values required by Social Auth Suomi.fi
@@ -498,45 +547,58 @@ SOCIAL_AUTH_SUOMIFI_CALLBACK_MATCH = r'^/openid/authorize?.*'
 # These should be overwritten in local settings.
 
 # Service provider (Tunnistamo) entity ID and certificates.
-SOCIAL_AUTH_SUOMIFI_SP_ENTITY_ID = ''
-SOCIAL_AUTH_SUOMIFI_SP_PUBLIC_CERT = ''
-SOCIAL_AUTH_SUOMIFI_SP_PRIVATE_KEY = ''
+SOCIAL_AUTH_SUOMIFI_SP_ENTITY_ID = env("SOCIAL_AUTH_SUOMIFI_SP_ENTITY_ID")
+SOCIAL_AUTH_SUOMIFI_SP_PUBLIC_CERT = env("SOCIAL_AUTH_SUOMIFI_SP_PUBLIC_CERT")
+SOCIAL_AUTH_SUOMIFI_SP_PRIVATE_KEY = env("SOCIAL_AUTH_SUOMIFI_SP_PRIVATE_KEY")
 
 # Organization (hel.fi/tunnistamo) details must be given for languages fi/sv/en.
-SOCIAL_AUTH_SUOMIFI_ORG_INFO = {'fi': {'name': '', 'displayname': '', 'url': ''},
-                                'sv': {'name': '', 'displayname': '', 'url': ''},
-                                'en': {'name': '', 'displayname': '', 'url': ''}}
+SOCIAL_AUTH_SUOMIFI_ORG_INFO = env.json("SOCIAL_AUTH_SUOMIFI_ORG_INFO")
+if not SOCIAL_AUTH_SUOMIFI_ORG_INFO:
+    SOCIAL_AUTH_SUOMIFI_ORG_INFO = {'fi': {'name': '', 'displayname': '', 'url': ''},
+                                    'sv': {'name': '', 'displayname': '', 'url': ''},
+                                    'en': {'name': '', 'displayname': '', 'url': ''}}
+
 # Both technical and support contact information are required.
 # First name and surname must be given separately.
-SOCIAL_AUTH_SUOMIFI_TECHNICAL_CONTACT = {'givenName': '', 'surName': '', 'emailAddress': ''}
-SOCIAL_AUTH_SUOMIFI_SUPPORT_CONTACT = {'givenName': '', 'surName': '', 'emailAddress': ''}
+SOCIAL_AUTH_SUOMIFI_TECHNICAL_CONTACT = env.json("SOCIAL_AUTH_SUOMIFI_TECHNICAL_CONTACT")
+if not SOCIAL_AUTH_SUOMIFI_TECHNICAL_CONTACT:
+    SOCIAL_AUTH_SUOMIFI_TECHNICAL_CONTACT = {'givenName': '', 'surName': '', 'emailAddress': ''}
+SOCIAL_AUTH_SUOMIFI_SUPPORT_CONTACT = env.json("SOCIAL_AUTH_SUOMIFI_SUPPORT_CONTACT")
+if not SOCIAL_AUTH_SUOMIFI_SUPPORT_CONTACT:
+    SOCIAL_AUTH_SUOMIFI_SUPPORT_CONTACT = {'givenName': '', 'surName': '', 'emailAddress': ''}
 
 # Suomi.fi identity provider information.
 # These values can be obtained from Suomi.fi IdP metadata.
-SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS = {
-    'suomifi': {
-        'entity_id': '',  # IdP URI
-        'url': '',  # SSO URL
-        'logout_url': '',  # SLO URL
-        'x509cert': '',  # IdP certificate
-        # Social Core attribute bindings
-        'attr_user_permanent_id': 'urn:oid:1.2.246.21',
-        'attr_full_name': 'urn:oid:2.5.4.3',
-        'attr_first_name': 'http://eidas.europa.eu/attributes/naturalperson/CurrentGivenName',
-        'attr_last_name': 'urn:oid:2.5.4.4',
-        'attr_username': 'urn:oid:1.2.246.21',
-        'attr_email': 'urn:oid:0.9.2342.19200300.100.1.3',
+SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS = env.json("SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS")
+if not SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS:
+    SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS = {
+        'suomifi': {
+            'entity_id': '',  # IdP URI
+            'url': '',  # SSO URL
+            'logout_url': '',  # SLO URL
+            'x509cert': '',  # IdP certificate
+            # Social Core attribute bindings
+            'attr_user_permanent_id': 'urn:oid:1.2.246.21',
+            'attr_full_name': 'urn:oid:2.5.4.3',
+            'attr_first_name': 'http://eidas.europa.eu/attributes/naturalperson/CurrentGivenName',
+            'attr_last_name': 'urn:oid:2.5.4.4',
+            'attr_username': 'urn:oid:1.2.246.21',
+            'attr_email': 'urn:oid:0.9.2342.19200300.100.1.3',
+        }
     }
-}
 
 # UI configuration hints for Suomi.fi. Suomi.fi authentication selection page
 # uses this information for UI customization. Required languages are fi/sv/en.
-SOCIAL_AUTH_SUOMIFI_UI_INFO = {
-    'fi': {'DisplayName': '', 'Description': '', 'PrivacyStatementURL': ''},
-    'sv': {'DisplayName': '', 'Description': '', 'PrivacyStatementURL': ''},
-    'en': {'DisplayName': '', 'Description': '', 'PrivacyStatementURL': ''},
-}
-SOCIAL_AUTH_SUOMIFI_UI_LOGO = {'url': '', 'height': None, 'width': None}
+SOCIAL_AUTH_SUOMIFI_UI_INFO = env.json("SOCIAL_AUTH_SUOMIFI_UI_INFO")
+if not SOCIAL_AUTH_SUOMIFI_UI_INFO:
+    SOCIAL_AUTH_SUOMIFI_UI_INFO = {
+        'fi': {'DisplayName': '', 'Description': '', 'PrivacyStatementURL': ''},
+        'sv': {'DisplayName': '', 'Description': '', 'PrivacyStatementURL': ''},
+        'en': {'DisplayName': '', 'Description': '', 'PrivacyStatementURL': ''},
+    }
+SOCIAL_AUTH_SUOMIFI_UI_LOGO = env.json("SOCIAL_AUTH_SUOMIFI_UI_LOGO")
+if not SOCIAL_AUTH_SUOMIFI_UI_LOGO:
+    SOCIAL_AUTH_SUOMIFI_UI_LOGO = {'url': '', 'height': None, 'width': None}
 
 # End of Suomi.fi section
 ###
@@ -573,15 +635,17 @@ if 'SECRET_KEY' not in locals():
         with open(secret_file) as f:
             SECRET_KEY = f.read().strip()
     except IOError:
-        import random
-        system_random = random.SystemRandom()
-        try:
-            SECRET_KEY = ''.join(
-                [system_random.choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(64)])
-            with open(secret_file, 'w') as f:
-                import os
-                os.fchmod(f.fileno(), 0o0600)
-                f.write(SECRET_KEY)
-                f.close()
-        except IOError:
-            Exception('Please create a %s file with random characters to generate your secret key!' % secret_file)
+        SECRET_KEY = env("SECRET_KEY")
+        if not SECRET_KEY:
+            import random
+            system_random = random.SystemRandom()
+            try:
+                SECRET_KEY = ''.join(
+                    [system_random.choice('abcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*(-_=+)') for i in range(64)])
+                with open(secret_file, 'w') as f:
+                    import os
+                    os.fchmod(f.fileno(), 0o0600)
+                    f.write(SECRET_KEY)
+                    f.close()
+            except IOError:
+                Exception('Please create a %s file with random characters to generate your secret key!' % secret_file)

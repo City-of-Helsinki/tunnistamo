@@ -4,6 +4,7 @@
 /db.sqlite3
 /.django_secret
 /local_settings.py
+/docker-compose.env.yaml
 /node_modules
 /static
 /oidc_provider
