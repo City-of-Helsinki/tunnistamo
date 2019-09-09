@@ -17,6 +17,7 @@ cryptography
 django-npm
 libsass
 django-compressor
+django-environ
 django-sass-processor
 social-auth-core[openidconnect,saml]
 social-auth-app-django
