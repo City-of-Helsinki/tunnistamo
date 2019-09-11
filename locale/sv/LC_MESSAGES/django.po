@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: Tunnistamo\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-17 07:26+0000\n"
-"PO-Revision-Date: 2019-05-27 09:45+0300\n"
+"PO-Revision-Date: 2019-08-12 13:51+0300\n"
 "Last-Translator: Henrik Andersson <dev@hel.fi>, 2019\n"
 "Language-Team: Swedish (https://www.transifex.com/city-of-helsinki-1/teams/98217/sv/)\n"
 "MIME-Version: 1.0\n"
@@ -123,7 +123,7 @@ msgstr ""
 
 #: oidc_apis/models.py:21
 msgid "E-mail"
-msgstr "E-post"
+msgstr "E-postadress"
 
 #: oidc_apis/models.py:22
 msgid "Profile"

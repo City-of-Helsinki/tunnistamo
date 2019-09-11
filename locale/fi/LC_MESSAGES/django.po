@@ -12,7 +12,7 @@ msgstr ""
 "Project-Id-Version: Tunnistamo\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-04-17 07:26+0000\n"
-"PO-Revision-Date: 2019-04-17 07:55+0000\n"
+"PO-Revision-Date: 2019-08-12 13:50+0300\n"
 "Last-Translator: Timo Tuominen <dev@hel.fi>, 2019\n"
 "Language-Team: Finnish (https://www.transifex.com/city-of-helsinki-1/teams/98217/fi/)\n"
 "MIME-Version: 1.0\n"
@@ -31,7 +31,7 @@ msgstr ""
 
 #: adfs_provider/models.py:20 oidc_apis/scopes.py:81
 msgid "Email"
-msgstr "Sähköposti"
+msgstr "Sähköpostiosoite"
 
 #: adfs_provider/models.py:21
 msgid "Username"
@@ -123,7 +123,7 @@ msgstr ""
 
 #: oidc_apis/models.py:21
 msgid "E-mail"
-msgstr "Sähköposti"
+msgstr "Sähköpostiosoite"
 
 #: oidc_apis/models.py:22
 msgid "Profile"
