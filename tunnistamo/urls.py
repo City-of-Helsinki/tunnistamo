@@ -64,7 +64,7 @@ v1_api_path = path('v1/', include((router.urls + [v1_scope_path], 'v1')))
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('report/', staff_member_required(ReportView.as_view())),
+    path('admin/report/', staff_member_required(ReportView.as_view())),
     path('api-tokens/', get_api_tokens_view),
     path('accounts/profile/', show_login),
     path('accounts/login/', LoginView.as_view()),

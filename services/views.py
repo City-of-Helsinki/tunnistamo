@@ -3,6 +3,7 @@ from collections.abc import Iterable
 from urllib.parse import urlparse
 
 from django.db.models import Max
+from django.urls import reverse
 from django.views.generic.base import TemplateView
 from oauth2_provider.models import AccessToken
 from oidc_provider.models import Client, Token
@@ -18,8 +19,10 @@ def configured_domains(app):
         urls = getattr(app, field, None)
         if urls is None:
             continue
+        if isinstance(urls, str):
+            urls = urls.splitlines()
         for url in urls:
-            netloc = urlparse(url).netloc
+            netloc = urlparse(url.strip()).netloc
             if len(netloc.strip()) > 0:
                 hosts.add(netloc)
     return hosts
@@ -67,7 +70,8 @@ def report_oidc_clients():
             ui_or_api=ui_or_api(client),
             AD_enabled=AD_enabled,
             login_methods=login_methods,
-            modify='<a href="/admin/oidc_provider/client/{}">edit</a>'.format(client.id)
+            modify='<a href="{}">edit</a>'.format(reverse(
+                'admin:oidc_provider_client_change', args=[client.id]))
         )
         yield cdata
 
@@ -97,14 +101,15 @@ def report_oauth_clients():
             response_types=[client.authorization_grant_type],
             last_token=timestamps_by_client.get(client.id),
             date_created=client.created,
-            website_url='TODO can be found?',
-            contact_email='TODO can be found?',
+            website_url='',
+            contact_email='',
             hosts=configured_domains(client),
             status=client.site_type,
             ui_or_api=ui_or_api(client),
             AD_enabled=client.include_ad_groups,
             login_methods=login_methods,
-            modify='<a href="/admin/users/application/{}">edit</a>'.format(client.id)
+            modify='<a href="{}">edit</a>'.format(reverse(
+                'admin:users_application_change', args=[client.id]))
         )
         yield cdata
 
