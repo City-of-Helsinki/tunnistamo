@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<p>{% trans "You have been logged out of City of Helsinki services." %}</p>
+
+{% if backend and backend.persistent_session_warning %}
+<p><strong>{{ backend.persistent_session_warning }}</strong>
+{% trans "whose credentials you originally used to log in to City of Helsinki services." %}</p>
+
+<p><strong>{{ backend.persistent_session_final_warning }}</strong></p>
+
+<div class="well">
+    <p>{{ backend.persistent_session_suggestion }}</p>
+    <p><strong><a href="{{ backend.user_facing_url }}">{{ backend.persistent_session_link }}</a></strong></p>
+</div>
+
+{% endif %}
+
+{% if post_logout_redirect_uri %}
+<p><a href="{{post_logout_redirect_uri}}">{% trans "Return" %}</a></p>
+{% endif %}
+{% endblock %}

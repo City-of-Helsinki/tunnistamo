@@ -2,98 +2,126 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 # Translators:
 # Henrik Andersson <dev@hel.fi>, 2019
-# 
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Tunnistamo\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-17 07:26+0000\n"
+"POT-Creation-Date: 2019-10-31 14:16+0000\n"
 "PO-Revision-Date: 2019-08-12 13:51+0300\n"
 "Last-Translator: Henrik Andersson <dev@hel.fi>, 2019\n"
-"Language-Team: Swedish (https://www.transifex.com/city-of-helsinki-1/teams/98217/sv/)\n"
+"Language-Team: Swedish (https://www.transifex.com/city-of-helsinki-1/"
+"teams/98217/sv/)\n"
+"Language: sv\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: sv\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: adfs_provider/models.py:18
-msgid "Primary SID"
+#: auth_backends/facebook.py:7
+msgid "Please note that you are still logged in to Facebook"
 msgstr ""
 
-#: adfs_provider/models.py:19
-msgid "Department name"
+#: auth_backends/facebook.py:10
+msgid "Go back to Facebook where you can log yourself out in the usual manner:"
 msgstr ""
 
-#: adfs_provider/models.py:20 oidc_apis/scopes.py:81
-msgid "Email"
-msgstr "E-postadress"
+#: auth_backends/facebook.py:14
+msgid "Go to Facebook"
+msgstr ""
 
-#: adfs_provider/models.py:21
-msgid "Username"
-msgstr "Användarnamn"
+#: auth_backends/facebook.py:17
+msgid ""
+"If access to this device is shared by other users, the next user will be "
+"able to access your Facebook account unless you explicitly log out from "
+"Facebook."
+msgstr ""
 
-#: adfs_provider/models.py:22 oidc_apis/models.py:25 oidc_apis/scopes.py:67
-msgid "AD Groups"
-msgstr "AD-grupper"
+#: auth_backends/github.py:7
+msgid "Please note that you are still logged in to GitHub"
+msgstr ""
 
-#: adfs_provider/models.py:23
-msgid "First name"
-msgstr "Förnamn"
+#: auth_backends/github.py:10
+msgid "Go back to GitHub where you can log yourself out in the usual manner:"
+msgstr ""
 
-#: adfs_provider/models.py:24
-msgid "Last name"
-msgstr "Efternamn"
+#: auth_backends/github.py:14
+msgid "Go to GitHub"
+msgstr ""
 
-#: devices/models.py:17 identities/models.py:11 users/models.py:105
+#: auth_backends/github.py:17
+msgid ""
+"If access to this device is shared by other users, the next user will be "
+"able to access your GitHub account unless you explicitly log out from GitHub."
+msgstr ""
+
+#: auth_backends/google.py:9
+msgid "Please note that you are still logged in to Google's services"
+msgstr ""
+
+#: auth_backends/google.py:12
+msgid "Go back to Google to log yourself out in the usual manner:"
+msgstr ""
+
+#: auth_backends/google.py:16
+msgid "Go to Google"
+msgstr ""
+
+#: auth_backends/google.py:19
+msgid ""
+"If access to this device is shared by other users, the next user will be "
+"able to access your Google account unless you explicitly log out from Google."
+msgstr ""
+
+#: devices/models.py:18 identities/models.py:11 users/models.py:115
 msgid "user"
 msgstr "användare"
 
-#: devices/models.py:18
+#: devices/models.py:19
 msgid "public key"
 msgstr "öppen nyckel"
 
-#: devices/models.py:19 devices/models.py:37
+#: devices/models.py:20 devices/models.py:38
 msgid "secret key"
 msgstr "hemlig nyckel"
 
-#: devices/models.py:20
+#: devices/models.py:21
 msgid "app version"
 msgstr "Version av applikationen"
 
-#: devices/models.py:21
+#: devices/models.py:22
 msgid "OS"
 msgstr "Operativsystem"
 
-#: devices/models.py:22
+#: devices/models.py:23
 msgid "OS version"
 msgstr "Version av operativsystemet"
 
-#: devices/models.py:23
+#: devices/models.py:24
 msgid "device model"
 msgstr "Enhetsmodell"
 
-#: devices/models.py:24
+#: devices/models.py:25
 msgid "last used at"
 msgstr "användes senast"
 
-#: devices/models.py:28
+#: devices/models.py:29
 msgid "user device"
 msgstr "användarens enhet"
 
-#: devices/models.py:29
+#: devices/models.py:30
 msgid "user devices"
 msgstr "användarens enheter"
 
-#: devices/models.py:38
+#: devices/models.py:39
 msgid "allowed OAuth scopes"
 msgstr ""
 
-#: identities/models.py:12 services/models.py:29 users/models.py:107
+#: identities/models.py:12 services/models.py:29 users/models.py:117
 msgid "service"
 msgstr "tjänst"
 
@@ -137,6 +165,10 @@ msgstr "Adress"
 msgid "GitHub username"
 msgstr "användarnamn på GitHub"
 
+#: oidc_apis/models.py:25 oidc_apis/scopes.py:67
+msgid "AD Groups"
+msgstr "AD-grupper"
+
 #: oidc_apis/models.py:33
 msgid "API domain identifier, e.g. https://api.hel.fi/auth"
 msgstr ""
@@ -159,8 +191,8 @@ msgstr ""
 
 #: oidc_apis/models.py:58
 msgid ""
-"Select the scopes that this API needs information from. Information from the"
-" selected scopes will be included to the API Tokens."
+"Select the scopes that this API needs information from. Information from the "
+"selected scopes will be included to the API Tokens."
 msgstr ""
 
 #: oidc_apis/models.py:65
@@ -197,8 +229,8 @@ msgstr ""
 #: oidc_apis/models.py:141
 msgid ""
 "If there is a need for multiple scopes per API, this can specify what kind "
-"of scope this is about, e.g. \"readonly\".  For general API scope just leave"
-" this empty."
+"of scope this is about, e.g. \"readonly\".  For general API scope just leave "
+"this empty."
 msgstr ""
 
 #: oidc_apis/models.py:149
@@ -207,8 +239,7 @@ msgstr ""
 
 #: oidc_apis/models.py:150
 msgid ""
-"Select client applications which are allowed to get access to this API "
-"scope."
+"Select client applications which are allowed to get access to this API scope."
 msgstr ""
 
 #: oidc_apis/models.py:157 oidc_apis/models.py:190
@@ -277,11 +308,14 @@ msgstr "Grundläggande profil"
 
 #: oidc_apis/scopes.py:78
 msgid ""
-"Access to your basic information. Includes names and possibly a user "
-"picture."
+"Access to your basic information. Includes names and possibly a user picture."
 msgstr ""
 "Åtkomst till din grundläggande information. Innehåller namn och eventuellt "
 "en användarbild."
+
+#: oidc_apis/scopes.py:81
+msgid "Email"
+msgstr "E-postadress"
 
 #: oidc_apis/scopes.py:82
 msgid "Access to your email address."
@@ -312,8 +346,8 @@ msgstr "Fält som inte kan översättas"
 
 #: services/api.py:37
 msgid ""
-"Include only services that have or don't have a consent given by the current"
-" user. Accepts boolean values \"true\" and \"false\"."
+"Include only services that have or don't have a consent given by the current "
+"user. Accepts boolean values \"true\" and \"false\"."
 msgstr ""
 
 #: services/models.py:13
@@ -354,31 +388,39 @@ msgstr ""
 msgid "Users"
 msgstr "Användare"
 
-#: users/models.py:76
+#: users/models.py:73
+msgid "Post Logout Redirect URIs"
+msgstr ""
+
+#: users/models.py:74
+msgid "Enter each URI on a new line."
+msgstr ""
+
+#: users/models.py:82
 msgid "OIDC Client"
 msgstr ""
 
-#: users/models.py:82 users/models.py:83
+#: users/models.py:88 users/models.py:89
 msgid "OIDC Client Options"
 msgstr ""
 
-#: users/models.py:109
+#: users/models.py:119
 msgid "timestamp"
 msgstr "tidsstämpel"
 
-#: users/models.py:110
+#: users/models.py:120
 msgid "IP address"
 msgstr "IP-adress"
 
-#: users/models.py:111
+#: users/models.py:121
 msgid "geo location"
 msgstr "geolokaliseringsdata"
 
-#: users/models.py:116
+#: users/models.py:126
 msgid "user login entry"
 msgstr "inloggningspost"
 
-#: users/models.py:117
+#: users/models.py:127
 msgid "user login entries"
 msgstr "inloggningposter"
 
@@ -402,3 +444,49 @@ msgstr "Avvisa"
 #: users/templates/oidc_provider/authorize.html:21
 msgid "Allow"
 msgstr "Godkänn"
+
+#: users/templates/registration/logged_out.html:4
+msgid "You have been logged out"
+msgstr ""
+
+#: users/templates/registration/logged_out.html:7
+msgid "You have been logged out of City of Helsinki services."
+msgstr ""
+
+#: users/templates/registration/logged_out.html:11
+msgid ""
+"whose credentials you originally used to log in to City of Helsinki services."
+msgstr ""
+
+#: users/templates/registration/logged_out.html:23
+msgid "Return"
+msgstr ""
+
+#: yletunnus/backends.py:53
+msgid "Please note that you are still logged in to Yle Tunnus"
+msgstr ""
+
+#: yletunnus/backends.py:56
+msgid ""
+"Go back to Yle Tunnus where you can log yourself out in the usual manner:"
+msgstr ""
+
+#: yletunnus/backends.py:60
+msgid "Go to Yle Tunnus"
+msgstr ""
+
+#: yletunnus/backends.py:63
+msgid ""
+"If access to this device is shared by other users, the next user will be "
+"able to access your Yle account unless you explicitly log out from Yle "
+"Tunnus."
+msgstr ""
+
+#~ msgid "Username"
+#~ msgstr "Användarnamn"
+
+#~ msgid "First name"
+#~ msgstr "Förnamn"
+
+#~ msgid "Last name"
+#~ msgstr "Efternamn"

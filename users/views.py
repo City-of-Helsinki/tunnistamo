@@ -1,15 +1,15 @@
+import logging
 import re
 from pydoc import locate
 from urllib.parse import parse_qs, urlparse
 
 from django.conf import settings
-from django.contrib.auth import logout as auth_logout
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import translation
 from django.utils.http import quote
 from django.views.generic import View
-from django.views.generic.base import TemplateView
+from django.views.generic.base import RedirectView, TemplateView
 from jwkest.jws import JWT
 from oauth2_provider.models import get_application_model
 from oidc_provider.lib.endpoints.token import TokenEndpoint
@@ -17,12 +17,19 @@ from oidc_provider.lib.errors import TokenError, UserAuthError
 from oidc_provider.lib.utils.token import client_id_from_id_token
 from oidc_provider.models import Client, Token
 from oidc_provider.views import AuthorizeView, EndSessionView
+from social_core.backends.utils import get_backend
 from social_django.models import UserSocialAuth
 from social_django.utils import load_backend, load_strategy
 
 from oidc_apis.models import ApiScope
 
 from .models import LoginMethod, OidcClientOptions
+
+logger = logging.getLogger(__name__)
+
+
+def get_backend_class(backend_name):
+    return get_backend(settings.AUTHENTICATION_BACKENDS, backend_name)
 
 
 class LoginView(TemplateView):
@@ -105,39 +112,6 @@ def _process_uris(uris):
     return uris.splitlines()
 
 
-class LogoutView(TemplateView):
-    template_name = 'logout_done.html'
-
-    def _validate_client_uri(self, uri):
-        """Valid post logout URIs are explicitly managed in the database via
-        the admin UI as linefeed-separated text fields of one or
-        several URIs.
-
-        This method treats all URIs of all OAuth apps and OIDC Clients
-        as valid for any logout request.
-        """
-        if uri is None or uri == '':
-            return False
-
-        uri_texts = list()
-        for manager in [get_application_model().objects, Client.objects]:
-            for o in manager.all():
-                value = o.post_logout_redirect_uris
-                if value is None or len(value) == 0:
-                    continue
-                uri_texts.append(value)
-
-        return uri in (u for uri_text in uri_texts for u in _process_uris(uri_text))
-
-    def get(self, *args, **kwargs):
-        if self.request.user.is_authenticated:
-            auth_logout(self.request)
-        uri = self.request.GET.get('next')
-        if self._validate_client_uri(uri):
-            return redirect(uri)
-        return super(LogoutView, self).get(*args, **kwargs)
-
-
 class AuthenticationErrorView(TemplateView):
     template_name = 'account/signup_closed.html'
 
@@ -164,24 +138,93 @@ class TunnistamoOidcAuthorizeView(AuthorizeView):
         return super().post(request, *args, **kwargs)
 
 
+class AuthoritativeLogoutRedirectView(RedirectView):
+    permanent = True
+    query_string = False
+    pattern_name = 'end-session'
+
+    def get_redirect_url(self, *args, **kwargs):
+        query_parameters = self.request.GET.copy()
+        if 'next' in self.request.GET:
+            next_url = self.request.GET['next']
+            del query_parameters['next']
+            query_parameters['post_logout_redirect_uri'] = next_url
+        url = super().get_redirect_url(*args, **kwargs)
+        if len(query_parameters) > 0:
+            url += '/?{}'.format(query_parameters.urlencode())
+        return url
+
+
 class TunnistamoOidcEndSessionView(EndSessionView):
-    def dispatch(self, request, *args, **kwargs):
-        # check if the authenticated user has active Suomi.fi login
-        user = request.user
-        social_user = None
-        if request.user.is_authenticated:
-            # social_auth creates a new user for each (provider, uid) pair so
+    def _validate_client_uri(self, uri):
+        """Valid post logout URIs are explicitly managed in the database via
+        the admin UI as linefeed-separated text fields of one or
+        several URIs.
+
+        This method treats all URIs of all OAuth apps and OIDC Clients
+        as valid for any logout request.
+        """
+        if uri is None or uri == '':
+            return False
+
+        uri_texts = list()
+        for manager in [get_application_model().objects, Client.objects]:
+            for o in manager.all():
+                value = o.post_logout_redirect_uris
+                if value is None or len(value) == 0:
+                    continue
+                uri_texts.append(value)
+
+        return uri in (u for uri_text in uri_texts for u in _process_uris(uri_text))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['post_logout_redirect_uri'] = self.post_logout_redirect_uri
+        context['backend'] = self.backend
+        return context
+
+    def _active_suomi_fi_social_user(self, user):
+        if not user.is_authenticated:
+            return None
+        try:
+            # Social_auth creates a new user for each (provider, uid) pair so
             # we don't need to worry about duplicates
-            try:
-                social_user = UserSocialAuth.objects.get(user=user, provider='suomifi')
-            except UserSocialAuth.DoesNotExist:
-                pass
+            return UserSocialAuth.objects.get(user=user, provider='suomifi')
+        except UserSocialAuth.DoesNotExist:
+            return None
+
+    def get_active_social_users(self, user):
+        if not user.is_authenticated:
+            return []
+        return UserSocialAuth.objects.filter(user=user)
+
+    def dispatch(self, request, *args, **kwargs):
+        # Check if the authenticated user has active Suomi.fi login
+        user = request.user
+        social_user = self._active_suomi_fi_social_user(user)
+
         # clear Django session and get redirect URL
-        response = super().dispatch(request, *args, **kwargs)
-        # create Suomi.fi logout redirect if needed
+        response = super(TunnistamoOidcEndSessionView, self).dispatch(request, *args, **kwargs)
+
         if social_user is not None:
-            response = self._create_suomifi_logout_response(social_user, user, request, response.url)
-        return response
+            # Case 1: Suomi.fi
+            # create Suomi.fi logout redirect if needed
+            return self._create_suomifi_logout_response(social_user, user, request, response.url)
+
+        # Case 2: default case
+        self.post_logout_redirect_uri = self.request.GET.get('post_logout_redirect_uri', None)
+        if not self._validate_client_uri(self.post_logout_redirect_uri):
+            self.post_logout_redirect_uri = None
+        self.next_page = None
+
+        social_users = self.get_active_social_users(user)
+        if len(social_users) > 1:
+            logger.warn('Multiple active social core backends for user {}'.format(user.pk))
+
+        self.backend = None
+        for su in social_users:
+            self.backend = get_backend_class(su.provider)
+        return super(EndSessionView, self).dispatch(request, *args, **kwargs)
 
     @staticmethod
     def _create_suomifi_logout_response(social_user, user, request, redirect_url):

@@ -2,98 +2,128 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 # Translators:
 # Timo Tuominen <dev@hel.fi>, 2019
-# 
+#
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Tunnistamo\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-04-17 07:26+0000\n"
-"PO-Revision-Date: 2019-08-12 13:50+0300\n"
+"POT-Creation-Date: 2019-10-31 14:16+0000\n"
+"PO-Revision-Date: 2019-11-01 13:41+0200\n"
 "Last-Translator: Timo Tuominen <dev@hel.fi>, 2019\n"
-"Language-Team: Finnish (https://www.transifex.com/city-of-helsinki-1/teams/98217/fi/)\n"
+"Language-Team: Finnish (https://www.transifex.com/city-of-helsinki-1/"
+"teams/98217/fi/)\n"
+"Language: fi\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Language: fi\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: adfs_provider/models.py:18
-msgid "Primary SID"
-msgstr ""
+#
+#: auth_backends/facebook.py:7
+msgid "Please note that you are still logged in to Facebook"
+msgstr "Huomaa, että olet edelleen kirjautuneena Facebook-tilillesi,"
 
-#: adfs_provider/models.py:19
-msgid "Department name"
-msgstr ""
+#: auth_backends/facebook.py:10
+msgid "Go back to Facebook where you can log yourself out in the usual manner:"
+msgstr "Siirry Facebookiin ja kirjaudu ulos Facebook-käyttäjätililtäsi sieltä käsin."
 
-#: adfs_provider/models.py:20 oidc_apis/scopes.py:81
-msgid "Email"
-msgstr "Sähköpostiosoite"
+#: auth_backends/facebook.py:14
+msgid "Go to Facebook"
+msgstr "Siirry Facebookiin"
 
-#: adfs_provider/models.py:21
-msgid "Username"
-msgstr "Käyttäjätunnus"
+#: auth_backends/facebook.py:17
+msgid ""
+"If access to this device is shared by other users, the next user will be "
+"able to access your Facebook account unless you explicitly log out from "
+"Facebook."
+msgstr "Jos tämä laite on yhteiskäytössä, etkä kirjaudu omatoimisesti ulos Facebookista, laitteen seuraava käyttäjä pääsee nimissäsi Facebookiin!"
 
-#: adfs_provider/models.py:22 oidc_apis/models.py:25 oidc_apis/scopes.py:67
-msgid "AD Groups"
-msgstr "AD-ryhmät"
+#
+#: auth_backends/github.py:7
+msgid "Please note that you are still logged in to GitHub"
+msgstr "Huomaa, että olet vielä kirjautuneena GitHub-tiliisi,"
 
-#: adfs_provider/models.py:23
-msgid "First name"
-msgstr "Etunimi"
+#: auth_backends/github.py:10
+msgid "Go back to GitHub where you can log yourself out in the usual manner:"
+msgstr "Siirry takaisin GitHubiin ja kirjaudu sieltä ulos GitHubin omalla uloskirjautumistoiminnolla:"
 
-#: adfs_provider/models.py:24
-msgid "Last name"
-msgstr "Sukunimi"
+#: auth_backends/github.py:14
+msgid "Go to GitHub"
+msgstr "Siirry GitHubiin"
 
-#: devices/models.py:17 identities/models.py:11 users/models.py:105
+#: auth_backends/github.py:17
+msgid ""
+"If access to this device is shared by other users, the next user will be "
+"able to access your GitHub account unless you explicitly log out from GitHub."
+msgstr "Jos tämä laite on yhteiskäytössä, etkä kirjaudu omatoimisesti ulos GitHubista, laitteen seuraava käyttäjä pääsee nimissäsi GitHubiin!"
+
+#: auth_backends/google.py:9
+msgid "Please note that you are still logged in to Google's services"
+msgstr "Huomaa, että olet vielä kirjautuneena Google-tilillesi,"
+
+#: auth_backends/google.py:12
+msgid "Go back to Google to log yourself out in the usual manner:"
+msgstr "Siirry takaisin Google-tiliisi ja kirjaudu siltä ulos Googlen omalla uloskirjautumistoiminnolla:"
+
+#: auth_backends/google.py:16
+msgid "Go to Google"
+msgstr "Siirry Googleen"
+
+#: auth_backends/google.py:19
+msgid ""
+"If access to this device is shared by other users, the next user will be "
+"able to access your Google account unless you explicitly log out from Google."
+msgstr "Jos tämä laite on yhteiskäytössä, etkä kirjaudu omatoimisesti ulos Google-tililtäsi, laitteen seuraava käyttäjä pääsee käyttämään nimissäsi Google-tiliäsi!"
+
+#: devices/models.py:18 identities/models.py:11 users/models.py:115
 msgid "user"
 msgstr "käyttäjä"
 
-#: devices/models.py:18
+#: devices/models.py:19
 msgid "public key"
 msgstr "julkinen avain"
 
-#: devices/models.py:19 devices/models.py:37
+#: devices/models.py:20 devices/models.py:38
 msgid "secret key"
 msgstr "salainen avain"
 
-#: devices/models.py:20
+#: devices/models.py:21
 msgid "app version"
 msgstr "sovelluksen versio"
 
-#: devices/models.py:21
+#: devices/models.py:22
 msgid "OS"
 msgstr "Käyttöjärjestelmä"
 
-#: devices/models.py:22
+#: devices/models.py:23
 msgid "OS version"
 msgstr "Käyttöjärjestelmän versio"
 
-#: devices/models.py:23
+#: devices/models.py:24
 msgid "device model"
 msgstr "laitteen malli"
 
-#: devices/models.py:24
+#: devices/models.py:25
 msgid "last used at"
 msgstr "viimeksi käytetty"
 
-#: devices/models.py:28
+#: devices/models.py:29
 msgid "user device"
 msgstr "käyttäjän laite"
 
-#: devices/models.py:29
+#: devices/models.py:30
 msgid "user devices"
 msgstr "käyttäjien laitteet"
 
-#: devices/models.py:38
+#: devices/models.py:39
 msgid "allowed OAuth scopes"
 msgstr ""
 
-#: identities/models.py:12 services/models.py:29 users/models.py:107
+#: identities/models.py:12 services/models.py:29 users/models.py:117
 msgid "service"
 msgstr "palvelu"
 
@@ -137,6 +167,10 @@ msgstr "Osoite"
 msgid "GitHub username"
 msgstr "GitHub käyttäjätunnus"
 
+#: oidc_apis/models.py:25 oidc_apis/scopes.py:67
+msgid "AD Groups"
+msgstr "AD-ryhmät"
+
 #: oidc_apis/models.py:33
 msgid "API domain identifier, e.g. https://api.hel.fi/auth"
 msgstr ""
@@ -159,8 +193,8 @@ msgstr ""
 
 #: oidc_apis/models.py:58
 msgid ""
-"Select the scopes that this API needs information from. Information from the"
-" selected scopes will be included to the API Tokens."
+"Select the scopes that this API needs information from. Information from the "
+"selected scopes will be included to the API Tokens."
 msgstr ""
 
 #: oidc_apis/models.py:65
@@ -197,8 +231,8 @@ msgstr ""
 #: oidc_apis/models.py:141
 msgid ""
 "If there is a need for multiple scopes per API, this can specify what kind "
-"of scope this is about, e.g. \"readonly\".  For general API scope just leave"
-" this empty."
+"of scope this is about, e.g. \"readonly\".  For general API scope just leave "
+"this empty."
 msgstr ""
 
 #: oidc_apis/models.py:149
@@ -207,8 +241,7 @@ msgstr ""
 
 #: oidc_apis/models.py:150
 msgid ""
-"Select client applications which are allowed to get access to this API "
-"scope."
+"Select client applications which are allowed to get access to this API scope."
 msgstr ""
 
 #: oidc_apis/models.py:157 oidc_apis/models.py:190
@@ -277,10 +310,13 @@ msgstr "Perustiedot"
 
 #: oidc_apis/scopes.py:78
 msgid ""
-"Access to your basic information. Includes names and possibly a user "
-"picture."
+"Access to your basic information. Includes names and possibly a user picture."
 msgstr ""
 "Lupa lukea perustiedot, jotka sisältävät nimet ja mahdollisen profiilikuvan."
+
+#: oidc_apis/scopes.py:81
+msgid "Email"
+msgstr "Sähköpostiosoite"
 
 #: oidc_apis/scopes.py:82
 msgid "Access to your email address."
@@ -312,8 +348,8 @@ msgstr "Kentät joita ei käännetä"
 
 #: services/api.py:37
 msgid ""
-"Include only services that have or don't have a consent given by the current"
-" user. Accepts boolean values \"true\" and \"false\"."
+"Include only services that have or don't have a consent given by the current "
+"user. Accepts boolean values \"true\" and \"false\"."
 msgstr ""
 
 #: services/models.py:13
@@ -354,31 +390,39 @@ msgstr ""
 msgid "Users"
 msgstr "Käyttäjät"
 
-#: users/models.py:76
+#: users/models.py:73
+msgid "Post Logout Redirect URIs"
+msgstr ""
+
+#: users/models.py:74
+msgid "Enter each URI on a new line."
+msgstr ""
+
+#: users/models.py:82
 msgid "OIDC Client"
 msgstr ""
 
-#: users/models.py:82 users/models.py:83
+#: users/models.py:88 users/models.py:89
 msgid "OIDC Client Options"
 msgstr ""
 
-#: users/models.py:109
+#: users/models.py:119
 msgid "timestamp"
 msgstr "aikaleima"
 
-#: users/models.py:110
+#: users/models.py:120
 msgid "IP address"
 msgstr "IP-osoite"
 
-#: users/models.py:111
+#: users/models.py:121
 msgid "geo location"
 msgstr "sijaintitiedot"
 
-#: users/models.py:116
+#: users/models.py:126
 msgid "user login entry"
 msgstr "kirjautumismerkintä"
 
-#: users/models.py:117
+#: users/models.py:127
 msgid "user login entries"
 msgstr "kirjautumismerkinnät"
 
@@ -402,3 +446,57 @@ msgstr "Älä anna lupaa"
 #: users/templates/oidc_provider/authorize.html:21
 msgid "Allow"
 msgstr "Anna lupa"
+
+#: users/templates/registration/logged_out.html:4
+msgid "You have been logged out"
+msgstr "Sinut on kirjattu ulos"
+
+#: users/templates/registration/logged_out.html:7
+msgid "You have been logged out of City of Helsinki services."
+msgstr "Sinut on kirjattu ulos Helsingin kaupungin palveluista."
+
+#: users/templates/registration/logged_out.html:11
+msgid ""
+"whose credentials you originally used to log in to City of Helsinki services."
+msgstr "jolla alun perin kirjauduit Helsingin kaupungin palveluihin."
+
+#: users/templates/registration/logged_out.html:23
+msgid "Return"
+msgstr "Palaa"
+
+#
+#: yletunnus/backends.py:53
+msgid "Please note that you are still logged in to Yle Tunnus"
+msgstr "Huomaa, että olet vielä kirjautuneena Yle Tunnus -tilillesi,"
+
+#: yletunnus/backends.py:56
+msgid ""
+"Go back to Yle Tunnus where you can log yourself out in the usual manner:"
+msgstr "Siirry takaisin Yle Tunnukseen ja kirjaudu sieltä ulos Yle Tunnuksen omalla uloskirjautumistoiminnolla:"
+
+#: yletunnus/backends.py:60
+msgid "Go to Yle Tunnus"
+msgstr "Siirry Yle Tunnukseen"
+
+#: yletunnus/backends.py:63
+msgid ""
+"If access to this device is shared by other users, the next user will be "
+"able to access your Yle account unless you explicitly log out from Yle "
+"Tunnus."
+msgstr "Jos tämä laite on yhteiskäytössä, etkä kirjaudu omatoimisesti ulos Yle Tunnus -tililtäsi, laitteen seuraava käyttäjä pääsee käyttämään Yle Tunnusta nimissäsi!"
+
+#~ msgid ""
+#~ "If desired, you can go back to Facebook to log out using Facebook's own "
+#~ "log out feature:"
+#~ msgstr ""
+#~ "Jos haluat, voit mennä takaisin Facebookiin kirjautumaan sieltä ulos "
+#~ "Facebookin omalla uloskirjautumistoiminnolla:"
+
+#~ msgid "Username"
+#~ msgstr "Käyttäjätunnus"
+
+#~ msgid "First name"
+#~ msgstr "Etunimi"
+
+#~ msgid "Last name"
+#~ msgstr "Sukunimi"
