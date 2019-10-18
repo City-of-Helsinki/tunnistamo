@@ -6,24 +6,16 @@
 
 ## Set up with Docker
 
-1. Create a `local_settings.py` file in the project folder:
-   * use the `local_settings.py.docker.template`
-   * set `DEBUG` the way you need it
+1. Create a `docker-compose.env.yaml` file in the project folder:
+   * you can use `docker-compose.env.yaml.template` as a base, it does not need any changes if you want all features enables
+   * change `DEBUG` and the rest of the Django settings if needed
+   * set entrypoint/startup variables according to taste
+     * `SETUP_DEV_OIDC`, creates a working OIDC environment
+     * `CREATE_SUPERUSER`, creates a superuser with credentials `admin`:`admin` (admin@example.com)
+     * `APPLY_MIGRATIONS`, applies migrations on startup
+     * `GENERATE_OPENID_KEY`, generates a RSA key on startup
 
 2. Run `docker-compose up`
-
-3. Run migrations if needed:
-   * `docker exec tunnistamo-backend python manage.py migrate`
-
-4. Create superuser if needed:
-   * `docker exec -it tunnistamo-backend python manage.py createsuperuser`
-   
-5. Create RSA keys:
-   * `docker exec -it tunnistamo-backend python manage.py manage_openid_keys`
-   * In order to automatically rotate the server RSA key at set intervals this command should be added to `cron.daily`
-
-6. Run the server:
-   * `docker exec tunnistamo-backend python manage.py runserver 0:8000`
    
 The project is now running at [localhost:8000](http://localhost:8000)
 
