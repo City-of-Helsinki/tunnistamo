@@ -12,6 +12,7 @@ RUN apt-install.sh \
       pkg-config \
       git \
       curl \
+      libpq-dev \
       build-essential
 
 WORKDIR /app
