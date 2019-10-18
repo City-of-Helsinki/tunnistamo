@@ -10,7 +10,7 @@ django-helusers
 django-allauth
 django-bootstrap3
 psycopg2
-psycopg2-binary
+--no-binary psycopg2
 raven
 PyJWT
 cryptography

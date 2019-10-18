@@ -2,4 +2,6 @@
 #
 #   prequ update
 #
+--no-binary psycopg2
+
 uwsgi==2.0.18
