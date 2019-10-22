@@ -3,6 +3,9 @@ include:
     ref: v1
     file: '/.gitlab-ci-template.yml'
 
+variables:
+  DB_MIGRATE: /app/.prod/on_deploy.sh
+
 build:
   extends: .build
 
