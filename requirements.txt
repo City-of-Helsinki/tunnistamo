@@ -29,7 +29,7 @@ django-oauth-toolkit==1.2.0
 django-oidc-provider==0.7.0
 django-parler==1.9.2
 django-sass-processor==0.7
-git+git://github.com/City-of-Helsinki/django-translation-checker.git@master#egg=django-translation-checker==0.1
+git+https://github.com/City-of-Helsinki/django-translation-checker.git@master#egg=django-translation-checker==0.1
 djangorestframework==3.10.2
 drf-oidc-auth==0.9        # via django-helusers
 ecdsa==0.13               # via python-jose
@@ -56,7 +56,7 @@ pyjwkest==1.4.0           # via django-oidc-provider, drf-oidc-auth
 pyjwt==1.6.4
 python-jose==3.0.1        # via social-auth-core
 python3-openid==3.1.0     # via django-allauth, social-auth-core
-git+git://github.com/City-of-Helsinki/python3-saml.git@v1.5.0-tunnistamo#egg=python3-saml==1.5.0
+git+https://github.com/City-of-Helsinki/python3-saml.git@v1.5.0-tunnistamo#egg=python3-saml==1.5.0
 pytz==2018.4              # via django
 raven==6.9.0
 rcssmin==1.0.6            # via django-compressor
