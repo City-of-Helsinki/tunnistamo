@@ -1,3 +1,4 @@
+import logging
 import uuid
 
 from django.contrib.auth import get_user_model
@@ -8,6 +9,8 @@ from helusers.utils import uuid_to_username
 from auth_backends.adfs.base import BaseADFS
 from users.models import LoginMethod
 from users.views import AuthenticationErrorView
+
+logger = logging.getLogger(__name__)
 
 
 def get_user_uuid(details, backend, response, user=None, *args, **kwargs):
@@ -88,6 +91,8 @@ def associate_by_email(strategy, details, user=None, *args, **kwargs):
     user has only authenticated using password, connect the social
     login to the user.
     """
+    logger.debug(f"starting email association; user:{user}; details:{details}")
+
     if user:
         return
 
@@ -101,6 +106,8 @@ def associate_by_email(strategy, details, user=None, *args, **kwargs):
     existing_users = User.objects.filter(email__iexact=email).order_by('-date_joined')
     if not existing_users:
         return
+
+    logger.debug(f"found existing users with email '{email}': {existing_users}")
 
     user = existing_users[0]
 
@@ -118,6 +125,8 @@ def associate_by_email(strategy, details, user=None, *args, **kwargs):
         return {
             'user': user,
         }
+
+    logger.debug(f"'{email}' already in use by existing user and email domain not trusted")
 
     providers = [a.provider for a in social_set]
     strategy.request.other_logins = LoginMethod.objects.filter(provider_id__in=providers)
@@ -139,9 +148,11 @@ def update_ad_groups(details, backend, user=None, *args, **kwargs):
 
 
 def check_existing_social_associations(backend, strategy, user=None, social=None, *args, **kwargs):
+    logger.debug(f"starting check for existing social assoc; user:{user}; backend: {backend.name}; social:{social}")
     if user and not social:
         social_set = user.social_auth.all()
         providers = [a.provider for a in social_set]
+        logger.debug(f"social does not exist; providers: {providers}")
         if providers and backend.name not in providers:
             strategy.request.other_logins = LoginMethod.objects.filter(provider_id__in=providers)
             error_view = AuthenticationErrorView(request=strategy.request)
