@@ -45,10 +45,10 @@ def assert_database_state_consistent(urls, cut):
 
 
 @pytest.mark.parametrize("application_url,cors_enabled,destructive_operation", [  # noqa: C901
-    ('/.well-known/openid-configuration/', True, 'delete'),
+    ('/.well-known/openid-configuration', True, 'delete'),
     ('/api-tokens/', True, 'erase'),
     ('/openid/jwks/', True, 'delete'),
-    ('/openid/.well-known/openid-configuration/', True, 'erase'),
+    ('/openid/.well-known/openid-configuration', True, 'erase'),
     ('/login/', False, 'delete'),
     ('/logout/', False, 'erase'),
     ('/admin/', False, 'delete'),

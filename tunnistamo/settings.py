@@ -291,7 +291,7 @@ LOGGING = {
 }
 
 CORS_ORIGIN_ALLOW_ALL = False
-CORS_URLS_REGEX = r'.*/(\.well-known/openid-configuration|v1|openid|api-tokens|jwt-token)/.*'
+CORS_URLS_REGEX = r'.*/(\.well-known/openid-configuration|v1|openid|api-tokens|jwt-token).*'
 
 
 OAUTH2_PROVIDER_APPLICATION_MODEL = 'users.Application'
