@@ -6,13 +6,12 @@
 # Translators:
 # Timo Tuominen <dev@hel.fi>, 2019
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Tunnistamo\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-10-31 14:16+0000\n"
-"PO-Revision-Date: 2019-11-01 13:41+0200\n"
+"POT-Creation-Date: 2019-11-14 15:14+0000\n"
+"PO-Revision-Date: 2019-11-14 17:13+0200\n"
 "Last-Translator: Timo Tuominen <dev@hel.fi>, 2019\n"
 "Language-Team: Finnish (https://www.transifex.com/city-of-helsinki-1/"
 "teams/98217/fi/)\n"
@@ -22,62 +21,92 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#
 #: auth_backends/facebook.py:7
-msgid "Please note that you are still logged in to Facebook"
-msgstr "Huomaa, että olet edelleen kirjautuneena Facebook-tilillesi,"
+msgid "Facebook"
+msgstr "Facebook"
+
+#: auth_backends/facebook.py:8
+msgctxt "access to []"
+msgid "Facebook"
+msgstr "Facebookiin"
+
+#: auth_backends/facebook.py:9
+msgctxt "genetive form"
+msgid "Facebook"
+msgstr "Facebookin"
 
 #: auth_backends/facebook.py:10
-msgid "Go back to Facebook where you can log yourself out in the usual manner:"
-msgstr "Siirry Facebookiin ja kirjaudu ulos Facebook-käyttäjätililtäsi sieltä käsin."
+msgctxt "logged in to []"
+msgid "Facebook"
+msgstr "Facebookiin"
 
-#: auth_backends/facebook.py:14
-msgid "Go to Facebook"
-msgstr "Siirry Facebookiin"
+#: auth_backends/facebook.py:11
+msgctxt "log out from []"
+msgid "Facebook"
+msgstr "Facebookista"
 
-#: auth_backends/facebook.py:17
-msgid ""
-"If access to this device is shared by other users, the next user will be "
-"able to access your Facebook account unless you explicitly log out from "
-"Facebook."
-msgstr "Jos tämä laite on yhteiskäytössä, etkä kirjaudu omatoimisesti ulos Facebookista, laitteen seuraava käyttäjä pääsee nimissäsi Facebookiin!"
+#: auth_backends/facebook.py:12
+msgctxt "go to []"
+msgid "Facebook"
+msgstr "Facebookiin"
 
-#
 #: auth_backends/github.py:7
-msgid "Please note that you are still logged in to GitHub"
-msgstr "Huomaa, että olet vielä kirjautuneena GitHub-tiliisi,"
+msgid "GitHub"
+msgstr "GitHub"
+
+#: auth_backends/github.py:8
+msgctxt "access to []"
+msgid "GitHub"
+msgstr "GitHubiin"
+
+#: auth_backends/github.py:9
+msgctxt "genetive form"
+msgid "GitHub"
+msgstr "GitHubin"
 
 #: auth_backends/github.py:10
-msgid "Go back to GitHub where you can log yourself out in the usual manner:"
-msgstr "Siirry takaisin GitHubiin ja kirjaudu sieltä ulos GitHubin omalla uloskirjautumistoiminnolla:"
+msgctxt "logged in to []"
+msgid "GitHub"
+msgstr "GitHubiin"
 
-#: auth_backends/github.py:14
-msgid "Go to GitHub"
-msgstr "Siirry GitHubiin"
+#: auth_backends/github.py:11
+msgctxt "log out from []"
+msgid "GitHub"
+msgstr "GitHubista"
 
-#: auth_backends/github.py:17
-msgid ""
-"If access to this device is shared by other users, the next user will be "
-"able to access your GitHub account unless you explicitly log out from GitHub."
-msgstr "Jos tämä laite on yhteiskäytössä, etkä kirjaudu omatoimisesti ulos GitHubista, laitteen seuraava käyttäjä pääsee nimissäsi GitHubiin!"
+#: auth_backends/github.py:12
+msgctxt "go to []"
+msgid "GitHub"
+msgstr "GitHubiin"
+
+#: auth_backends/google.py:8
+msgid "Google"
+msgstr "Google"
 
 #: auth_backends/google.py:9
-msgid "Please note that you are still logged in to Google's services"
-msgstr "Huomaa, että olet vielä kirjautuneena Google-tilillesi,"
+msgctxt "access to []"
+msgid "Google"
+msgstr "Googleen"
+
+#: auth_backends/google.py:10
+msgctxt "genetive form"
+msgid "Google"
+msgstr "Googlen"
+
+#: auth_backends/google.py:11
+msgctxt "logged in to []"
+msgid "Google"
+msgstr "Google-tilillesi"
 
 #: auth_backends/google.py:12
-msgid "Go back to Google to log yourself out in the usual manner:"
-msgstr "Siirry takaisin Google-tiliisi ja kirjaudu siltä ulos Googlen omalla uloskirjautumistoiminnolla:"
+msgctxt "log out from []"
+msgid "Google"
+msgstr "Googlesta"
 
-#: auth_backends/google.py:16
-msgid "Go to Google"
-msgstr "Siirry Googleen"
-
-#: auth_backends/google.py:19
-msgid ""
-"If access to this device is shared by other users, the next user will be "
-"able to access your Google account unless you explicitly log out from Google."
-msgstr "Jos tämä laite on yhteiskäytössä, etkä kirjaudu omatoimisesti ulos Google-tililtäsi, laitteen seuraava käyttäjä pääsee käyttämään nimissäsi Google-tiliäsi!"
+#: auth_backends/google.py:13
+msgctxt "go to []"
+msgid "Google"
+msgstr "Googleen"
 
 #: devices/models.py:18 identities/models.py:11 users/models.py:115
 msgid "user"
@@ -447,56 +476,72 @@ msgstr "Älä anna lupaa"
 msgid "Allow"
 msgstr "Anna lupa"
 
-#: users/templates/registration/logged_out.html:4
-msgid "You have been logged out"
-msgstr "Sinut on kirjattu ulos"
-
-#: users/templates/registration/logged_out.html:7
+#: users/templates/registration/logged_out.html:5
 msgid "You have been logged out of City of Helsinki services."
 msgstr "Sinut on kirjattu ulos Helsingin kaupungin palveluista."
 
-#: users/templates/registration/logged_out.html:11
+#: users/templates/registration/logged_out.html:10
+#, python-format
 msgid ""
-"whose credentials you originally used to log in to City of Helsinki services."
-msgstr "jolla alun perin kirjauduit Helsingin kaupungin palveluihin."
+"Please note that you are still logged in to %(name_logged_in)s, whose "
+"credentials you originally used to log in to City of Helsinki services."
+msgstr ""
+"Huomaa, että olet edelleen kirjautuneena %(name_logged_in)s, jolla alun "
+"perin kirjauduit Helsingin kaupungin palveluihin."
 
-#: users/templates/registration/logged_out.html:23
+#: users/templates/registration/logged_out.html:17
+#, python-format
+msgid ""
+"If access to this device is shared by other users, the next user will be "
+"able to access your %(name_access)s account unless you explicitly log out "
+"from %(name_logout)s."
+msgstr ""
+"Jos tämä laite on yhteiskäytössä, etkä kirjaudu omatoimisesti ulos "
+"%(name_logout)s, laitteen seuraava käyttäjä pääsee nimissäsi %(name_access)s!"
+
+#: users/templates/registration/logged_out.html:26
+#, python-format
+msgid ""
+"Go back to %(name_goto)s to log yourself out using %(name_genetive)s own "
+"logout feature."
+msgstr ""
+"Siirry %(name_goto)s ja kirjaudu siellä ulos %(name_genetive)s omalla "
+"uloskirjautumistoiminnolla."
+
+#: users/templates/registration/logged_out.html:31
+#, python-format
+msgid "Go to %(name_goto)s"
+msgstr "Siirry %(name_goto)s"
+
+#: users/templates/registration/logged_out.html:41
 msgid "Return"
 msgstr "Palaa"
 
-#
-#: yletunnus/backends.py:53
-msgid "Please note that you are still logged in to Yle Tunnus"
-msgstr "Huomaa, että olet vielä kirjautuneena Yle Tunnus -tilillesi,"
+#: yletunnus/backends.py:54
+msgid "Yle Tunnus"
+msgstr "Yle Tunnus"
+
+#: yletunnus/backends.py:55
+msgctxt "access to []"
+msgid "Yle Tunnus"
+msgstr "Ylen palveluihin"
 
 #: yletunnus/backends.py:56
-msgid ""
-"Go back to Yle Tunnus where you can log yourself out in the usual manner:"
-msgstr "Siirry takaisin Yle Tunnukseen ja kirjaudu sieltä ulos Yle Tunnuksen omalla uloskirjautumistoiminnolla:"
+msgctxt "genetive form"
+msgid "Yle Tunnus"
+msgstr "Yle Tunnuksen"
 
-#: yletunnus/backends.py:60
-msgid "Go to Yle Tunnus"
-msgstr "Siirry Yle Tunnukseen"
+#: yletunnus/backends.py:57
+msgctxt "logged in to []"
+msgid "Yle Tunnus"
+msgstr "Yle Tunnukseesi"
 
-#: yletunnus/backends.py:63
-msgid ""
-"If access to this device is shared by other users, the next user will be "
-"able to access your Yle account unless you explicitly log out from Yle "
-"Tunnus."
-msgstr "Jos tämä laite on yhteiskäytössä, etkä kirjaudu omatoimisesti ulos Yle Tunnus -tililtäsi, laitteen seuraava käyttäjä pääsee käyttämään Yle Tunnusta nimissäsi!"
+#: yletunnus/backends.py:58
+msgctxt "log out from []"
+msgid "Yle Tunnus"
+msgstr "Yle Tunnuksesta"
 
-#~ msgid ""
-#~ "If desired, you can go back to Facebook to log out using Facebook's own "
-#~ "log out feature:"
-#~ msgstr ""
-#~ "Jos haluat, voit mennä takaisin Facebookiin kirjautumaan sieltä ulos "
-#~ "Facebookin omalla uloskirjautumistoiminnolla:"
-
-#~ msgid "Username"
-#~ msgstr "Käyttäjätunnus"
-
-#~ msgid "First name"
-#~ msgstr "Etunimi"
-
-#~ msgid "Last name"
-#~ msgstr "Sukunimi"
+#: yletunnus/backends.py:59
+msgctxt "go to []"
+msgid "Yle Tunnus"
+msgstr "Yle Tunnukseen"

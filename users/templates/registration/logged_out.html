@@ -4,15 +4,35 @@
 {% block content %}
 <p>{% trans "You have been logged out of City of Helsinki services." %}</p>
 
-{% if backend and backend.persistent_session_warning %}
-<p><strong>{{ backend.persistent_session_warning }}</strong>
-{% trans "whose credentials you originally used to log in to City of Helsinki services." %}</p>
+{% if backend and backend.user_facing_url %}
 
-<p><strong>{{ backend.persistent_session_final_warning }}</strong></p>
+<p><strong>
+  {% blocktrans trimmed with name_logged_in=backend.name_logged_in_to %}
+  Please note that you are still logged in to {{ name_logged_in }},
+  whose credentials you originally used to log in to City of Helsinki services.
+  {% endblocktrans %}
+</strong></p>
+
+<p><strong>
+  {% blocktrans trimmed with name_access=backend.name_access name_logout=backend.name_logout_from %}
+  If access to this device is shared by other users,
+  the next user will be able to access your {{ name_access }} account
+  unless you explicitly log out from {{ name_logout }}.
+  {% endblocktrans %}
+</strong></p>
 
 <div class="well">
-    <p>{{ backend.persistent_session_suggestion }}</p>
-    <p><strong><a href="{{ backend.user_facing_url }}">{{ backend.persistent_session_link }}</a></strong></p>
+<p>
+  {% blocktrans trimmed with name_goto=backend.name_goto name_genetive=backend.name_genetive url=backend.user_facing_url%}
+  Go back to {{ name_goto }} to log yourself out using {{ name_genetive }} own logout feature.
+  {% endblocktrans %}
+</p>
+<p><strong><a href="{{ backend.user_facing_url }}">
+  {% blocktrans trimmed with name_goto=backend.name_goto %}
+  Go to {{ name_goto }}
+  {% endblocktrans %}
+</a></strong></p>
+
 </div>
 
 {% endif %}

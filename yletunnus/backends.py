@@ -1,5 +1,5 @@
 import jwt
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext, pgettext
 from social_core.backends.oauth import BaseOAuth2
 
 
@@ -49,19 +49,11 @@ class YleTunnusOAuth2(BaseOAuth2):
         )
         return data
 
-    persistent_session_warning = _(
-        "Please note that you are still logged in to Yle Tunnus"
-    )
-    persistent_session_suggestion = _(
-        "Go back to Yle Tunnus where you can log yourself out "
-        "in the usual manner:"
-    )
-    persistent_session_link = _(
-        "Go to Yle Tunnus"
-    )
-    persistent_session_final_warning = _(
-        "If access to this device is shared by other users, "
-        "the next user will be able to access your Yle account "
-        "unless you explicitly log out from Yle Tunnus."
-    )
+    user_facing_name = 'Yle Tunnus'
     user_facing_url = 'https://tunnus.yle.fi/'
+    name_baseform = gettext('Yle Tunnus')
+    name_access = pgettext('access to []', 'Yle Tunnus')
+    name_genetive = pgettext('genetive form', 'Yle Tunnus')
+    name_logged_in_to = pgettext('logged in to []', 'Yle Tunnus')
+    name_logout_from = pgettext('log out from []', 'Yle Tunnus')
+    name_goto = pgettext('go to []', 'Yle Tunnus')
