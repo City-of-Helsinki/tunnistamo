@@ -1,0 +1,16 @@
+include:
+  - project: 'city-of-helsinki/kuva/ci-cd-config/ci-configuration'
+    ref: v1
+    file: '/.gitlab-ci-template.yml'
+
+variables:
+  DB_MIGRATE: /app/.prod/on_deploy.sh
+
+build:
+  extends: .build
+
+staging:
+  variables:
+    K8S_SECRET_ALLOWED_HOSTS: "*"
+    K8S_SECRET_DEBUG: 0
+    K8S_SECRET_SECRET_KEY: "$GL_QA_DJANGO_SECRET_KEY"

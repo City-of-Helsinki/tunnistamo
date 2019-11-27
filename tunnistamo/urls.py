@@ -91,3 +91,20 @@ urlpatterns = [
 
 if settings.DEBUG:
     static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+
+#
+# Kubernetes liveness & readiness probes
+#
+def healthz(*args, **kwargs):
+    return HttpResponse(status=200)
+
+
+def readiness(*args, **kwargs):
+    return HttpResponse(status=200)
+
+
+urlpatterns += [
+    path('healthz', healthz),
+    path('readiness', readiness),
+]
