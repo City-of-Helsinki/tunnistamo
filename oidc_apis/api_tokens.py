@@ -27,17 +27,22 @@ def get_api_tokens_by_access_token(token, request=None):
     # Group API scopes by the API identifiers
     scopes_by_api = defaultdict(list)
     for api_scope in allowed_api_scopes:
-        scopes_by_api[api_scope.api.identifier].append(api_scope)
+        # TODO: group by api domain
+        scopes_by_api[api_scope.api.identifier] = list(allowed_api_scopes)
 
     return {
-        api_identifier: generate_api_token(scopes, token, request)
+        api_identifier: generate_api_token(api_identifier, scopes, token, request)
         for (api_identifier, scopes) in scopes_by_api.items()
     }
 
 
-def generate_api_token(api_scopes, token, request=None):
+def generate_api_token(api_identifier, api_scopes, token, request=None):
     assert api_scopes
-    api = api_scopes[0].api
+    api = None
+    for api_scope in api_scopes:
+        if api_scope.api.identifier == api_identifier:
+            api = api_scope.api
+    assert api
     audience = api.oidc_client.client_id
     req_scopes = api.required_scopes
 
