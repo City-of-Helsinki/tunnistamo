@@ -21,10 +21,10 @@ if [[ "$SETUP_DEV_OIDC" = "1" ]]; then
     echo "Setting up a OIDC test environments"
     ./manage.py add_oidc_client \
       --confidential \
-      --name Profiles \
+      --name Helsinkiprofile \
       --response_types "id_token token" \
       --redirect_uris https://oidcdebugger.com/debug \
-      --client_id https://api.hel.fi/auth/profiles \
+      --client_id https://api.hel.fi/auth/helsinkiprofile \
       --site_type dev \
       --login_methods github
 
@@ -40,24 +40,24 @@ if [[ "$SETUP_DEV_OIDC" = "1" ]]; then
       --client_id http://tunnistamo-backend:8000/project \
       --site_type dev \
       --login_methods github \
-      --scopes "https://api.hel.fi/auth/profiles login_entries consents email profile"
+      --scopes "https://api.hel.fi/auth/helsinkiprofile login_entries consents email profile"
 
     ./manage.py add_oidc_api \
-      --name profiles \
+      --name helsinkiprofile \
       --domain https://api.hel.fi/auth \
       --scopes profile email \
-      --client_id https://api.hel.fi/auth/profiles
+      --client_id https://api.hel.fi/auth/helsinkiprofile
 
     ./manage.py add_oidc_api_scope \
-      --name Profiles \
-      --api_name profiles \
+      --name Helsinkiprofile \
+      --api_name helsinkiprofile \
       --description "Profile backend" \
-      --client_ids https://api.hel.fi/auth/profiles
+      --client_ids https://api.hel.fi/auth/helsinkiprofile
 
     echo "The following test OIDC environments are available:
 
   # PROFILE CLIENT & API
-  Client id      : https://api.hel.fi/auth/profiles
+  Client id      : https://api.hel.fi/auth/helsinkiprofile
   Response types : id_token token
   Login methods  : GitHub
   Redirect URLs  : https://oidcdebugger.com/debug
@@ -68,7 +68,7 @@ if [[ "$SETUP_DEV_OIDC" = "1" ]]; then
   Response types : code
   Login methods  : GitHub, Google, Yle Tunnus
   Redirect URLs  : http://localhost:8000/complete/tunnistamo/ & https://oidcdebugger.com/debug
-  Scopes: https://api.hel.fi/auth/profiles login_entries consents email profile
+  Scopes: https://api.hel.fi/auth/helsinkiprofile login_entries consents email profile
 
   To change the settings, please visit the admin panel and change
   the Client, API and API Scope accordingly.
