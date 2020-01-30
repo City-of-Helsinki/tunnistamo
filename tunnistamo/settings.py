@@ -140,6 +140,7 @@ AUTHENTICATION_BACKENDS = (
     'auth_backends.adfs.helsinki.HelsinkiADFS',
     'auth_backends.google.GoogleOAuth2CustomName',
     'auth_backends.adfs.helsinki_library_asko.HelsinkiLibraryAskoADFS',
+    'auth_backends.helsinki_username.HelsinkiUsername',
     'yletunnus.backends.YleTunnusOAuth2',
     'social_core.backends.facebook.FacebookOAuth2',
     'social_core.backends.github.GithubOAuth2',
