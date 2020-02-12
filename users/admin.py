@@ -22,6 +22,14 @@ class ExtendedUserAdmin(UserAdmin):
                 fields.insert(fields.index('username'), 'uuid')
                 field_options = dict(field_options, fields=fields)
             new_fieldsets.append((name, field_options))
+
+        ad_group_fieldsets = ('AD groups', {
+            'classes': ('collapse',),
+            'fields': (('ad_groups'),),
+        })
+
+        new_fieldsets.append(ad_group_fieldsets)
+
         return new_fieldsets
 
     def get_readonly_fields(self, request, obj=None):
