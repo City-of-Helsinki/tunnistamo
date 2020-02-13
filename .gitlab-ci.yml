@@ -9,6 +9,11 @@ variables:
 build:
   extends: .build
 
+review:
+  variables:
+    K8S_SECRET_ALLOWED_HOSTS: "*"
+    K8S_SECRET_DEBUG: 1
+
 staging:
   variables:
     K8S_SECRET_ALLOWED_HOSTS: "*"
