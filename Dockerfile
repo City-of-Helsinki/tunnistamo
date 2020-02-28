@@ -24,8 +24,8 @@ RUN pip install -U pip \
 RUN npm install
 
 COPY . /app/
-RUN python manage.py collectstatic --noinput \
-    && python manage.py compilescss
+RUN python manage.py compilescss \
+    && python manage.py collectstatic --noinput
 
 # ===========================================
 FROM helsinkitest/python:3.6-slim as appbase
