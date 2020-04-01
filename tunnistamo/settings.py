@@ -20,7 +20,7 @@ env = environ.Env(
     SECRET_KEY=(str, ""),
     DATABASE_URL=(str, ""),
     ALLOWED_HOSTS=(list, []),
-    ALLOW_EMBEDDING_IN_FRAME=(bool, True),
+    ALLOW_EMBEDDING_IN_FRAME=(bool, False),
 
     STATIC_URL=(str, "/sso/static/"),
     STATIC_ROOT=(str, os.path.join(BASE_DIR, 'static')),
@@ -131,8 +131,10 @@ MIDDLEWARE = [
     'tunnistamo.middleware.ContentSecurityPolicyMiddleware'
 ]
 
-# Traditional (heh) silent renew requires embedding the login endpoint
-# in IFRAME. Thus this must be enabled (True), if silent renew is wanted.
+# If you need to allow embedding tunnistamo in FRAME, this is the setting
+# to toggle. Note that "openid/authorize/" is always allowed to be embedded
+# as that is required for traditional silent renewal as used in implicit
+# flow without refresh tokens.
 if not env('ALLOW_EMBEDDING_IN_FRAME'):
     # Middleware position likely does not matter, this just puts it in the
     # same place where it was before adding this switch.

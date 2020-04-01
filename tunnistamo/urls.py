@@ -7,6 +7,7 @@ from django.contrib.admin.views.decorators import staff_member_required
 from django.http import HttpResponse
 from django.urls import include, path, re_path
 from django.utils import translation
+from django.views.decorators.clickjacking import xframe_options_exempt
 from django.views.decorators.csrf import csrf_exempt
 from django.views.defaults import permission_denied
 from oidc_provider.views import ProviderInfoView as OIDCProviderInfoView
@@ -74,7 +75,7 @@ urlpatterns = [
     path('oauth2/applications/', permission_denied),
     path('oauth2/authorize/', TunnistamoAuthorizationView.as_view(), name="oauth2_authorize"),
     path('oauth2/', include(oauth2_provider.urls, namespace='oauth2_provider')),
-    re_path(r'^openid/authorize/?$', TunnistamoOidcAuthorizeView.as_view(), name='authorize'),
+    re_path(r'^openid/authorize/?$', xframe_options_exempt(TunnistamoOidcAuthorizeView.as_view()), name='authorize'),
     re_path(r'^openid/end-session/?$', TunnistamoOidcEndSessionView.as_view(), name='end-session'),
     re_path(r'^openid/token/?$', csrf_exempt(TunnistamoOidcTokenView.as_view()), name='token'),
     path('openid/', include(oidc_provider.urls, namespace='oidc_provider')),
