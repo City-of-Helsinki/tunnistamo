@@ -20,6 +20,7 @@ env = environ.Env(
     SECRET_KEY=(str, ""),
     DATABASE_URL=(str, ""),
     ALLOWED_HOSTS=(list, []),
+    ALLOW_CROSS_SITE_SESSION_COOKIE=(bool, False),
 
     STATIC_URL=(str, "/sso/static/"),
     STATIC_ROOT=(str, os.path.join(BASE_DIR, 'static')),
@@ -311,6 +312,13 @@ REST_FRAMEWORK = {
 
 CSRF_COOKIE_NAME = 'sso-csrftoken'
 SESSION_COOKIE_NAME = 'sso-sessionid'
+
+# You will likely need to allow cross site session cookies, if your
+# tunnistamo instance must support non-interactive renew of tokens
+# using IFRAME.
+if env('ALLOW_CROSS_SITE_SESSION_COOKIE'):
+    # Not setting the attribute allows cookies to be passed across sites
+    SESSION_COOKIE_SAMESITE = None
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_SCHEME', 'https')
 
