@@ -20,7 +20,6 @@ env = environ.Env(
     SECRET_KEY=(str, ""),
     DATABASE_URL=(str, ""),
     ALLOWED_HOSTS=(list, []),
-    ALLOW_EMBEDDING_IN_FRAME=(bool, True),
 
     STATIC_URL=(str, "/sso/static/"),
     STATIC_ROOT=(str, os.path.join(BASE_DIR, 'static')),
@@ -66,6 +65,8 @@ DEBUG = env("DEBUG")
 TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
+
+X_FRAME_OPTIONS = 'DENY'
 
 # Application definition
 
@@ -117,29 +118,20 @@ INSTALLED_APPS = (
     'utils',
 )
 
-MIDDLEWARE = [
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'tunnistamo.middleware.RestrictedAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'users.middleware.CustomDatabaseWhitelistCorsMiddleware',
     'crequest.middleware.CrequestMiddleware',
     'tunnistamo.middleware.InterruptedSocialAuthMiddleware',
     'tunnistamo.middleware.OIDCExceptionMiddleware',
     'tunnistamo.middleware.ContentSecurityPolicyMiddleware'
-]
-
-# Traditional (heh) silent renew requires embedding the login endpoint
-# in IFRAME. Thus this must be enabled (True), if silent renew is wanted.
-if not env('ALLOW_EMBEDDING_IN_FRAME'):
-    # Middleware position likely does not matter, this just puts it in the
-    # same place where it was before adding this switch.
-    position = MIDDLEWARE.index("users.middleware.CustomDatabaseWhitelistCorsMiddleware")
-    MIDDLEWARE.insert(position, 'django.middleware.clickjacking.XFrameOptionsMiddleware')
-    X_FRAME_OPTIONS = 'DENY'
-
+)
 
 AUTHENTICATION_BACKENDS = (
     'auth_backends.eduhelfi.EduHelFiAzure',
