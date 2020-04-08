@@ -1,4 +1,5 @@
 import jwt
+from django.utils.translation import gettext, pgettext
 from social_core.backends.oauth import BaseOAuth2
 
 
@@ -47,3 +48,12 @@ class YleTunnusOAuth2(BaseOAuth2):
             issuer='https://auth.api.yle.fi', audience=self.setting('APP_ID')
         )
         return data
+
+    user_facing_name = 'Yle Tunnus'
+    user_facing_url = 'https://tunnus.yle.fi/'
+    name_baseform = gettext('Yle Tunnus')
+    name_access = pgettext('access to []', 'Yle Tunnus')
+    name_genetive = pgettext('genetive form', 'Yle Tunnus')
+    name_logged_in_to = pgettext('logged in to []', 'Yle Tunnus')
+    name_logout_from = pgettext('log out from []', 'Yle Tunnus')
+    name_goto = pgettext('go to []', 'Yle Tunnus')

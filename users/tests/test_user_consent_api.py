@@ -79,7 +79,7 @@ def test_get(user_api_client, endpoint, scope_included, service):
 
         assert oidc_scope.keys() == {'id', 'name', 'description'}
         assert oidc_scope['id'] == 'email'
-        assert oidc_scope['name'] == {'fi': 'Sähköposti', 'sv': 'E-postadress', 'en': 'Email'}
+        assert oidc_scope['name'] == {'fi': 'Sähköpostiosoite', 'sv': 'E-postadress', 'en': 'Email'}
         assert 'en' in oidc_scope['description']
 
         assert api_scope.keys() == {'id', 'name', 'description'}

@@ -11,6 +11,8 @@ before_install:
 
 install: 'pip install codecov -r requirements.txt -r requirements-dev.txt'
 
+before_script: 'python manage.py compilemessages'
+
 script:
   # Run the tests
   - flake8

@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% load i18n %}
+
+{% block content %}
+<p>{% trans "You have been logged out of City of Helsinki services." %}</p>
+
+{% if backend and backend.user_facing_url %}
+
+<p><strong>
+  {% blocktrans trimmed with name_logged_in=backend.name_logged_in_to %}
+  Please note that you are still logged in to {{ name_logged_in }},
+  whose credentials you originally used to log in to City of Helsinki services.
+  {% endblocktrans %}
+</strong></p>
+
+<p><strong>
+  {% blocktrans trimmed with name_access=backend.name_access name_logout=backend.name_logout_from %}
+  If access to this device is shared by other users,
+  the next user will be able to access your {{ name_access }} account
+  unless you explicitly log out from {{ name_logout }}.
+  {% endblocktrans %}
+</strong></p>
+
+<div class="well">
+<p>
+  {% blocktrans trimmed with name_goto=backend.name_goto name_genetive=backend.name_genetive url=backend.user_facing_url%}
+  Go back to {{ name_goto }} to log yourself out using {{ name_genetive }} own logout feature.
+  {% endblocktrans %}
+</p>
+<p><strong><a href="{{ backend.user_facing_url }}">
+  {% blocktrans trimmed with name_goto=backend.name_goto %}
+  Go to {{ name_goto }}
+  {% endblocktrans %}
+</a></strong></p>
+
+</div>
+
+{% endif %}
+
+{% if post_logout_redirect_uri %}
+<p><a href="{{post_logout_redirect_uri}}">{% trans "Return" %}</a></p>
+{% endif %}
+{% endblock %}

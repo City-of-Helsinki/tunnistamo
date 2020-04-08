@@ -296,8 +296,8 @@ def test_suomifi_logout_sp_request_no_social_user(django_client, django_user_mod
 
     # If social user does not exist only Django logout is performed
     assert not django_client.cookies.get('sso-sessionid').value
-    assert logout_page_response.status_code == 302
-    assert logout_page_response.url == REDIRECT_URI
+    assert logout_page_response.status_code == 200
+    assert 'href="{}"'.format(REDIRECT_URI) in str(logout_page_response.content)
 
 
 @pytest.mark.django_db

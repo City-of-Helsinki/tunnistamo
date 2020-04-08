@@ -44,7 +44,7 @@ def test_get_oidc_scopes_list(api_client):
     assert [s['id'] for s in results] == EXPECTED_OIDC_SCOPES
     email_scope_data = next(s for s in results if s['id'] == 'email')
     assert email_scope_data.keys() == {'id', 'name', 'description'}
-    assert email_scope_data['name'] == {'fi': 'Sähköposti', 'sv': 'E-postadress', 'en': 'Email'}
+    assert email_scope_data['name'] == {'fi': 'Sähköpostiosoite', 'sv': 'E-postadress', 'en': 'Email'}
 
 
 def test_get_also_api_scopes_list(api_client):

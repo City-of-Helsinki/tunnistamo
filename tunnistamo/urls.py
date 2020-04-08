@@ -24,7 +24,8 @@ from services.views import ReportView
 from tunnistamo import social_auth_urls
 from users.api import TunnistamoAuthorizationView, UserConsentViewSet, UserLoginEntryViewSet
 from users.views import (
-    LoginView, LogoutView, TunnistamoOidcAuthorizeView, TunnistamoOidcEndSessionView, TunnistamoOidcTokenView
+    AuthoritativeLogoutRedirectView, LoginView, TunnistamoOidcAuthorizeView, TunnistamoOidcEndSessionView,
+    TunnistamoOidcTokenView
 )
 
 from .api import GetJWTView, UserView
@@ -62,13 +63,14 @@ router.register('user_consent', UserConsentViewSet)
 v1_scope_path = path('scope/', ScopeListView.as_view(), name='scope-list')
 v1_api_path = path('v1/', include((router.urls + [v1_scope_path], 'v1')))
 
+
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('admin/report/', staff_member_required(ReportView.as_view())),
     path('api-tokens/', get_api_tokens_view),
     path('accounts/profile/', show_login),
     path('accounts/login/', LoginView.as_view()),
-    path('accounts/logout/', LogoutView.as_view()),
+    path('accounts/logout/', AuthoritativeLogoutRedirectView.as_view()),
     path('accounts/', include(auth_backends.urls, namespace='auth_backends')),
     path('accounts/', include(social_auth_urls, namespace='social')),
     path('oauth2/applications/', permission_denied),
@@ -83,7 +85,7 @@ urlpatterns = [
     path('user/', UserView.as_view()),
     path('jwt-token/', GetJWTView.as_view()),
     path('login/', LoginView.as_view()),
-    path('logout/', LogoutView.as_view()),
+    path('logout/', AuthoritativeLogoutRedirectView.as_view()),
     v1_api_path,
     path('docs/', include_docs_urls(title='Tunnistamo API v1', patterns=[v1_api_path],
                                     generator_class=AllEnglishSchemaGenerator)),
