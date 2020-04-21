@@ -353,6 +353,13 @@ SASS_PRECISION = 8
 TEST_NON_SERIALIZED_APPS = ['adfs_provider']
 
 # Social Auth
+
+# social-core from version >= 3.3.0 allows providers to update user fields
+# even if they already have a value. The code in question will break when
+# trying to update "ad_groups" due to it being a many-to-many relation.
+# Instead AD groups are updated in their own pipeline step.
+SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['ad_groups']
+
 SOCIAL_AUTH_PIPELINE = (
     # Get the information we can about the user and return it in a simple
     # format to create the user instance later. On some cases the details are
