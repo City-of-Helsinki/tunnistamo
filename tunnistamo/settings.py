@@ -151,6 +151,7 @@ AUTHENTICATION_BACKENDS = (
     'auth_backends.google.GoogleOAuth2CustomName',
     'auth_backends.adfs.helsinki_library_asko.HelsinkiLibraryAskoADFS',
     'auth_backends.helsinki_username.HelsinkiUsername',
+    'auth_backends.helsinki_tunnistus.HelsinkiIdentity',
     'yletunnus.backends.YleTunnusOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'auth_backends.suomifi.SuomiFiSAMLAuth',
