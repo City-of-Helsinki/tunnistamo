@@ -100,15 +100,13 @@ To access the themed views you also need to install
 ## Developing
 
 ### Outdated Python dependencies
-Tunnistamo uses [prequ](https://github.com/suutari/prequ) – a fork of pip-tools –
+Tunnistamo uses [pip-tools](https://github.com/jazzband/pip-tools)
 to manage the Python dependencies.
-prequ can handle `-e` style dependencies (git URLs) in the requirements files.
 
 Update the requirements with:
 ```
-pip install prequ
-rm requirements.txt
-prequ update
+pip install pip-tools
+pip-compile --upgrade
 ```
 
 ## Configuring
