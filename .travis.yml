@@ -18,6 +18,7 @@ script:
   - flake8
   - isort -c
   - pytest -ra -vvv --cov=.
+  - python manage.py check
 
 addons:
   postgresql: '9.6'
