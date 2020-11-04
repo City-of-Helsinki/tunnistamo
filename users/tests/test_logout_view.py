@@ -62,9 +62,12 @@ def test_logout_redirect_next(client, user_factory, _next, expected, application
 ))
 @pytest.mark.django_db
 def test_logout_no_redirect_on_invalid_next(client, user_factory, _next, endpoint, uri_param):
-    response = client.get('/{}/'.format(endpoint), {
-        uri_param: _next,
-    }, follow=True)
+    if _next is None:
+        response = client.get('/{}/'.format(endpoint), None, follow=True)
+    else:
+        response = client.get('/{}/'.format(endpoint), {
+            uri_param: _next,
+        }, follow=True)
     assert response.status_code == 200
     assert not link_to_url_found_in_response(response, _next)
 
