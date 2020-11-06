@@ -1,7 +1,7 @@
-django>=2.1.9,<2.2
+django>2.1.15,<3.0
 django-multiselectfield
 django-oauth-toolkit
-django-parler
+django-parler>2.1
 django-cors-headers
 django-oidc-provider>=0.7
 djangorestframework>=3.10
