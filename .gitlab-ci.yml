@@ -12,11 +12,13 @@ build:
 review:
   variables:
     K8S_SECRET_ALLOWED_HOSTS: "*"
+    K8S_SECRET_CORS_ALLOWED_ORIGIN_REGEXES: r"^https://\w+\.test\.kuva\.hel\.ninja$"
     K8S_SECRET_DEBUG: 1
 
 staging:
   variables:
     K8S_SECRET_ALLOWED_HOSTS: "*"
+    K8S_SECRET_CORS_ALLOWED_ORIGIN_REGEXES: r"^https://\w+\.test\.kuva\.hel\.ninja$"
     K8S_SECRET_DEBUG: 0
     K8S_SECRET_SECRET_KEY: "$GL_QA_DJANGO_SECRET_KEY"
     K8S_SECRET_SKIP_DATABASE_CHECK: 1
