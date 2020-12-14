@@ -28,6 +28,11 @@ env = environ.Env(
     MEDIA_URL=(str, '/media/'),
     NODE_MODULES_ROOT=(str, os.path.join(BASE_DIR, 'node_modules')),
 
+    # CORS settings
+    CORS_ALLOWED_ORIGINS=(list, []),
+    CORS_ALLOWED_ORIGIN_REGEXES=(list, []),
+    CORS_ORIGIN_ALLOW_ALL=(bool, False),
+
     # Authentication settings
     SOCIAL_AUTH_FACEBOOK_KEY=(str, ""),
     SOCIAL_AUTH_FACEBOOK_SECRET=(str, ""),
@@ -300,7 +305,10 @@ LOGGING = {
     }
 }
 
-CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOWED_ORIGINS = env("CORS_ALLOWED_ORIGINS")
+CORS_ALLOWED_ORIGIN_REGEXES = env("CORS_ALLOWED_ORIGIN_REGEXES")
+CORS_ORIGIN_ALLOW_ALL = env("CORS_ORIGIN_ALLOW_ALL")
+
 CORS_URLS_REGEX = r'.*/(\.well-known/openid-configuration|v1|openid|api-tokens|jwt-token).*'
 
 
