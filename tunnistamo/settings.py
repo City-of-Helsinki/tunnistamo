@@ -18,7 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 env = environ.Env(
     DEBUG=(bool, False),
     SECRET_KEY=(str, ""),
-    DATABASE_URL=(str, "postgres://tunnistamo"),
+    DATABASE_URL=(str, "postgres:///tunnistamo"),
     ALLOWED_HOSTS=(list, []),
     ALLOW_CROSS_SITE_SESSION_COOKIE=(bool, False),
 
