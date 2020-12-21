@@ -321,6 +321,7 @@ class SuomiFiSAMLAuth(SAMLAuth):
                                nq=idp.entity_id,
                                name_id=social_user.extra_data['name_id'],
                                name_id_format='urn:oasis:names:tc:SAML:2.0:nameid-format:transient',
+                               spnq=self.setting('SP_ENTITY_ID'),
                                session_index=social_user.extra_data['session_index'])
         social_user.extra_data = {}
         social_user.save()
