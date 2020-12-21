@@ -29,6 +29,6 @@ django-ipware
 geoip2
 django-filter
 coreapi
-git+https://github.com/City-of-Helsinki/python3-saml.git@v1.5.0-tunnistamo
+python3-saml
 ruamel.yaml
 git+https://github.com/City-of-Helsinki/django-translation-checker.git@master
