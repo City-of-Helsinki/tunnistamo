@@ -20,7 +20,7 @@ django-compressor==2.2    # via -r requirements.in
 django-cors-headers==2.2.0  # via -r requirements.in
 django-crequest==2018.5.11  # via -r requirements.in
 django-environ==0.4.5     # via -r requirements.in
-django-filter==2.0.0      # via -r requirements.in
+django-filter==2.4.0      # via -r requirements.in
 django-helusers==0.4.2    # via -r requirements.in
 django-ipware==2.1.0      # via -r requirements.in
 django-multiselectfield==0.1.8  # via -r requirements.in
