@@ -63,7 +63,7 @@ rcssmin==1.0.6            # via django-compressor
 requests-oauthlib==1.0.0  # via django-allauth, social-auth-core
 requests==2.24.0          # via -r requirements.in, coreapi, django-allauth, django-helusers, django-oauth-toolkit, geoip2, pyjwkest, requests-oauthlib, social-auth-core
 rjsmin==1.0.12            # via django-compressor
-rsa==4.0                  # via python-jose
+rsa==4.6                  # via python-jose
 ruamel.yaml==0.15.89      # via -r requirements.in
 six==1.11.0               # via cryptography, ecdsa, isodate, libsass, pyjwkest, python-jose, social-auth-app-django, social-auth-core
 social-auth-app-django==2.1.0  # via -r requirements.in
