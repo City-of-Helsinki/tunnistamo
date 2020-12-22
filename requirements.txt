@@ -17,7 +17,7 @@ django-allauth==0.44.0    # via -r requirements.in
 django-appconf==1.0.2     # via django-compressor
 django-bootstrap3==10.0.1  # via -r requirements.in
 django-compressor==2.2    # via -r requirements.in
-django-cors-headers==2.2.0  # via -r requirements.in
+django-cors-headers==3.6.0  # via -r requirements.in
 django-crequest==2018.5.11  # via -r requirements.in
 django-environ==0.4.5     # via -r requirements.in
 django-filter==2.4.0      # via -r requirements.in
@@ -30,7 +30,7 @@ django-oidc-provider==0.7.0  # via -r requirements.in
 django-parler==2.2        # via -r requirements.in, django-translation-checker
 django-sass-processor==0.7  # via -r requirements.in
 git+https://github.com/City-of-Helsinki/django-translation-checker.git@master  # via -r requirements.in
-django==2.2.17            # via -r requirements.in, django-allauth, django-crequest, django-filter, django-helusers, django-multiselectfield, django-oauth-toolkit, django-translation-checker, drf-oidc-auth
+django==2.2.17            # via -r requirements.in, django-allauth, django-cors-headers, django-crequest, django-filter, django-helusers, django-multiselectfield, django-oauth-toolkit, django-translation-checker, drf-oidc-auth
 djangorestframework==3.10.2  # via -r requirements.in, drf-oidc-auth
 drf-oidc-auth==0.9        # via django-helusers
 ecdsa==0.15               # via python-jose
