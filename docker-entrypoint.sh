@@ -1,14 +1,14 @@
 #!/bin/bash
 
-set -e
-
+# set -e
+echo "Running entrypoint..."
 if [ -z "$SKIP_DATABASE_CHECK" -o "$SKIP_DATABASE_CHECK" = "0" ]; then
-  until nc -z -v -w30 "$DATABASE_HOST" 5432
-  do
-    echo "Waiting for postgres database connection..."
-    sleep 1
-  done
-  echo "Database is up!"
+until nc -z -v -w30 "$DATABASE_HOST" 5432
+ do
+  echo "Waiting for postgres database connection..."
+  sleep 1
+ done
+ echo "Database is up!"
 fi
 
 # Apply database migrations
@@ -77,20 +77,25 @@ fi
 
 
 if [[ "$GENERATE_OPENID_KEY" = "1" ]]; then
+echo "Creating openid key"
     # (Re-)Generate OpenID RSA key if needed
     ./manage.py manage_openid_keys
 fi
 
 if [[ "$CREATE_SUPERUSER" = "1" ]]; then
+echo "Creating superuser"
     ./manage.py add_admin_user -u admin -p admin -e admin@example.com
     echo "Admin user created with credentials admin:admin (email: admin@example.com)"
 fi
 
 # Start server
 if [[ ! -z "$@" ]]; then
+echo "Starting server"
     "$@"
 elif [[ "$DEV_SERVER" = "1" ]]; then
+echo "Startind DEV SERVER"
     python ./manage.py runserver 0.0.0.0:8000
 else
+echo "Starting UWSI"
     uwsgi --ini .prod/uwsgi.ini
 fi

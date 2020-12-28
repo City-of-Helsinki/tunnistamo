@@ -191,7 +191,7 @@ DATABASES = {"default": env.db("DATABASE_URL")}
 #
 # Internationalization
 #
-LANGUAGE_CODE = 'fi'
+LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
     ('fi', 'Finnish'),
