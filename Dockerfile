@@ -79,10 +79,10 @@ USER appuser
 EXPOSE 8000/tcp
 
 # ==========================
-FROM appbase as production
+# FROM appbase as production
 # ==========================
 
-COPY --chown=appuser:appuser . /app/
+# COPY --chown=appuser:appuser . /app/
 
-USER appuser
-EXPOSE 8000/tcp
+# USER appuser
+# EXPOSE 8000/tcp
