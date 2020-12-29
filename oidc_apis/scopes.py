@@ -33,8 +33,9 @@ class GithubUsernameScopeClaims(ScopeClaims):
         _("GitHub username"), _("Access to your GitHub username."))
 
     def scope_github_username(self):
-        social_accounts = self.user.socialaccount_set
-        github_account = social_accounts.filter(provider='github').first()
+        github_account = UserSocialAuth.objects.filter(
+            user=self.user, provider='github'
+        ).first()
         if not github_account:
             return {}
         github_data = github_account.extra_data
