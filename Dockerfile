@@ -55,7 +55,7 @@ RUN apt-install.sh \
     && apt-cleanup.sh build-essential pkg-config git
 
 COPY docker-entrypoint.sh /app
-ENTRYPOINT ["./docker-entrypoint.sh"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
 # STore static files under /var to not conflict with development volume mount
 ENV STATIC_ROOT /var/tunnistamo/static
