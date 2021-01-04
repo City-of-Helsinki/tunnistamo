@@ -1,7 +1,7 @@
 #!/bin/bash
 
-set -e
-
+# set -e
+echo "Running entrypoint..."
 # if [ -z "$SKIP_DATABASE_CHECK" -o "$SKIP_DATABASE_CHECK" = "0" ]; then
 # until nc -z -v -w30 "$DATABASE_HOST" 5432
 #  do
