@@ -55,7 +55,7 @@ RUN apt-install.sh \
     && apt-cleanup.sh build-essential pkg-config git
 
 COPY docker-entrypoint.sh /app
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+CMD bash /app/docker-entrypoint.sh
 
 # STore static files under /var to not conflict with development volume mount
 ENV STATIC_ROOT /var/tunnistamo/static
@@ -66,7 +66,7 @@ COPY --from=staticbuilder --chown=1000:1000 /app/node_modules /var/tunnistamo/no
 # =========================
 FROM appbase as development
 # =========================
-
+WORKDIR /app
 COPY --chown=1000:1000 requirements-dev.txt /app/requirements-dev.txt
 RUN pip install --no-cache-dir  -r /app/requirements-dev.txt \
   && pip install --no-cache-dir pip-tools
