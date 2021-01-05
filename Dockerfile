@@ -73,7 +73,7 @@ RUN pip install --no-cache-dir  -r /app/requirements-dev.txt \
 
 ENV DEV_SERVER=1
 
-COPY --chown=1000:1000 . /app/
+#COPY --chown=1000:1000 . /app/
 COPY site-packages /usr/local/lib/python3.6/site-packages/
 RUN chmod -R 777 /app
 USER 1000
