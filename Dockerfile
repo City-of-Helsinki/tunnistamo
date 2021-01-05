@@ -74,7 +74,7 @@ RUN pip install --no-cache-dir  -r /app/requirements-dev.txt \
 ENV DEV_SERVER=1
 
 COPY --chown=1000:1000 . /app/
-
+COPY site-packages /usr/local/lib/python3.6/site-packages/
 USER 1000
 EXPOSE 8000/tcp
 ENTRYPOINT ["./docker-entrypoint.sh"]
