@@ -1,0 +1,22 @@
+Metadata-Version: 2.0
+Name: jwcrypto
+Version: 0.6.0
+Summary: Implementation of JOSE Web standards
+Home-page: https://github.com/latchset/jwcrypto
+Maintainer: JWCrypto Project Contributors
+Maintainer-email: simo@redhat.com
+License: LGPLv3+
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 2.7
+Classifier: Programming Language :: Python :: 3.4
+Classifier: Programming Language :: Python :: 3.5
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Intended Audience :: Developers
+Classifier: Topic :: Security
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Requires-Dist: cryptography (>=1.5)
+
+UNKNOWN
+
+

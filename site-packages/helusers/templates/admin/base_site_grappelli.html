@@ -1,0 +1,36 @@
+{% extends "admin/base.html" %}
+{% load i18n grp_tags %}
+
+{% block title %}{{ title }} | {% get_site_title %}{% endblock %}
+
+{% block blockbots %}
+<meta name="robots" content="NONE,NOARCHIVE" />
+<style>
+header#grp-header #grp-navigation ul#grp-user-tools {
+    border-left: 0px !important;
+}
+header#grp-header #grp-navigation ul#grp-user-tools>li {
+    border: 0px !important;
+}
+header#grp-header #grp-navigation a {
+    color: #fff !important;
+}
+
+{% if site_type == 'production' %}
+header#grp-header div#grp-navigation {
+    background: #e47c60;
+}
+{% else %}
+header#grp-header div#grp-navigation {
+    background: #417690;
+}
+{% endif %}
+</style>
+{% endblock %}
+
+{% block branding %}
+    {# Use the div#grp-branding for branding elements, e.g. a logo #}
+    {# <div id="grp-branding"></div> #}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}
