@@ -6,7 +6,7 @@ FROM helsinkitest/python-node:3.6-10-slim as staticbuilder
 # is required for compiling SCSS files.
 # =========================================================
 
-RUN apt update && apt install \
+RUN apt update && apt install -y \
       libxmlsec1-dev \
       libxml2-dev \
       pkg-config \
@@ -40,7 +40,7 @@ COPY --chown=1000:1000 requirements-prod.txt /app/requirements-prod.txt
 # Note that production dependencies are installed here as well since
 # that is the default state of the image and development stages are
 # just extras.
-RUN apt update && apt install \
+RUN apt update && apt install -y \
       build-essential \
       libpq-dev \
       gettext \
