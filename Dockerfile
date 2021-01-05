@@ -64,7 +64,7 @@ COPY --from=staticbuilder --chown=1000:1000 /app/static /var/tunnistamo/static
 COPY --from=staticbuilder --chown=1000:1000 /app/node_modules /var/tunnistamo/node_modules
 
 # =========================
-FROM appbase as development
+#FROM appbase as development
 # =========================
 WORKDIR /app
 COPY --chown=1000:1000 requirements-dev.txt /app/requirements-dev.txt
