@@ -28,7 +28,7 @@ RUN python manage.py compilescss \
     && python manage.py collectstatic --noinput
 
 # ===========================================
-FROM helsinkitest/python:3.6-slim as appbase
+#FROM helsinkitest/python:3.6-slim as appbase
 # ===========================================
 
 WORKDIR /app
