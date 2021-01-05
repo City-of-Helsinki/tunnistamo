@@ -191,12 +191,12 @@ DATABASES = {"default": env.db("DATABASE_URL")}
 #
 # Internationalization
 #
-LANGUAGE_CODE = 'fi'
+LANGUAGE_CODE = 'en'
 
 LANGUAGES = (
-    ('fi', 'Finnish'),
-    ('en', 'English'),
-    ('sv', 'Swedish')
+#    ('fi', 'Finnish'),
+    ('en', 'English')#,
+#    ('sv', 'Swedish')
 )
 
 TIME_ZONE = 'UTC'
