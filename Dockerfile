@@ -69,13 +69,13 @@ EXPOSE 8000/tcp
 ENTRYPOINT ["./docker-entrypoint.sh"]
 
 # ===========================================
-FROM helsinkitest/python:3.6-slim as appbase
+#FROM helsinkitest/python:3.6-slim as appbase
 # ===========================================
 
 
 
 # =========================
-FROM appbase as development
+#FROM appbase as development
 # =========================
 
 # ==========================
