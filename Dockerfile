@@ -31,7 +31,7 @@ RUN python manage.py compilescss \
 FROM helsinkitest/python:3.6-slim as appbase
 # ===========================================
 
-WORKDIR /app
+
 
 COPY requirements.txt /app/requirements.txt
 COPY requirements-prod.txt /app/requirements-prod.txt
@@ -66,7 +66,7 @@ COPY --from=staticbuilder  /app/node_modules /var/tunnistamo/node_modules
 # =========================
 FROM appbase as development
 # =========================
-
+WORKDIR /app
 COPY requirements-dev.txt /app/requirements-dev.txt
 RUN pip install --no-cache-dir  -r /app/requirements-dev.txt \
   && pip install --no-cache-dir pip-tools
