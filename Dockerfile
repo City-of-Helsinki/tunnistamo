@@ -1,13 +1,13 @@
 # =========================================================
 FROM helsinkitest/python-node:3.6-10-slim as staticbuilder
+
 # ---------------------------------------------------------
 # Stage for building static files for
 # the project. Installs Node as that
 # is required for compiling SCSS files.
 # =========================================================
 
-RUN sed -i 's/usr\/bin\/env /bin\//g' /tools/apt-install.sh
-RUN bash /tools/apt-install.sh \
+RUN /tools/apt-install.sh \
       libxmlsec1-dev \
       libxml2-dev \
       pkg-config \
@@ -69,13 +69,13 @@ EXPOSE 8000/tcp
 ENTRYPOINT ["./docker-entrypoint.sh"]
 
 # ===========================================
-# FROM helsinkitest/python:3.6-slim as appbase
+FROM helsinkitest/python:3.6-slim as appbase
 # ===========================================
 
 
 
 # =========================
-# FROM appbase as development
+FROM appbase as development
 # =========================
 
 # ==========================
