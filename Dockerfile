@@ -77,7 +77,7 @@ COPY . /app/
 
 USER appuser
 EXPOSE 8000/tcp
-ENTRYPOINT ["./docker-entrypoint.sh"]
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 # ==========================
 # FROM appbase as production
 # ==========================
