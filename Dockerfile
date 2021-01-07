@@ -6,7 +6,7 @@ FROM helsinkitest/python-node:3.6-10-slim as staticbuilder
 # is required for compiling SCSS files.
 # =========================================================
 
-RUN bash apt-install.sh \
+RUN bash /tools/apt-install.sh \
       libxmlsec1-dev \
       libxml2-dev \
       pkg-config \
