@@ -64,7 +64,7 @@ COPY --from=staticbuilder  /app/static /var/tunnistamo/static
 COPY --from=staticbuilder  /app/node_modules /var/tunnistamo/node_modules
 
 # =========================
-FROM appbase as development
+#FROM appbase as development
 # =========================
 WORKDIR /app
 COPY requirements-dev.txt /app/requirements-dev.txt
