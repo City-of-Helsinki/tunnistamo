@@ -13,7 +13,10 @@ RUN apt-install.sh \
       git \
       curl \
       libpq-dev \
-      build-essential
+      build-essential \
+      libpq-dev \
+      gettext \
+      netcat
 
 WORKDIR /app
 
@@ -40,16 +43,7 @@ COPY requirements-prod.txt /app/requirements-prod.txt
 # Note that production dependencies are installed here as well since
 # that is the default state of the image and development stages are
 # just extras.
-RUN apt-install.sh \
-      build-essential \
-      libpq-dev \
-      gettext \
-      git \
-      libxmlsec1-dev \
-      libxml2-dev \
-      netcat \
-      pkg-config \
-    && pip install -U pip \
+RUN pip install -U pip \
     && pip install --no-cache-dir  -r /app/requirements.txt \
     && pip install --no-cache-dir  -r /app/requirements-prod.txt \
     && apt-cleanup.sh build-essential pkg-config git
