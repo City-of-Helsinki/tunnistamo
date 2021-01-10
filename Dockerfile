@@ -33,8 +33,8 @@ FROM helsinkitest/python:3.6-slim as appbase
 
 WORKDIR /app
 
-COPY --chown=appuser:appuser requirements.txt /app/requirements.txt
-COPY --chown=appuser:appuser requirements-prod.txt /app/requirements-prod.txt
+COPY requirements.txt /app/requirements.txt
+COPY requirements-prod.txt /app/requirements-prod.txt
 
 # Install main project dependencies and clean up
 # Note that production dependencies are installed here as well since
@@ -60,20 +60,20 @@ ENTRYPOINT ["./docker-entrypoint.sh"]
 # STore static files under /var to not conflict with development volume mount
 ENV STATIC_ROOT /var/tunnistamo/static
 ENV NODE_MODULES_ROOT /var/tunnistamo/node_modules
-COPY --from=staticbuilder --chown=appuser:appuser /app/static /var/tunnistamo/static
-COPY --from=staticbuilder --chown=appuser:appuser /app/node_modules /var/tunnistamo/node_modules
+COPY --from=staticbuilder  /app/static /var/tunnistamo/static
+COPY --from=staticbuilder  /app/node_modules /var/tunnistamo/node_modules
 
 # =========================
 FROM appbase as development
 # =========================
 
-COPY --chown=appuser:appuser requirements-dev.txt /app/requirements-dev.txt
+COPY  requirements-dev.txt /app/requirements-dev.txt
 RUN pip install --no-cache-dir  -r /app/requirements-dev.txt \
   && pip install --no-cache-dir pip-tools
 
 ENV DEV_SERVER=1
 
-COPY --chown=appuser:appuser . /app/
+COPY  . /app/
 
 USER appuser
 EXPOSE 8000/tcp
@@ -82,7 +82,7 @@ EXPOSE 8000/tcp
 FROM appbase as production
 # ==========================
 
-COPY --chown=appuser:appuser . /app/
+COPY  . /app/
 
 USER appuser
 EXPOSE 8000/tcp
