@@ -47,6 +47,13 @@ env = environ.Env(
     # Client secret
     SOCIAL_AUTH_HELUSERNAME_SECRET=(str, ""),
 
+    # Helsinki Tunnistus Keycloak proxying to suomi.fi
+    SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_OIDC_ENDPOINT=(str, ""),
+    # Client ID
+    SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_KEY=(str, ""),
+    # Client secret
+    SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_SECRET=(str, ""),
+
     SOCIAL_AUTH_ESPOO_ADFS_KEY=(str, ""),
     SOCIAL_AUTH_ESPOO_ADFS_SECRET=(str, ""),
 
@@ -151,7 +158,7 @@ AUTHENTICATION_BACKENDS = (
     'auth_backends.google.GoogleOAuth2CustomName',
     'auth_backends.adfs.helsinki_library_asko.HelsinkiLibraryAskoADFS',
     'auth_backends.helsinki_username.HelsinkiUsername',
-    'auth_backends.helsinki_tunnistus.HelsinkiIdentity',
+    'auth_backends.helsinki_tunnistus_suomifi.HelsinkiTunnistus',
     'yletunnus.backends.YleTunnusOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'auth_backends.suomifi.SuomiFiSAMLAuth',
@@ -453,6 +460,10 @@ SOCIAL_AUTH_ESPOO_ADFS_SECRET = env("SOCIAL_AUTH_ESPOO_ADFS_SECRET")
 SOCIAL_AUTH_HELUSERNAME_OIDC_ENDPOINT = env("SOCIAL_AUTH_HELUSERNAME_OIDC_ENDPOINT")
 SOCIAL_AUTH_HELUSERNAME_KEY = env("SOCIAL_AUTH_HELUSERNAME_KEY")
 SOCIAL_AUTH_HELUSERNAME_SECRET = env("SOCIAL_AUTH_HELUSERNAME_SECRET")
+
+SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_OIDC_ENDPOINT = env("SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_OIDC_ENDPOINT")
+SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_KEY = env("SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_KEY")
+SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_SECRET = env("SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_SECRET")
 
 
 ###
