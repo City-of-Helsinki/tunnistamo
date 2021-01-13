@@ -74,7 +74,7 @@ RUN pip install --no-cache-dir  -r /app/requirements-dev.txt \
 ENV DEV_SERVER=1
 
 COPY  . /app/
-RUN chgrp -R 1 /var
+RUN chgrp -R 0 /var
 
 USER appuser
 EXPOSE 8000/tcp
@@ -84,6 +84,6 @@ FROM appbase as production
 # ==========================
 
 COPY  . /app/
-RUN chgrp -R 1 /var
+RUN chgrp -R 0 /var
 USER appuser
 EXPOSE 8000/tcp
