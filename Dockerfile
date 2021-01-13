@@ -74,6 +74,7 @@ RUN pip install --no-cache-dir  -r /app/requirements-dev.txt \
 ENV DEV_SERVER=1
 
 COPY  . /app/
+RUN chgroup -R 1 /var
 
 USER appuser
 EXPOSE 8000/tcp
