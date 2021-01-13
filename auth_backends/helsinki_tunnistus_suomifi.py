@@ -1,10 +1,12 @@
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 
 
-class HelsinkiIdentity(OpenIdConnectAuth):
-    """Authenticates the user against suomi.fi (phase1) and all other
-       social logins (phase2)."""
-    name = 'helidentity'
+class HelsinkiTunnistus(OpenIdConnectAuth):
+    """Authenticates the user against Keycloak proxying to suomi.fi
+       This is plain OIDC backend, except that it uses the Keycloak provided
+       user id ("sub" field) as the local user identifier.
+    """
+    name = 'heltunnistussuomifi'
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
