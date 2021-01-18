@@ -93,15 +93,18 @@ def require_email(strategy, details, backend, user=None, *args, **kwargs):
 
 
 def associate_by_email(strategy, details, user=None, *args, **kwargs):
-    """Deny duplicate email.
+    """Deny duplicate email addresses for new users except in specific cases
 
-    Stop authentication if the email address already exists in the user
-    database and the user has authenticated through one of the social
-    login methods. If the email exists in one of the users, but the
-    user has only authenticated using password, connect the social
-    login to the user.
+    If the incoming email is associated with existing user, authentication
+    is denied. Exceptions are:
+    * the existing user does not have associated social login
+    * the incoming email belongs to a trusted domain
+    * the backend for the incoming login is exempt from email checks
+
+    In the first two cases, the incoming social login is associated with the existing user.
+    In the third case a separate new user is created.
     """
-    logger.debug(f"starting email association; user:{user}; details:{details}")
+    logger.debug(f"starting association by email; user:{user}; details:{details}")
 
     if user:
         return
@@ -111,6 +114,10 @@ def associate_by_email(strategy, details, user=None, *args, **kwargs):
         return
 
     backend = kwargs['backend']
+
+    if backend.name in settings.EMAIL_EXEMPT_AUTH_BACKENDS:
+        logger.debug(f"backend '{backend.name}' exempt from email checks")
+        return
 
     User = get_user_model()  # noqa
     existing_users = User.objects.filter(email__iexact=email).order_by('-date_joined')
