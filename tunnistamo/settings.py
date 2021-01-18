@@ -30,6 +30,7 @@ env = environ.Env(
     NODE_MODULES_ROOT=(str, os.path.join(BASE_DIR, 'node_modules')),
 
     ALLOW_DUPLICATE_EMAILS=(bool, False),
+    EMAIL_EXEMPT_AUTH_BACKENDS=(list,[]),
 
     # Authentication settings
     SOCIAL_AUTH_FACEBOOK_KEY=(str, ""),
@@ -175,6 +176,8 @@ RESTRICTED_AUTHENTICATION_BACKENDS = (
     'auth_backends.suomifi.SuomiFiSAMLAuth',
 )
 RESTRICTED_AUTHENTICATION_TIMEOUT = 60 * 60
+
+EMAIL_EXEMPT_AUTH_BACKENDS = env("EMAIL_EXEMPT_AUTH_BACKENDS")
 
 ROOT_URLCONF = 'tunnistamo.urls'
 
