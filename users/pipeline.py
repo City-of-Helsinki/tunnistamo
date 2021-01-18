@@ -77,8 +77,10 @@ def require_email(strategy, details, backend, user=None, *args, **kwargs):
     if user:
         logger.debug(f"user: {user} already exists. Will not check email.")
         return
-    # Suomi.fi returns PRC(VRK) information, which often doesn't inclue email address
-    if backend.name == 'suomifi':
+    # Some backends do not have email available for all their users, allow config to
+    # bypass this check. (unused suomi.fi backend is one such)
+    if backend.name in settings.EMAIL_EXEMPT_AUTH_BACKENDS:
+        logger.debug(f"backend '{backend.name}' exempt from email checks")
         return
     if details.get('email'):
         return

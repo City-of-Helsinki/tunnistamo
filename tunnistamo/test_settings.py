@@ -83,3 +83,5 @@ SOCIAL_AUTH_SUOMIFI_TECHNICAL_CONTACT = SOCIAL_AUTH_SUOMIFI_SUPPORT_CONTACT = {
     'emailAddress': 'teppo.testi@tunnistamo.test',
 }
 SOCIAL_AUTH_SUOMIFI_UI_LOGO = {'url': 'https://tunnistamo.test/logo.svg', 'height': '120', 'width': '240'}
+
+EMAIL_EXEMPT_AUTH_BACKENDS = ['suomifi']
