@@ -1,6 +1,7 @@
 import logging
 import uuid
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.urls import reverse
@@ -72,10 +73,14 @@ def require_email(strategy, details, backend, user=None, *args, **kwargs):
     `details` received from the social auth doesn't include an email
     address.
     """
+    logger.debug(f"enforcing email; user:{user}; details:{details}, backend: {backend.name}")
     if user:
+        logger.debug(f"user: {user} already exists. Will not check email.")
         return
-    # Suomi.fi returns PRC(VRK) information, which often doesn't inclue email address
-    if backend.name == 'suomifi':
+    # Some backends do not have email available for all their users, allow config to
+    # bypass this check. (unused suomi.fi backend is one such)
+    if backend.name in settings.EMAIL_EXEMPT_AUTH_BACKENDS:
+        logger.debug(f"backend '{backend.name}' exempt from email checks")
         return
     if details.get('email'):
         return
@@ -153,11 +158,14 @@ def update_ad_groups(details, backend, user=None, *args, **kwargs):
 
 
 def check_existing_social_associations(backend, strategy, user=None, social=None, *args, **kwargs):
+    """ Check if logged user already has associated social auth and deny login if so
+    """
     logger.debug(f"starting check for existing social assoc; user:{user}; backend: {backend.name}; social:{social}")
     if user and not social:
+        logger.debug(f"user does not have associated social auth for backend: {backend.name}")
         social_set = user.social_auth.all()
         providers = [a.provider for a in social_set]
-        logger.debug(f"social does not exist; providers: {providers}")
+        logger.debug(f"current providers for user are {providers}")
         if providers and backend.name not in providers:
             strategy.request.other_logins = LoginMethod.objects.filter(provider_id__in=providers)
             error_view = AuthenticationErrorView(request=strategy.request)
