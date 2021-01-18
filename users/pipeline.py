@@ -73,7 +73,9 @@ def require_email(strategy, details, backend, user=None, *args, **kwargs):
     `details` received from the social auth doesn't include an email
     address.
     """
+    logger.debug(f"enforcing email; user:{user}; details:{details}, backend: {backend.name}")
     if user:
+        logger.debug(f"user: {user} already exists. Will not check email.")
         return
     # Suomi.fi returns PRC(VRK) information, which often doesn't inclue email address
     if backend.name == 'suomifi':
