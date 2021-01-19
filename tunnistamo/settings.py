@@ -387,8 +387,7 @@ SOCIAL_AUTH_PIPELINE = (
     # Checks if the current social-account is already associated in the site.
     'social_core.pipeline.social_auth.social_user',
 
-
-    # Add `new_uuid` argument to the pipeline.
+    # Add `uuid` argument to the pipeline.
     'users.pipeline.get_user_uuid',
     # Sets the `username` argument.
     'users.pipeline.get_username',
@@ -464,7 +463,8 @@ SOCIAL_AUTH_HELUSERNAME_SECRET = env("SOCIAL_AUTH_HELUSERNAME_SECRET")
 SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_OIDC_ENDPOINT = env("SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_OIDC_ENDPOINT")
 SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_KEY = env("SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_KEY")
 SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_SECRET = env("SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_SECRET")
-
+# Helsinki Tunnistus (Keycloak) suomi.fi sets the uuid for easier migration
+SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_USER_FIELDS = ['username', 'email', 'uuid']
 
 ###
 # The following section contains values required by Social Auth Suomi.fi

@@ -14,18 +14,23 @@ logger = logging.getLogger(__name__)
 
 
 def get_user_uuid(details, backend, response, user=None, *args, **kwargs):
-    """Add `new_uuid` argument to the pipeline.
+    """Add `uuid` argument to the pipeline.
 
-    Makes sure that a `new_uuid` argument is available to other
-    pipeline entries.
+    Makes `uuid` argument available to other pipeline entries.
 
     If the backend provides `get_user_uuid` method (as is the case with
-    the ADFS backends), it is used to generate the UUID. Otherwise, the
-    UUID is generated with `uuid.uuid1` function.
+    the ADFS backends and Keycloak suomi.fi backend), it is used to
+    generate the UUID. Otherwise, the UUID is generated with `uuid.uuid1`
+    function.
+
+    The argument is named same as the django-helusers `uuid` field.
+    This allows syncing the helusers `uuid`-field with uuid generated
+    here using SOCIAL_AUTH_backend_name_USER_FIELDS.
     """
+
     if user and getattr(user, 'uuid'):
         return {
-            'new_uuid': user.uuid,
+            'uuid': user.uuid,
         }
     if callable(getattr(backend, 'get_user_uuid', None)):
         new_uuid = backend.get_user_uuid(details, response)
@@ -33,7 +38,7 @@ def get_user_uuid(details, backend, response, user=None, *args, **kwargs):
         new_uuid = uuid.uuid1()
 
     return {
-        'new_uuid': new_uuid,
+        'uuid': new_uuid,
     }
 
 
@@ -47,7 +52,7 @@ def get_username(strategy, user=None, *args, **kwargs):
     storage = strategy.storage
 
     if not user:
-        user_uuid = kwargs.get('new_uuid')
+        user_uuid = kwargs.get('uuid')
         if not user_uuid:
             return
 
