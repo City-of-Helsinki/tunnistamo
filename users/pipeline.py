@@ -160,6 +160,14 @@ def update_ad_groups(details, backend, user=None, *args, **kwargs):
 
 
 def check_existing_social_associations(backend, strategy, user=None, social=None, *args, **kwargs):
+    """Deny adding additional social auths
+
+    social_core.pipeline.social_auth.associate_user would automatically
+    add additional social auths for the user, if they succesfully
+    authenticated to another IdP while holding a session with Tunnistamo.
+    We don't want this to happen, as there is no interface for managing
+    additional IdPs.
+    """
     logger.debug(f"starting check for existing social assoc; user:{user}; backend: {backend.name}; social:{social}")
     if user and not social:
         social_set = user.social_auth.all()
