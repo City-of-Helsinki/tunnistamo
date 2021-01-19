@@ -90,12 +90,12 @@ fi
 
 # Start server
 if [[ ! -z "$@" ]]; then
-echo "Starting server"
+echo "Starting given cmd: $@"
     "$@"
 elif [[ "$DEV_SERVER" = "1" ]]; then
-echo "Startind DEV SERVER"
+echo "Starting DEV SERVER"
     python ./manage.py runserver 0.0.0.0:8000
 else
-echo "Starting UWSI"
-    uwsgi --ini .prod/uwsgi.ini
+echo "Starting uWSGI"
+    exec uwsgi --ini .prod/uwsgi.ini
 fi
