@@ -15,6 +15,4 @@ class HelsinkiTunnistus(OpenIdConnectAuth):
     def get_user_uuid(self, details, response):
         # We explicitly want to use the UUID from the keycloak provided
         # token as our own identity
-        uid = self.get_user_id(details, response)
-
-        return uid
+        return self.get_user_id(details, response)
