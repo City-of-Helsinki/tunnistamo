@@ -28,6 +28,8 @@ env = environ.Env(
     MEDIA_URL=(str, '/media/'),
     NODE_MODULES_ROOT=(str, os.path.join(BASE_DIR, 'node_modules')),
 
+    ALLOW_DUPLICATE_EMAILS=(bool, False),
+
     # Authentication settings
     SOCIAL_AUTH_FACEBOOK_KEY=(str, ""),
     SOCIAL_AUTH_FACEBOOK_SECRET=(str, ""),
@@ -393,9 +395,10 @@ SOCIAL_AUTH_PIPELINE = (
     'users.pipeline.get_username',
     # Enforce email address.
     'users.pipeline.require_email',
-    # Deny duplicate email or associate to an existing user by email
-    'users.pipeline.associate_by_email',
 
+    # Disallows a new login with the same email address and different
+    # provider except when ALLOW_DUPLICATE_EMAILS is true
+    'users.pipeline.associate_by_email',
     # Make up a username for this person, appends a random string at the end if
     # there's any collision.
     # 'social_core.pipeline.user.get_username',
@@ -429,6 +432,8 @@ SOCIAL_AUTH_PIPELINE = (
     # Save last login backend to user data
     'users.pipeline.save_social_auth_backend'
 )
+
+ALLOW_DUPLICATE_EMAILS = env("ALLOW_DUPLICATE_EMAILS")
 
 SOCIAL_AUTH_ADMIN_USER_SEARCH_FIELDS = ['email', 'first_name', 'last_name']
 

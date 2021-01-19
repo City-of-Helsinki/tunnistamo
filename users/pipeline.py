@@ -1,6 +1,7 @@
 import logging
 import uuid
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.urls import reverse
@@ -88,19 +89,23 @@ def require_email(strategy, details, backend, user=None, *args, **kwargs):
 
 
 def associate_by_email(strategy, details, user=None, *args, **kwargs):
-    """Deny duplicate email.
+    """Deny duplicate email addresses for new users except in specific cases
 
-    Stop authentication if the email address already exists in the user
-    database and the user has authenticated through one of the social
-    login methods. If the email exists in one of the users, but the
-    user has only authenticated using password, connect the social
-    login to the user.
+    If the incoming email is associated with existing user, authentication
+    is denied. Exceptions are:
+    * the existing user does not have associated social login
+    * the incoming email belongs to a trusted domain
+    * the duplicate email address check has been disabled in the settings
+
+    In the first two cases, the incoming social login is associated with the existing user.
+    In the third case a separate new user is created.
     """
-    logger.debug(f"starting email association; user:{user}; details:{details}")
+    logger.debug(f"starting association by email; user:{user}; details:{details}")
 
     if user:
         return
-
+    if settings.ALLOW_DUPLICATE_EMAILS:
+        return
     email = details.get('email')
     if not email:
         return
