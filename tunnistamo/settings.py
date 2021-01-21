@@ -21,6 +21,7 @@ env = environ.Env(
     DATABASE_URL=(str, "postgres:///tunnistamo"),
     ALLOWED_HOSTS=(list, []),
     ALLOW_CROSS_SITE_SESSION_COOKIE=(bool, False),
+    TRUST_X_FORWARDED_HOST=(bool, False),
 
     STATIC_URL=(str, "/sso/static/"),
     STATIC_ROOT=(str, os.path.join(BASE_DIR, 'static')),
@@ -331,6 +332,8 @@ SESSION_COOKIE_NAME = 'sso-sessionid'
 if env('ALLOW_CROSS_SITE_SESSION_COOKIE'):
     # Not setting the attribute allows cookies to be passed across sites
     SESSION_COOKIE_SAMESITE = None
+
+USE_X_FORWARDED_HOST = env("TRUST_X_FORWARDED_HOST")
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_SCHEME', 'https')
 
