@@ -230,7 +230,7 @@ LOCALE_PATHS = (
 )
 
 LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/profile/'
+LOGIN_REDIRECT_URL = '/accounts/profile/'
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 AUTH_USER_MODEL = 'users.User'
