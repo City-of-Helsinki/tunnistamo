@@ -30,7 +30,7 @@ env = environ.Env(
     NODE_MODULES_ROOT=(str, os.path.join(BASE_DIR, 'node_modules')),
 
     ALLOW_DUPLICATE_EMAILS=(bool, False),
-    EMAIL_EXEMPT_AUTH_BACKENDS=(list,[]),
+    EMAIL_EXEMPT_AUTH_BACKENDS=(list, []),
 
     # Authentication settings
     SOCIAL_AUTH_FACEBOOK_KEY=(str, ""),
