@@ -76,6 +76,13 @@ env = environ.Env(
     SOCIAL_AUTH_YLETUNNUS_APP_ID=(str, ""),
     SOCIAL_AUTH_YLETUNNUS_APP_KEY=(str, ""),
     SOCIAL_AUTH_YLETUNNUS_SECRET=(str, ""),
+
+    # Another Tunnistamo instance provides authentication
+    SOCIAL_AUTH_TUNNISTAMO_OIDC_ENDPOINT=(str, ""),
+    # Client ID
+    SOCIAL_AUTH_TUNNISTAMO_KEY=(str, ""),
+    # Client secret
+    SOCIAL_AUTH_TUNNISTAMO_SECRET=(str, ""),
 )
 
 
@@ -170,6 +177,7 @@ AUTHENTICATION_BACKENDS = (
     'yletunnus.backends.YleTunnusOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'auth_backends.suomifi.SuomiFiSAMLAuth',
+    'auth_backends.tunnistamo.Tunnistamo',
 )
 
 RESTRICTED_AUTHENTICATION_BACKENDS = (
@@ -490,6 +498,11 @@ SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_USER_FIELDS = ['username', 'email', 'uuid']
 SOCIAL_AUTH_YLETUNNUS_APP_ID = env("SOCIAL_AUTH_YLETUNNUS_APP_ID")
 SOCIAL_AUTH_YLETUNNUS_APP_KEY = env("SOCIAL_AUTH_YLETUNNUS_APP_KEY")
 SOCIAL_AUTH_YLETUNNUS_SECRET = env("SOCIAL_AUTH_YLETUNNUS_SECRET")
+
+SOCIAL_AUTH_TUNNISTAMO_OIDC_ENDPOINT = env("SOCIAL_AUTH_TUNNISTAMO_OIDC_ENDPOINT")
+SOCIAL_AUTH_TUNNISTAMO_KEY = env("SOCIAL_AUTH_TUNNISTAMO_KEY")
+SOCIAL_AUTH_TUNNISTAMO_SECRET = env("SOCIAL_AUTH_TUNNISTAMO_SECRET")
+SOCIAL_AUTH_TUNNISTAMO_SCOPE = ["ad_groups"]
 
 ###
 # The following section contains values required by Social Auth Suomi.fi

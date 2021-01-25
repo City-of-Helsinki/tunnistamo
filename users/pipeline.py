@@ -8,6 +8,7 @@ from django.urls import reverse
 from helusers.utils import uuid_to_username
 
 from auth_backends.adfs.base import BaseADFS
+from auth_backends.tunnistamo import Tunnistamo
 from users.models import LoginMethod
 from users.views import AuthenticationErrorView
 
@@ -155,7 +156,7 @@ def update_ad_groups(details, backend, user=None, *args, **kwargs):
     Updates the users `ADGroup`s if the user authenticated through an ADFS
     backend.
     """
-    if not isinstance(backend, BaseADFS) or not user or 'ad_groups' not in details:
+    if not isinstance(backend, (BaseADFS, Tunnistamo)) or not user or 'ad_groups' not in details:
         return
 
     user.update_ad_groups(details['ad_groups'])
