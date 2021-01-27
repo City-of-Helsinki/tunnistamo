@@ -43,6 +43,7 @@ jobs:
           track: 'stable'
         env:
           K8S_NAMESPACE: ${{ secrets.K8S_NAMESPACE_STABLE }}
+          K8S_ADDITIONAL_HOSTNAMES: ${{ secrets.K8S_ADDITIONAL_HOSTNAMES }}
           ENVIRONMENT_URL: https://${{ secrets.ENVIRONMENT_URL_STABLE }}
           K8S_SECRET_ALLOW_EMBEDDING_IN_FRAME: 0
           K8S_SECRET_DATABASE_HOST: ${{ secrets.K8S_SECRET_DATABASE_HOST_STABLE }}
