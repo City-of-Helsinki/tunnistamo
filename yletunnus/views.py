@@ -15,7 +15,7 @@ class YleTunnusOAuth2Adapter(OAuth2Adapter):
         app_params = '?app_id={}&app_key={}'.format(self.auth_conf['app_id'],
                                                     self.auth_conf['app_key'])
         self.access_token_url += app_params
-        return super(YleTunnusOAuth2Adapter, self).__init__(*args, **kwargs)
+        super(YleTunnusOAuth2Adapter, self).__init__(*args, **kwargs)
 
     def complete_login(self, request, app, token, **kwargs):
         data = jwt.decode(token.token, secret=app.secret, verify=False)
