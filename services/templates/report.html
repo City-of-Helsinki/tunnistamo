@@ -4,10 +4,11 @@
 {% block content_title %}List of configured applications{% endblock %}
 {% block content %}
 <table>
+    <caption>Table of all configured client applications</caption>
     <thead>
         <tr>
             {% for key in headers %}
-            <th><strong>{{ key }}</strong></th>
+            <th scope="col"><strong>{{ key }}</strong></th>
             {% endfor %}
         </tr>
     </thead>
