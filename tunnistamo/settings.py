@@ -720,4 +720,5 @@ if 'SECRET_KEY' not in locals():
                     f.write(SECRET_KEY)
                     f.close()
             except IOError:
-                raise Exception('Please create a %s file with random characters to generate your secret key!' % secret_file)
+                raise IOError(
+                    'Please create a %s file with random characters to generate your secret key!' % secret_file)
