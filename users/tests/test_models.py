@@ -144,7 +144,7 @@ def test_implicit_oidc_login_id_token_content(
 
     expected_keys = {
         'aud', 'sub', 'exp', 'iat', 'iss',  'nonce',
-        'at_hash', 'auth_time',
+        'at_hash', 'auth_time', 'azp', 'loa'
     } | ({
         'name', 'family_name', 'given_name', 'nickname',
     } if 'profile' in scope else set()) | ({

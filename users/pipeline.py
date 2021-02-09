@@ -8,6 +8,7 @@ from django.urls import reverse
 from helusers.utils import uuid_to_username
 
 from auth_backends.adfs.base import BaseADFS
+from auth_backends.helsinki_tunnistus_suomifi import HelsinkiTunnistus
 from auth_backends.tunnistamo import Tunnistamo
 from users.models import LoginMethod
 from users.views import AuthenticationErrorView
@@ -186,3 +187,15 @@ def save_social_auth_backend(backend, user=None, *args, **kwargs):
     if user:
         user.last_login_backend = backend.name
         user.save()
+
+
+def save_loa_to_session(backend, strategy, user=None, social=None, *args, **kwargs):
+    if not user or not social or not isinstance(backend, HelsinkiTunnistus) or not backend.id_token:
+        return
+
+    # Save the "loa" claim received from the Helsinki Tunnistus Keycloak to the session.
+    # This will be in turn added as a "loa" claim to the tokens Tunnistamo supplies.
+    strategy.request.session["heltunnistussuomifi_loa"] = backend.id_token.get(
+        "loa",
+        "low"
+    )

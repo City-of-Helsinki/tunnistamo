@@ -366,6 +366,7 @@ OIDC_IDTOKEN_INCLUDE_CLAIMS = True
 OIDC_IDTOKEN_SUB_GENERATOR = 'tunnistamo.oidc.sub_generator'
 OIDC_EXTRA_SCOPE_CLAIMS = 'oidc_apis.scopes.CombinedScopeClaims'
 OIDC_AFTER_USERLOGIN_HOOK = 'oidc_apis.utils.after_userlogin_hook'
+OIDC_IDTOKEN_PROCESSING_HOOK = 'oidc_apis.utils.add_heltunnistussuomifi_loa_claim'
 
 # key_manager settings for RSA Key
 KEY_MANAGER_RSA_KEY_LENGTH = 4096
@@ -454,7 +455,11 @@ SOCIAL_AUTH_PIPELINE = (
     'users.pipeline.update_ad_groups',
 
     # Save last login backend to user data
-    'users.pipeline.save_social_auth_backend'
+    'users.pipeline.save_social_auth_backend',
+
+    # Save the "loa" claim received from the Helsinki Tunnistus Keycloak to the session.
+    # This will be in turn added as a "loa" claim to the tokens Tunnistamo supplies.
+    'users.pipeline.save_loa_to_session',
 )
 
 ALLOW_DUPLICATE_EMAILS = env("ALLOW_DUPLICATE_EMAILS")
