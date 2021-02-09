@@ -123,6 +123,19 @@ class AuthenticationErrorView(TemplateView):
 class TunnistamoOidcAuthorizeView(AuthorizeView):
     def get(self, request, *args, **kwargs):
         request.GET = _extend_scope_in_query_params(request.GET)
+
+        if request.GET.get('client_id'):
+            try:
+                client = Client.objects.get(client_id=request.GET.get('client_id'))
+
+                # Save the client_id to the session to be used in the HelsinkiTunnistus
+                # social auth backend.
+                request.session["oidc_authorize_original_client_id"] = client.client_id
+            except Client.DoesNotExist:
+                # We don't care if the client wasn't found because the client will be
+                # validated again in the parent get method.
+                pass
+
         request_locales = [l.strip() for l in request.GET.get('ui_locales', '').split(' ') if l]
         available_locales = [l[0] for l in settings.LANGUAGES]
 
