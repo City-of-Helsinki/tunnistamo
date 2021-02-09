@@ -86,3 +86,44 @@ def test_api_scopes_are_added_to_user_consent_after_authorization(client, api_sc
     assert response.status_code == 302
     user_consent = UserConsent.objects.get(user=user, client=oidc_client)
     assert 'github_username' in user_consent.scope
+
+
+@pytest.mark.parametrize('create_client', (False, True))
+@pytest.mark.django_db
+def test_original_client_id_is_saved_to_the_session(
+    client,
+    loginmethod_factory,
+    oidcclient_factory,
+    create_client,
+):
+    """Test that the original client id is saved to the session
+
+    This is an implementation detail test, but we don't have a better way to test
+    this right now. Proper testing would need end-to-end tests with e.g. Selenium."""
+    oidc_client = None
+
+    if create_client:
+        oidc_client = oidcclient_factory(
+            client_id="test_client",
+            redirect_uris=['https://tunnistamo.test/redirect_uri'],
+            response_types=["id_token"]
+        )
+
+    url = reverse('authorize')
+
+    data = {
+        'client_id': 'test_client',
+        'response_type': 'id_token',
+        'redirect_uri': 'https://tunnistamo.test/redirect_uri',
+        'scope': 'openid',
+        'response_mode': 'form_post',
+        'nonce': 'abcdefg'
+    }
+
+    client.get(url, data)
+
+    if oidc_client:
+        session_client_id = client.session.get("oidc_authorize_original_client_id")
+        assert session_client_id == oidc_client.client_id
+    else:
+        assert "oidc_authorize_original_client_id" not in client.session
