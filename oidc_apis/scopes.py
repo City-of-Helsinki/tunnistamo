@@ -158,7 +158,21 @@ class SuomiFiUserAttributeScopeClaims(ScopeClaims, metaclass=SuomiFiUserAttribut
 
 class OptionalOpenIDScopeClaims(ScopeClaims):
     def scope_openid(self):
-        return {'amr': self.user.last_login_backend} if self.user.last_login_backend else {}
+        claims = {}
+
+        if self.user.last_login_backend:
+            claims['amr'] = self.user.last_login_backend
+
+        # Add the current client id to the "azp" claim (Authorized party - the party
+        # to which the ID Token was issued).
+        claims['azp'] = self.client.client_id
+
+        # Set "low" as the default "Level of Assurance". This is possibly changed in
+        # the "add_heltunnistussuomifi_loa_claim" id processing hook if the user
+        # authenticated using the heltunnistussuomifi provider.
+        claims['loa'] = 'low'
+
+        return claims
 
 
 class CombinedScopeClaims(ScopeClaims):
