@@ -58,3 +58,17 @@ def after_userlogin_hook(request, user, client):
 
     # Return None to continue the login flow
     return None
+
+
+def add_heltunnistussuomifi_loa_claim(dic, request, **kwargs):
+    """Add "loa" to the claims dictionary
+
+    This can be used in the OIDC_IDTOKEN_PROCESSING_HOOK setting to add the value of
+    the "heltunnistussuomifi_loa" session key to the id_token claims dictionary.
+
+    The session value is set in the save_loa_to_session pipeline operation if
+    the provider used was HelsinkiTunnistus."""
+    if request.session and request.session.get("heltunnistussuomifi_loa"):
+        dic["loa"] = request.session.get("heltunnistussuomifi_loa")
+
+    return dic
