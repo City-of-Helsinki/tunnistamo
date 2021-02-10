@@ -8,7 +8,7 @@
 
 certifi==2018.4.16
     # via requests
-cffi==1.11.5
+cffi==1.14.4
     # via cryptography
 chardet==3.0.4
     # via requests
@@ -16,7 +16,7 @@ coreapi==2.3.3
     # via -r requirements.in
 coreschema==0.0.4
     # via coreapi
-cryptography==3.2
+cryptography==3.3.2
     # via
     #   -r requirements.in
     #   jwcrypto
