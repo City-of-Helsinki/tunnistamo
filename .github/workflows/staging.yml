@@ -14,6 +14,11 @@ env:
   BUILD_ARTIFACT_FOLDER: 'build_artifacts'
   SERVICE_ARTIFACT_FOLDER: 'service_artifacts'
   APP_MIGRATE_COMMAND: /app/.prod/on_deploy.sh
+  K8S_REQUEST_CPU: 50m
+  K8S_REQUEST_RAM: 250Mi
+  K8S_LIMIT_CPU: 150m
+  K8S_LIMIT_RAM: 300Mi
+  K8S_REPLICACOUNT: 2
 
 jobs:
   build:
