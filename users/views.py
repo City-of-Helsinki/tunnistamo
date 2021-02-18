@@ -1,7 +1,8 @@
 import logging
 import re
+from collections import defaultdict
 from pydoc import locate
-from urllib.parse import parse_qs, urlparse
+from urllib.parse import parse_qs, urlencode, urlparse
 
 from django.conf import settings
 from django.shortcuts import redirect
@@ -17,7 +18,9 @@ from oidc_provider.lib.errors import TokenError, UserAuthError
 from oidc_provider.lib.utils.token import client_id_from_id_token
 from oidc_provider.models import Client, Token
 from oidc_provider.views import AuthorizeView, EndSessionView
+from social_core.backends.open_id_connect import OpenIdConnectAuth
 from social_core.backends.utils import get_backend
+from social_core.exceptions import MissingBackend
 from social_django.models import UserSocialAuth
 from social_django.utils import load_backend, load_strategy
 
@@ -211,32 +214,111 @@ class TunnistamoOidcEndSessionView(EndSessionView):
             return []
         return UserSocialAuth.objects.filter(user=user)
 
+    def get_oidc_backends_end_session_url(self, request, social_users):
+        """Return end session url of the first OIDC backend the user has a
+        social auth entry on and hasn't been redirected yet.
+
+        The already redirected backends are tracked in a session variable because
+        in theory there could be multiple OIDC social auths for a user.
+        """
+        for social_user in social_users:
+            try:
+                backend_class = get_backend_class(social_user.provider)
+            except MissingBackend:
+                logger.warning(
+                    'Missing backend "{}" in user social auths for user {}'.format(
+                        social_user.provider,
+                        request.user.pk
+                    )
+                )
+                continue
+
+            if not issubclass(backend_class, OpenIdConnectAuth):
+                continue
+
+            backend = backend_class()
+
+            # Only redirect if it's enabled in the backend
+            if not backend.setting('REDIRECT_LOGOUT_TO_END_SESSION', default=False):
+                continue
+
+            end_session_endpoint = backend.oidc_config().get('end_session_endpoint')
+            if not end_session_endpoint:
+                continue
+
+            if 'oidc_backend_end_session_redirected' not in request.session:
+                request.session['oidc_backend_end_session_redirected'] = defaultdict(
+                    bool
+                )
+
+            if request.session['oidc_backend_end_session_redirected'].get(backend.name):
+                continue
+
+            request.session['oidc_backend_end_session_redirected'][backend.name] = True
+
+            end_session_url = '{}?{}'.format(end_session_endpoint, urlencode({
+                'post_logout_redirect_uri': request.build_absolute_uri(request.path)
+            }))
+
+            return end_session_url
+
     def dispatch(self, request, *args, **kwargs):
-        # Check if the authenticated user has active Suomi.fi login
         user = request.user
-        social_user = self._active_suomi_fi_social_user(user)
+
+        social_users = self.get_active_social_users(user)
+        if len(social_users) > 1:
+            logger.warning(
+                'Multiple active social core backends for user {}'.format(
+                    user.pk
+                )
+            )
+
+        # Redirect to the OpenID Connect providers end session endpoint if the user
+        # authenticated using a suitable backend.
+        end_session_url = self.get_oidc_backends_end_session_url(request, social_users)
+        if end_session_url:
+            # The original client supplied original_post_logout_redirect_uri is saved
+            # to the session because we need to set our own logout redirect uri in the
+            # end_session_url to get the user back here to continue the logout.
+            request.session[
+                'oidc_original_post_logout_redirect_uri'
+            ] = self.request.GET.get('post_logout_redirect_uri')
+
+            return redirect(end_session_url)
+
+        oidc_original_post_logout_redirect_uri = request.session.get(
+            'oidc_original_post_logout_redirect_uri'
+        )
+
+        # Check if the authenticated user has active Suomi.fi login
+        suomifi_social_user = self._active_suomi_fi_social_user(user)
 
         # clear Django session and get redirect URL
         response = super(TunnistamoOidcEndSessionView, self).dispatch(request, *args, **kwargs)
 
-        if social_user is not None:
+        if suomifi_social_user is not None:
             # Case 1: Suomi.fi
             # create Suomi.fi logout redirect if needed
-            return self._create_suomifi_logout_response(social_user, user, request, response.url)
+            return self._create_suomifi_logout_response(suomifi_social_user, user, request, response.url)
 
         # Case 2: default case
-        self.post_logout_redirect_uri = self.request.GET.get('post_logout_redirect_uri', None)
+        if oidc_original_post_logout_redirect_uri:
+            self.post_logout_redirect_uri = oidc_original_post_logout_redirect_uri
+        else:
+            self.post_logout_redirect_uri = self.request.GET.get(
+                'post_logout_redirect_uri',
+                None
+            )
+
         if not self._validate_client_uri(self.post_logout_redirect_uri):
             self.post_logout_redirect_uri = None
-        self.next_page = None
 
-        social_users = self.get_active_social_users(user)
-        if len(social_users) > 1:
-            logger.warn('Multiple active social core backends for user {}'.format(user.pk))
+        self.next_page = None
 
         self.backend = None
         for su in social_users:
             self.backend = get_backend_class(su.provider)
+
         return super(EndSessionView, self).dispatch(request, *args, **kwargs)
 
     @staticmethod
