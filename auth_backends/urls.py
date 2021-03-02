@@ -8,4 +8,6 @@ urlpatterns = [
     # Suomi.fi specific endpoints
     re_path(r'^suomifi/logout/callback/$', views.suomifi_logout_view, name='suomifi_logout_callback'),
     re_path(r'^suomifi/metadata/$', views.suomifi_metadata_view, name='suomifi_metadata'),
+    # Backchannel log out
+    re_path(r'^backchannel_logout/(?P<backend>[^/]+)/$', views.backchannel_logout, name='backchannel_logout'),
 ]

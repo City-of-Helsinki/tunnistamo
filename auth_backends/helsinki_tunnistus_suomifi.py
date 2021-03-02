@@ -1,7 +1,9 @@
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 
+from auth_backends.backchannel_logout import OidcBackchannelLogoutMixin
 
-class HelsinkiTunnistus(OpenIdConnectAuth):
+
+class HelsinkiTunnistus(OidcBackchannelLogoutMixin, OpenIdConnectAuth):
     """Authenticates the user against Keycloak proxying to suomi.fi
        This is plain OIDC backend, except that it uses the Keycloak provided
        user id ("sub" field) as the local user identifier.
