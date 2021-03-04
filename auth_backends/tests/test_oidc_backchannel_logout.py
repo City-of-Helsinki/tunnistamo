@@ -136,8 +136,19 @@ def test_logout_token_no_social_auth(
     assert 'User not authenticated with this backend' in str(excinfo.value)
 
 
+def reload_social_django_utils():
+    """Reloads social_django.utils module
+
+    We need to reload the social_django.utils module in the tests because the social
+    auth AUTHENTICATION_BACKENDS setting is read when the utils module is loaded.
+    """
+    import social_django.utils
+    from importlib import reload
+    reload(social_django.utils)
+
+
 @pytest.mark.django_db
-def test_backchannel_logout_not_implemented(
+def test_backchannel_logout_not_implemented_in_backend(
     settings,
     django_client_factory,
     application_factory,
@@ -148,11 +159,7 @@ def test_backchannel_logout_not_implemented(
         'auth_backends.tests.conftest.DummyOidcBackend',
     )
 
-    # We need to reload the social_django.utils module because the social auth
-    # AUTHENTICATION_BACKENDS setting is read when the utils module is loaded.
-    import social_django.utils
-    from importlib import reload
-    reload(social_django.utils)
+    reload_social_django_utils()
 
     password = get_random_string()
     user = user_factory(password=password)
@@ -193,11 +200,7 @@ def test_backchannel_successful_logout(
     )
     settings.SOCIAL_AUTH_DUMMYOIDCLOGOUTBACKEND_KEY = 'dummykey'
 
-    # We need to reload the social_django.utils module because the social auth
-    # AUTHENTICATION_BACKENDS setting is read when the utils module is loaded.
-    import social_django.utils
-    from importlib import reload
-    reload(social_django.utils)
+    reload_social_django_utils()
 
     password = get_random_string()
     user = user_factory(password=password)
@@ -249,11 +252,7 @@ def test_backchannel_logout_no_social_auth(
     )
     settings.SOCIAL_AUTH_DUMMYOIDCLOGOUTBACKEND_KEY = 'dummykey'
 
-    # We need to reload the social_django.utils module because the social auth
-    # AUTHENTICATION_BACKENDS setting is read when the utils module is loaded.
-    import social_django.utils
-    from importlib import reload
-    reload(social_django.utils)
+    reload_social_django_utils()
 
     password = get_random_string()
     user = user_factory(password=password)
