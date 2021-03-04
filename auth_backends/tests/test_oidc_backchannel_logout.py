@@ -4,7 +4,6 @@ import time
 import pytest
 from django.urls import reverse
 from django.utils.crypto import get_random_string
-from jwt import InvalidAudienceError
 from social_core.exceptions import AuthException, AuthTokenError
 
 from .conftest import DummyOidcBackchannelLogoutBackend, DummyOidcBackend, DummyStrategy
@@ -40,10 +39,10 @@ def test_logout_token_invalid_audience(
     )
     backend.strategy.logout_token = logout_token
 
-    with pytest.raises(InvalidAudienceError) as excinfo:
+    with pytest.raises(AuthTokenError) as excinfo:
         backend.backchannel_logout()
 
-    assert 'Invalid audience' in str(excinfo.value)
+    assert 'Token error: Invalid audience' in str(excinfo.value)
 
 
 @pytest.mark.django_db
