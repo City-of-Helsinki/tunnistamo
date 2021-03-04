@@ -55,7 +55,7 @@ def logout_token_factory():
         args.setdefault('iss', backend.oidc_config().get('issuer'))
         args.setdefault('sub', get_random_string())
         args.setdefault('aud', backend.setting('KEY'))
-        args.setdefault('iat', int(time.time()) + 60 * 60)
+        args.setdefault('iat', int(time.time()) - 10)
         args.setdefault('jti', get_random_string())
         args.setdefault(
             'events',
