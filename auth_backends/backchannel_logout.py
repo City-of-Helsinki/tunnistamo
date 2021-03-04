@@ -3,11 +3,10 @@ import logging
 from calendar import timegm
 from importlib import import_module
 
-import jwt
 from django.conf import settings
 from django.contrib.auth import SESSION_KEY, get_user_model
 from django.utils import timezone
-from jose import jwk
+from jose import jwk, jwt
 from jose.jwt import ExpiredSignatureError, JWTClaimsError, JWTError
 from social_core.exceptions import AuthException, AuthTokenError
 
