@@ -6,7 +6,88 @@ from django.urls import reverse
 from django.utils.crypto import get_random_string
 from social_core.exceptions import AuthException, AuthTokenError
 
-from .conftest import DummyOidcBackchannelLogoutBackend, DummyOidcBackend, DummyStrategy
+from .conftest import DummyOidcBackchannelLogoutBackend, DummyOidcBackend
+
+
+@pytest.mark.django_db
+def test_logout_token_missing(
+    rsa_key,
+    backend,
+    logout_token_factory,
+):
+    backend.strategy.logout_token = None
+
+    with pytest.raises(AuthException) as excinfo:
+        backend.backchannel_logout()
+
+    assert 'Log out token missing' in str(excinfo.value)
+
+
+@pytest.mark.django_db
+def test_logout_token_rsa_key_missing(
+    rsa_key,
+    backend,
+    logout_token_factory,
+):
+    logout_token = logout_token_factory(backend)
+    backend.strategy.logout_token = logout_token
+
+    rsa_key.delete()
+
+    with pytest.raises(AuthTokenError) as excinfo:
+        backend.backchannel_logout()
+
+    assert 'Signature verification failed' in str(excinfo.value)
+
+
+@pytest.mark.django_db
+def test_logout_token_part_missing(
+    rsa_key,
+    backend,
+    logout_token_factory,
+):
+    logout_token = logout_token_factory(backend)
+    logout_token = logout_token.split('.')[0]
+    backend.strategy.logout_token = logout_token
+
+    with pytest.raises(AuthTokenError) as excinfo:
+        backend.backchannel_logout()
+
+    assert 'Incorrect logout_token: signature missing' in str(excinfo.value)
+
+
+@pytest.mark.django_db
+def test_logout_token_invalid_signature(
+    rsa_key,
+    backend,
+    logout_token_factory,
+):
+    logout_token = logout_token_factory(backend)
+    logout_token_parts = logout_token.split('.')
+    logout_token = '{}.{}.invalid'.format(logout_token_parts[0], logout_token_parts[1])
+    backend.strategy.logout_token = logout_token
+
+    with pytest.raises(AuthTokenError) as excinfo:
+        backend.backchannel_logout()
+
+    assert 'Signature verification failed' in str(excinfo.value)
+
+
+@pytest.mark.django_db
+def test_logout_token_payload_missing(
+    rsa_key,
+    backend,
+    logout_token_factory,
+):
+    logout_token = logout_token_factory(backend)
+    logout_token_parts = logout_token.split('.')
+    logout_token = '{}..{}'.format(logout_token_parts[0], logout_token_parts[2])
+    backend.strategy.logout_token = logout_token
+
+    with pytest.raises(AuthTokenError) as excinfo:
+        backend.backchannel_logout()
+
+    assert 'Signature verification failed' in str(excinfo.value)
 
 
 @pytest.mark.django_db
@@ -46,6 +127,24 @@ def test_logout_token_invalid_audience(
 
 
 @pytest.mark.django_db
+def test_logout_token_invalid_audience_format(
+    rsa_key,
+    backend,
+    logout_token_factory,
+):
+    logout_token = logout_token_factory(
+        backend,
+        aud=12345,
+    )
+    backend.strategy.logout_token = logout_token
+
+    with pytest.raises(AuthTokenError) as excinfo:
+        backend.backchannel_logout()
+
+    assert 'Invalid claim format in token' in str(excinfo.value)
+
+
+@pytest.mark.django_db
 def test_logout_token_invalid_events(
     rsa_key,
     backend,
@@ -54,6 +153,24 @@ def test_logout_token_invalid_events(
     logout_token = logout_token_factory(
         backend,
         events={'invalid event': {}}
+    )
+    backend.strategy.logout_token = logout_token
+
+    with pytest.raises(AuthTokenError) as excinfo:
+        backend.backchannel_logout()
+
+    assert 'Incorrect logout_token: events' in str(excinfo.value)
+
+
+@pytest.mark.django_db
+def test_logout_token_invalid_events_not_dict(
+    rsa_key,
+    backend,
+    logout_token_factory,
+):
+    logout_token = logout_token_factory(
+        backend,
+        events="invalid_value"
     )
     backend.strategy.logout_token = logout_token
 
