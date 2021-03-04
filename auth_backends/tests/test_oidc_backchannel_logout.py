@@ -13,11 +13,9 @@ from .conftest import DummyOidcBackchannelLogoutBackend, DummyOidcBackend, Dummy
 @pytest.mark.django_db
 def test_logout_token_invalid_issuer(
     rsa_key,
+    backend,
     logout_token_factory,
 ):
-    backend = DummyOidcBackchannelLogoutBackend()
-    backend.strategy = DummyStrategy()
-
     logout_token = logout_token_factory(
         backend,
         iss='invalid_issuer',
@@ -33,11 +31,9 @@ def test_logout_token_invalid_issuer(
 @pytest.mark.django_db
 def test_logout_token_invalid_audience(
     rsa_key,
+    backend,
     logout_token_factory,
 ):
-    backend = DummyOidcBackchannelLogoutBackend()
-    backend.strategy = DummyStrategy()
-
     logout_token = logout_token_factory(
         backend,
         aud='invalid_audience',
@@ -53,11 +49,9 @@ def test_logout_token_invalid_audience(
 @pytest.mark.django_db
 def test_logout_token_invalid_events(
     rsa_key,
+    backend,
     logout_token_factory,
 ):
-    backend = DummyOidcBackchannelLogoutBackend()
-    backend.strategy = DummyStrategy()
-
     logout_token = logout_token_factory(
         backend,
         events={'invalid event': {}}
@@ -73,11 +67,9 @@ def test_logout_token_invalid_events(
 @pytest.mark.django_db
 def test_logout_token_invalid_issued_at_time(
     rsa_key,
+    backend,
     logout_token_factory,
 ):
-    backend = DummyOidcBackchannelLogoutBackend()
-    backend.strategy = DummyStrategy()
-
     logout_token = logout_token_factory(
         backend,
         iat=int(time.time()) - 60*60*24*2  # Two days ago
@@ -93,11 +85,9 @@ def test_logout_token_invalid_issued_at_time(
 @pytest.mark.django_db
 def test_logout_token_invalid_subject(
     rsa_key,
+    backend,
     logout_token_factory,
 ):
-    backend = DummyOidcBackchannelLogoutBackend()
-    backend.strategy = DummyStrategy()
-
     logout_token = logout_token_factory(
         backend,
         sub='',
@@ -113,11 +103,9 @@ def test_logout_token_invalid_subject(
 @pytest.mark.django_db
 def test_logout_token_extra_nonce(
     rsa_key,
+    backend,
     logout_token_factory,
 ):
-    backend = DummyOidcBackchannelLogoutBackend()
-    backend.strategy = DummyStrategy()
-
     logout_token = logout_token_factory(
         backend,
         nonce=get_random_string(),
@@ -133,11 +121,9 @@ def test_logout_token_extra_nonce(
 @pytest.mark.django_db
 def test_logout_token_no_social_auth(
     rsa_key,
+    backend,
     logout_token_factory,
 ):
-    backend = DummyOidcBackchannelLogoutBackend()
-    backend.strategy = DummyStrategy()
-
     logout_token = logout_token_factory(
         backend,
         sub=get_random_string(),
