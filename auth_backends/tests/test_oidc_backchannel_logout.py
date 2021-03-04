@@ -398,3 +398,70 @@ def test_backchannel_logout_no_social_auth(
     assert response.status_code == 200
     assert str(user) in str(response.content)
     assert response.wsgi_request.user.is_authenticated is True
+
+
+@pytest.mark.django_db
+def test_backchannel_successful_logout_other_session_unaffected(
+    caplog,
+    rsa_key,
+    settings,
+    django_client_factory,
+    user_factory,
+    usersocialauth_factory,
+    logout_token_factory,
+):
+    caplog.set_level(logging.INFO)
+
+    settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
+        'auth_backends.tests.conftest.DummyOidcBackchannelLogoutBackend',
+    )
+    settings.SOCIAL_AUTH_DUMMYOIDCLOGOUTBACKEND_KEY = 'dummykey'
+
+    reload_social_django_utils()
+
+    password = get_random_string()
+    user = user_factory(password=password)
+    password2 = get_random_string()
+    user2 = user_factory(password=password2)
+
+    backend = DummyOidcBackchannelLogoutBackend()
+    social_auth = usersocialauth_factory(provider=backend.name, user=user)
+    usersocialauth_factory(provider=backend.name, user=user2)
+
+    user_django_client = django_client_factory()
+    user_django_client.login(username=user.username, password=password)
+
+    user_django_client2 = django_client_factory()
+    user_django_client2.login(username=user2.username, password=password2)
+
+    op_django_client = django_client_factory()
+    backchannel_logout_url = reverse(
+        'auth_backends:backchannel_logout',
+        kwargs={'backend': backend.name}
+    )
+
+    logout_token = logout_token_factory(backend, sub=social_auth.uid)
+
+    data = {
+        'logout_token': logout_token
+    }
+    logout_response = op_django_client.post(backchannel_logout_url, data=data)
+
+    assert logout_response.status_code == 200
+    assert (
+               'auth_backends.backchannel_logout',
+               20,
+               f'Deleted a session for user {user.pk}'
+           ) in caplog.record_tuples
+
+    response = user_django_client.get('/accounts/profile/')
+
+    assert response.status_code == 200
+    assert str(user) not in str(response.content)
+    assert response.wsgi_request.user.is_authenticated is False
+
+    response = user_django_client2.get('/accounts/profile/')
+
+    assert response.status_code == 200
+    assert str(user2) in str(response.content)
+    assert response.wsgi_request.user.is_authenticated is True
