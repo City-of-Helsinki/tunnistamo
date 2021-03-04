@@ -48,7 +48,7 @@ class OidcBackchannelLogoutMixin:
         try:
             key = self.find_valid_key(logout_token)
         except ValueError:
-            raise AuthTokenError(self, 'Incorrect logout_token: key missing')
+            raise AuthTokenError(self, 'Incorrect logout_token: signature missing')
 
         if not key:
             raise AuthTokenError(self, 'Signature verification failed')
