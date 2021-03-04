@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth import SESSION_KEY, get_user_model
 from django.utils import timezone
 from jose import jwk, jwt
-from jose.jwt import ExpiredSignatureError, JWTClaimsError, JWTError
+from jose.jwt import JWTClaimsError, JWTError
 from social_core.exceptions import AuthException, AuthTokenError
 
 logger = logging.getLogger(__name__)
@@ -64,8 +64,6 @@ class OidcBackchannelLogoutMixin:
                 audience=client_id,
                 options=self.JWT_DECODE_OPTIONS,
             )
-        except ExpiredSignatureError:
-            raise AuthTokenError(self, 'Signature has expired')
         except JWTClaimsError as error:
             raise AuthTokenError(self, str(error))
         except JWTError:
