@@ -89,3 +89,11 @@ class DummyStrategy:
         return {
             'logout_token': self.logout_token
         }
+
+
+@pytest.fixture
+def backend():
+    backend = DummyOidcBackchannelLogoutBackend()
+    backend.strategy = DummyStrategy()
+
+    return backend
