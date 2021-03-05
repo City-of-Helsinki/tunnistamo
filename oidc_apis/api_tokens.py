@@ -48,6 +48,7 @@ def generate_api_token(api_scopes, token, request=None):
     payload.update(id_token)
     payload.update(_get_api_authorization_claims(api_scopes))
     payload['exp'] = _get_api_token_expires_at(token)
+    payload['loa'] = _get_api_token_level_of_assurance(token)
 
     return encode_id_token(payload, api.oidc_client)
 
@@ -73,3 +74,11 @@ def _datetime_to_timestamp(dt):
 
 
 _EPOCH = datetime.datetime.utcfromtimestamp(0).replace(tzinfo=timezone.utc)
+
+
+def _get_api_token_level_of_assurance(token):
+    loa = "low"
+    if token.id_token and token.id_token.get('loa'):
+        return token.id_token.get('loa')
+
+    return loa

@@ -22,7 +22,6 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, []),
     ALLOW_CROSS_SITE_SESSION_COOKIE=(bool, False),
     TRUST_X_FORWARDED_HOST=(bool, False),
-    CORS_ALLOW_CREDENTIALS=(bool, False),
 
     STATIC_URL=(str, "/sso/static/"),
     STATIC_ROOT=(str, os.path.join(BASE_DIR, 'static')),
@@ -321,7 +320,6 @@ LOGGING = {
 
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_URLS_REGEX = r'.*/(\.well-known/openid-configuration|v1|openid|api-tokens|jwt-token).*'
-CORS_ALLOW_CREDENTIALS = env("CORS_ALLOW_CREDENTIALS")
 
 
 OAUTH2_PROVIDER_APPLICATION_MODEL = 'users.Application'
