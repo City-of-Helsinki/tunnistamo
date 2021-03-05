@@ -2,8 +2,10 @@ import datetime
 
 import pytest
 from django.utils import timezone
+from django.utils.crypto import get_random_string
 from oidc_provider.models import Code
 
+from oidc_apis.models import Api, ApiDomain, ApiScope
 from users.tests.conftest import loginmethod_factory, oidcclient_factory, user  # noqa
 
 
@@ -29,6 +31,45 @@ def oidc_code_factory():
         args.setdefault("is_authentication", True)
 
         instance = Code.objects.create(**args)
+
+        return instance
+
+    return make_instance
+
+
+@pytest.fixture()
+def api_scope_factory():
+    def make_instance(**args):
+        args.setdefault('name', get_random_string())
+        args.setdefault('description', get_random_string())
+
+        instance = ApiScope.objects.create(**args)
+        instance.identifier = instance._generate_identifier()
+        instance.save()
+
+        return instance
+
+    return make_instance
+
+
+@pytest.fixture()
+def api_factory():
+    def make_instance(**args):
+        args.setdefault('name', get_random_string())
+
+        instance = Api.objects.create(**args)
+
+        return instance
+
+    return make_instance
+
+
+@pytest.fixture()
+def api_domain_factory():
+    def make_instance(**args):
+        args.setdefault('identifier', get_random_string())
+
+        instance = ApiDomain.objects.create(**args)
 
         return instance
 
