@@ -6,6 +6,9 @@ from users.factories import access_token_factory
 from users.models import AllowedOrigin
 
 
+SONAR_TEST = 'http://incorrect.url.io'
+
+
 def get_url_combinations():
     HOSTS = (
         ['localhost', 'internet.com', 'sub.domain.info', 'sub.sub.domain.info'] +

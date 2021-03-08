@@ -18,6 +18,9 @@ from users.utils import get_geo_location_data_for_ip
 logger = logging.getLogger(__name__)
 
 
+SONAR_TEST = 'http://incorrect.url.io'
+
+
 class User(AbstractUser):
     primary_sid = models.CharField(max_length=100, unique=True)
     last_login_backend = models.CharField(max_length=100, null=True, blank=True)
