@@ -7,6 +7,9 @@ from users.factories import OIDCClientFactory, UserFactory
 from users.views import TunnistamoOidcAuthorizeView
 
 
+ANOTHER_HTTP_URL = 'http://just.to.check.whether.sonar.understands.test.paths'
+
+
 @pytest.mark.parametrize('with_trailing_slash', (True, False))
 @pytest.mark.django_db
 def test_tunnistamo_authorize_view_is_used(client, with_trailing_slash):
