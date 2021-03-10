@@ -81,12 +81,10 @@ djangorestframework==3.10.2
     #   drf-oidc-auth
 drf-oidc-auth==0.9
     # via django-helusers
-ecdsa==0.15
+ecdsa==0.14.1
     # via python-jose
 future==0.16.0
-    # via
-    #   pyjwkest
-    #   python-jose
+    # via pyjwkest
 geoip2==2.9.0
     # via -r requirements.in
 idna==2.6
@@ -119,7 +117,9 @@ polib==1.1.0
 psycopg2==2.8.3
     # via -r requirements.in
 pyasn1==0.4.5
-    # via rsa
+    # via
+    #   python-jose
+    #   rsa
 pycparser==2.18
     # via cffi
 pycryptodomex==3.6.1
@@ -134,7 +134,9 @@ pyjwt[crypto]==1.7.1
     #   django-allauth
     #   social-auth-core
 python-jose==3.2.0
-    # via social-auth-core
+    # via
+    #   -r requirements.in
+    #   social-auth-core
 python3-openid==3.1.0
     # via
     #   django-allauth
