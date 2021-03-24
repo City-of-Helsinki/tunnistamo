@@ -46,7 +46,7 @@ tOXZmDzg
 
 @pytest.mark.django_db
 @freeze_time('2017-12-15 12:25:55', tz_offset=2)
-def test_login_and_ad_groups(client, httpretty):
+def test_login_and_ad_groups(client, httpretty, monkeypatch):
     access_token_body = json.dumps({
         'access_token': ACCESS_TOKEN,
         'expires_in': 600,
@@ -61,6 +61,27 @@ def test_login_and_ad_groups(client, httpretty):
     })
     login_start_response = client.get(login_start_url)
     auth_redirect_params = parse_qs(urlparse(login_start_response.url).query)
+
+    # Set a matching cert, from the time the test token was generated
+    monkeypatch.setattr(HelsinkiADFS, 'cert',
+                        'MIIDMDCCAhigAwIBAgIBATANBgkqhkiG9w0BAQsFADAjMSEwHwYDVQQDExhBR'
+                        'EZTIFNpZ25pbmcgLSBmcy5oZWwuZmkwHhcNMTYwNDAzMjIxMTAwWhcNMjEwND'
+                        'AzMjIxMTAwWjAjMSEwHwYDVQQDExhBREZTIFNpZ25pbmcgLSBmcy5oZWwuZmk'
+                        'wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQCrCo9kuzljk4F8R12A'
+                        'eIYMARztxkMojcrN1KN3KQeoxcCPaFOTMYHWk8ww1N+m0PJoLl1Eray+cMsoH'
+                        'rdd3iVxmApcQBxD02SnGsEn/3D/sTHcoi9WzqwM8ESbtm0jGIvfWrpJtMO/g7'
+                        'ELW0dXBcWq4LRvBtyTt3jiehIO0HohS8xfQ4+vURFpjvfD0kjPemsMJ7QB8Eo'
+                        '+JscSMTF2CNFO9vct1IJiQJUfRbVWk8I/JFA65ZuXrCjY//LSNLzLRZ+Iw1Bl'
+                        'iSj4jbmOtG8mcb7Fql7dvvz91AMksguO4+9xATukZK7MBLb3DtT2FzYt9oUBR'
+                        'wSsMXiNXh8AitTLUMgpAgMBAAGjbzBtMAwGA1UdEwEB/wQCMAAwHQYDVR0OBB'
+                        'YEFBDL4FpHu+kQEI7MIpSjSACaA9ajMAsGA1UdDwQEAwIFIDARBglghkgBhvh'
+                        'CAQEEBAMCBkAwHgYJYIZIAYb4QgENBBEWD3hjYSBjZXJ0aWZpY2F0ZTANBgkq'
+                        'hkiG9w0BAQsFAAOCAQEAISn44oOdtfdMHh0Z4nezAuDHtKqTd6iV3MY7MwTFm'
+                        'iUFQhJADO2ezpoW3Xj64wWeg3eVXyC7iHk/SV5OVmmo4uU/1YJHiBc5jEUZ5E'
+                        'dvaZQaDH5iaJlK6aiCTznqwu7XJS7LbLeLrVqj3H3IYsV6BiGlT4Z1rXYX+nD'
+                        'fi46TJCKqxE0zTArQQROocfKS+7JM+JU5dLMNOOC+6tCUOP3GEjuE3PMetpbH'
+                        '+k6Wu6d3LzhpU2QICWJnFpj1yJTAb94pWRUKNoBhpxQlWvNzRgFgJesIfkZ4C'
+                        'qqhmHqnV/BO+7MMv/g+WXRD09fo/YIXozpWzmO9LBzEvFe7Itz6C1R4Ng==')
 
     # Get the return url
     redirect_uri_parts = urlparse(auth_redirect_params.get('redirect_uri')[0])
