@@ -2,11 +2,15 @@ import datetime
 import json
 from calendar import timegm
 
+from django.core.exceptions import ImproperlyConfigured
 from httpretty import HTTPretty
 from jwkest.jwk import SYMKey
 from jwkest.jws import JWS
 from jwkest.jwt import b64encode_item
 from social_core.tests.backends.oauth import OAuth2Test
+
+VALID_ENVIRONMENTS = ['production', 'test']
+INVALID_ENVIRONMENTS = ['foo', 'biz']
 
 
 class YleTunnusOAuth2Test(OAuth2Test):
@@ -91,18 +95,40 @@ class YleTunnusOAuth2Test(OAuth2Test):
 
     def auth_handlers(self, start_url):
         target_url = super().auth_handlers(start_url)
+        if self.strategy.setting('YLETUNNUS_ENVIRONMENT') == 'production':
+            assert start_url.startswith('https://auth.api.yle.fi/v1/authorize')
+        elif self.strategy.setting('YLETUNNUS_ENVIRONMENT') == 'test':
+            assert start_url.startswith('https://auth.api-test.yle.fi/v1/authorize')
         self.complete_url = target_url
         HTTPretty.register_uri(HTTPretty.GET, start_url, body=self.authorize_body)
         return target_url
 
     def test_login(self):
-        self.strategy.set_settings({
-            'SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL': True
-        })
-        self.do_login()
+        for environment in VALID_ENVIRONMENTS:
+            with self.subTest():
+                self.strategy.set_settings({
+                    'YLETUNNUS_ENVIRONMENT': environment,
+                    'SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL': True
+                })
+                self.do_login()
+
+    def test_login_invalid_environment_raises_error(self):
+        for environment in INVALID_ENVIRONMENTS:
+            with self.subTest():
+                self.strategy.set_settings({
+                    'YLETUNNUS_ENVIRONMENT': environment,
+                    'SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL': True
+                })
+                with self.assertRaises(ImproperlyConfigured):
+                    self.do_login()
+
+    def test_login_missing_environment_raises_error(self):
+        with self.assertRaises(ImproperlyConfigured):
+            self.do_login()
 
     def test_partial_pipeline(self):
         self.strategy.set_settings({
+            'YLETUNNUS_ENVIRONMENT': 'production',
             'SOCIAL_AUTH_USERNAME_IS_FULL_EMAIL': True
         })
         self.do_partial_pipeline()
