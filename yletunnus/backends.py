@@ -1,6 +1,14 @@
+from itertools import chain
+
 import jwt
+from django.core.exceptions import ImproperlyConfigured
 from django.utils.translation import gettext, pgettext
 from social_core.backends.oauth import BaseOAuth2
+
+BASE_URLS = {
+    'test': 'https://auth.api-test.yle.fi',
+    'production': 'https://auth.api.yle.fi'
+}
 
 
 class YleTunnusOAuth2(BaseOAuth2):
@@ -10,8 +18,20 @@ class YleTunnusOAuth2(BaseOAuth2):
     REDIRECT_STATE = False
     ACCESS_TOKEN_METHOD = 'POST'
     DEFAULT_SCOPE = ['sub', 'email']
-    AUTHORIZATION_URL = 'https://auth.api.yle.fi/v1/authorize'
-    ACCESS_TOKEN_URL = 'https://auth.api.yle.fi/v1/token'
+
+    def _get_url(self, url_path, version='v1'):
+        environment = self.setting('YLETUNNUS_ENVIRONMENT')
+        if environment not in BASE_URLS.keys():
+            raise ImproperlyConfigured(
+                'Unknown or missing YLE Tunnus environment. '
+                'Please set the settings variable SOCIAL_AUTH_YLETUNNUS_ENVIRONMENT to an allowed value.')
+        if isinstance(url_path, str):
+            url_path = [url_path]
+        try:
+            url_elements = chain([BASE_URLS[environment], version], url_path)
+            return '/'.join(url_elements)
+        except TypeError:
+            raise TypeError("The url_path argument is expected to be a str or an iterable of strings.")
 
     def get_key_and_secret(self):
         return self.setting('APP_ID'), self.setting('SECRET')
@@ -24,7 +44,10 @@ class YleTunnusOAuth2(BaseOAuth2):
 
     def access_token_url(self):
         app_id, app_key = self.setting('APP_ID'), self.setting('APP_KEY')
-        return self.ACCESS_TOKEN_URL + '?app_id=%s&app_key=%s' % (app_id, app_key)
+        return self._get_url('token?app_id={}&app_key={}'.format(app_id, app_key))
+
+    def authorization_url(self):
+        return self._get_url('authorize')
 
     def auth_complete_params(self, state=None):
         params = super().auth_complete_params(state)
