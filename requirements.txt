@@ -168,7 +168,7 @@ requests==2.24.0
     #   social-auth-core
 rjsmin==1.0.12
     # via django-compressor
-rsa==4.6
+rsa==4.7
     # via python-jose
 ruamel.yaml==0.15.89
     # via -r requirements.in
