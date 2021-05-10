@@ -8,9 +8,8 @@ from django.urls import reverse
 from helusers.utils import uuid_to_username
 
 from auth_backends.adfs.base import BaseADFS
-from auth_backends.helsinki_tunnistus_suomifi import HelsinkiTunnistus
 from auth_backends.tunnistamo import Tunnistamo
-from users.models import LoginMethod
+from users.models import LoginMethod, TunnistamoSession
 from users.views import AuthenticationErrorView
 
 logger = logging.getLogger(__name__)
@@ -189,13 +188,34 @@ def save_social_auth_backend(backend, user=None, *args, **kwargs):
         user.save()
 
 
-def save_loa_to_session(backend, strategy, user=None, social=None, *args, **kwargs):
-    if not user or not social or not isinstance(backend, HelsinkiTunnistus) or not backend.id_token:
+def create_tunnistamo_session(strategy, user=None, social=None, *args, **kwargs):
+    """Create a Tunnistamo Session and add social auth entry to it
+
+    Creates a new Tunnistamo Session if an existing session is not found and
+    adds the current social auth entry to the Tunnistamo Session elements.
+    """
+    if not user or not social:
         return
 
-    # Save the "loa" claim received from the Helsinki Tunnistus Keycloak to the session.
-    # This will be in turn added as a "loa" claim to the tokens Tunnistamo supplies.
-    strategy.request.session["heltunnistussuomifi_loa"] = backend.id_token.get(
-        "loa",
-        "low"
+    tunnistamo_session = TunnistamoSession.objects.get_or_create_from_request(
+        strategy.request, user=user
     )
+
+    tunnistamo_session.add_element(social)
+
+    return {
+        'tunnistamo_session': tunnistamo_session,
+    }
+
+
+def add_loa_to_tunnistamo_session(backend, social=None, tunnistamo_session=None, *args, **kwargs):
+    """Add loa to Tunnistamo Session data
+
+    Adds "loa" key to Tunnistamo Session data if Tunnistamo_Session has been created
+    in an earlier pipeline phase and the backend in use has a `get_loa` method.
+    """
+    if not tunnistamo_session:
+        return
+
+    if backend.name in settings.TRUSTED_LOA_BACKENDS and hasattr(backend, 'get_loa'):
+        tunnistamo_session.set_data("loa", backend.get_loa(social))
