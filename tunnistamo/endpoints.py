@@ -1,5 +1,9 @@
+from django.conf import settings
+from django.utils.module_loading import import_string
+from jwkest.jwt import JWT
 from oidc_provider.lib.endpoints.authorize import AuthorizeEndpoint
 from oidc_provider.lib.endpoints.token import TokenEndpoint
+
 from users.models import TunnistamoSession
 
 
@@ -51,3 +55,25 @@ class TunnistamoTokenEndpoint(TokenEndpoint):
             tunnistamo_session.add_element(token)
 
         return token
+
+    def create_response_dic(self):
+        dic = super().create_response_dic()
+
+        # Django OIDC Provider doesn't support refresh token expiration (#230).
+        # We don't supply refresh tokens when using restricted authentication methods.
+        # TODO: By the OIDC spec the value of amr should be a list of strings,
+        #       but Tunnistamo sets it erroneously to a string. The error is kept
+        #       for backwards compatibility for now.
+        amr = JWT().unpack(dic['id_token']).payload().get('amr', '')
+        restricted_backend_names = {
+            import_string(restricted_auth).name
+            for restricted_auth in settings.RESTRICTED_AUTHENTICATION_BACKENDS
+        }
+
+        if {amr} & restricted_backend_names:
+            try:
+                dic.pop('refresh_token')
+            except KeyError:
+                pass
+
+        return dic

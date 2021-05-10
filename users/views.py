@@ -1,7 +1,6 @@
 import logging
 import re
 from collections import defaultdict
-from pydoc import locate
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from django.conf import settings
@@ -10,9 +9,7 @@ from django.urls import reverse
 from django.utils import translation
 from django.utils.http import quote
 from django.views.generic.base import RedirectView, TemplateView
-from jwkest.jws import JWT
 from oauth2_provider.models import get_application_model
-from oidc_provider.lib.errors import TokenError, UserAuthError
 from oidc_provider.lib.utils.token import client_id_from_id_token
 from oidc_provider.models import Client, Token
 from oidc_provider.views import AuthorizeView, EndSessionView, TokenView
@@ -358,30 +355,6 @@ class TunnistamoOidcEndSessionView(EndSessionView):
 
 class TunnistamoOidcTokenView(TokenView):
     token_endpoint_class = TunnistamoTokenEndpoint
-
-    def post(self, request, *args, **kwargs):
-        token = self.token_endpoint_class(request)
-
-        try:
-            token.validate_params()
-
-            dic = token.create_response_dic()
-
-            # Django OIDC Provider doesn't support refresh token expiration (#230).
-            # We don't supply refresh tokens when using restricted authentication methods.
-            amr = JWT().unpack(dic['id_token']).payload().get('amr', '')
-            for restricted_auth in settings.RESTRICTED_AUTHENTICATION_BACKENDS:
-                if amr == locate(restricted_auth).name:
-                    dic.pop('refresh_token')
-                    break
-
-            response = self.token_endpoint_class.response(dic)
-            return response
-
-        except TokenError as error:
-            return self.token_endpoint_class.response(error.create_dict(), status=400)
-        except UserAuthError as error:
-            return self.token_endpoint_class.response(error.create_dict(), status=403)
 
 
 def _extend_scope_in_query_params(query_params):
