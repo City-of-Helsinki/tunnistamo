@@ -11,9 +11,8 @@ from django.utils.html import escape, format_html
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from oauth2_provider.models import get_application_model
-from social_django.models import UserSocialAuth
-
 from oidc_provider.models import Code, Token
+from social_django.models import UserSocialAuth
 
 from .models import LoginMethod, SessionElement, TunnistamoSession, User
 

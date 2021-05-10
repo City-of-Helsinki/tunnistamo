@@ -3,9 +3,9 @@ from django.contrib.auth.middleware import AuthenticationMiddleware
 from django.contrib.auth.models import AnonymousUser
 from django.contrib.sessions.middleware import SessionMiddleware
 from django.utils import timezone
+from oidc_provider.models import Token
 from social_django.models import UserSocialAuth
 
-from oidc_provider.models import Token
 from tunnistamo.tests.conftest import social_login
 from users.models import TunnistamoSession
 
