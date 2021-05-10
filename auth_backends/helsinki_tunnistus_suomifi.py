@@ -34,3 +34,12 @@ class HelsinkiTunnistus(OidcBackchannelLogoutMixin, OpenIdConnectAuth):
             extra_arguments["original_client_id"] = original_client_id
 
         return extra_arguments
+
+    def get_loa(self, social=None):
+        claims = {}
+        if self.id_token:
+            claims = self.id_token
+        elif social and social.extra_data and 'id_token' in social.extra_data:
+            claims = social.extra_data['id_token']
+
+        return claims.get("loa", "low")
