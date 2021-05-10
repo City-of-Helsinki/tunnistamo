@@ -32,6 +32,8 @@ env = environ.Env(
     ALLOW_DUPLICATE_EMAILS=(bool, False),
     EMAIL_EXEMPT_AUTH_BACKENDS=(list, []),
 
+    TRUSTED_LOA_BACKENDS=(list, []),
+
     # Authentication settings
     SOCIAL_AUTH_FACEBOOK_KEY=(str, ""),
     SOCIAL_AUTH_FACEBOOK_SECRET=(str, ""),
@@ -189,6 +191,8 @@ RESTRICTED_AUTHENTICATION_BACKENDS = (
 RESTRICTED_AUTHENTICATION_TIMEOUT = 60 * 60
 
 EMAIL_EXEMPT_AUTH_BACKENDS = env("EMAIL_EXEMPT_AUTH_BACKENDS")
+
+TRUSTED_LOA_BACKENDS = env("TRUSTED_LOA_BACKENDS")
 
 ROOT_URLCONF = 'tunnistamo.urls'
 
@@ -460,9 +464,11 @@ SOCIAL_AUTH_PIPELINE = (
     # Save last login backend to user data
     'users.pipeline.save_social_auth_backend',
 
-    # Save the "loa" claim received from the Helsinki Tunnistus Keycloak to the session.
-    # This will be in turn added as a "loa" claim to the tokens Tunnistamo supplies.
-    'users.pipeline.save_loa_to_session',
+    # Create tunnistamo session and add the social auth as an session element into it
+    'users.pipeline.create_tunnistamo_session',
+
+    # Add loa to Tunnistamo Session
+    'users.pipeline.add_loa_to_tunnistamo_session',
 )
 
 ALLOW_DUPLICATE_EMAILS = env("ALLOW_DUPLICATE_EMAILS")
