@@ -9,15 +9,13 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import translation
 from django.utils.http import quote
-from django.views.generic import View
 from django.views.generic.base import RedirectView, TemplateView
 from jwkest.jws import JWT
 from oauth2_provider.models import get_application_model
-from oidc_provider.lib.endpoints.token import TokenEndpoint
 from oidc_provider.lib.errors import TokenError, UserAuthError
 from oidc_provider.lib.utils.token import client_id_from_id_token
 from oidc_provider.models import Client, Token
-from oidc_provider.views import AuthorizeView, EndSessionView
+from oidc_provider.views import AuthorizeView, EndSessionView, TokenView
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 from social_core.backends.utils import get_backend
 from social_core.exceptions import MissingBackend
@@ -25,6 +23,7 @@ from social_django.models import UserSocialAuth
 from social_django.utils import load_backend, load_strategy
 
 from oidc_apis.models import ApiScope
+from tunnistamo.endpoints import TunnistamoAuthorizeEndpoint, TunnistamoTokenEndpoint
 
 from .models import LoginMethod, OidcClientOptions
 
@@ -124,6 +123,8 @@ class AuthenticationErrorView(TemplateView):
 
 
 class TunnistamoOidcAuthorizeView(AuthorizeView):
+    authorize_endpoint_class = TunnistamoAuthorizeEndpoint
+
     def get(self, request, *args, **kwargs):
         request.GET = _extend_scope_in_query_params(request.GET)
 
@@ -355,9 +356,11 @@ class TunnistamoOidcEndSessionView(EndSessionView):
         return response
 
 
-class TunnistamoOidcTokenView(View):
+class TunnistamoOidcTokenView(TokenView):
+    token_endpoint_class = TunnistamoTokenEndpoint
+
     def post(self, request, *args, **kwargs):
-        token = TokenEndpoint(request)
+        token = self.token_endpoint_class(request)
 
         try:
             token.validate_params()
@@ -372,13 +375,13 @@ class TunnistamoOidcTokenView(View):
                     dic.pop('refresh_token')
                     break
 
-            response = TokenEndpoint.response(dic)
+            response = self.token_endpoint_class.response(dic)
             return response
 
         except TokenError as error:
-            return TokenEndpoint.response(error.create_dict(), status=400)
+            return self.token_endpoint_class.response(error.create_dict(), status=400)
         except UserAuthError as error:
-            return TokenEndpoint.response(error.create_dict(), status=403)
+            return self.token_endpoint_class.response(error.create_dict(), status=403)
 
 
 def _extend_scope_in_query_params(query_params):

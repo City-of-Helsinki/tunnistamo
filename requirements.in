@@ -3,7 +3,9 @@ django-multiselectfield
 django-oauth-toolkit
 django-parler>2.1
 django-cors-headers
-django-oidc-provider>=0.7
+# Use our own fork of django-oidc-provider as long as the token extraction PR is not merged
+# https://github.com/juanifioren/django-oidc-provider/pull/389
+git+https://github.com/City-of-Helsinki/django-oidc-provider.git@extract-token-creation
 djangorestframework>=3.10
 pyjwt
 django-helusers
