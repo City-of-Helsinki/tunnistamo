@@ -373,7 +373,7 @@ OIDC_IDTOKEN_INCLUDE_CLAIMS = True
 OIDC_IDTOKEN_SUB_GENERATOR = 'tunnistamo.oidc.sub_generator'
 OIDC_EXTRA_SCOPE_CLAIMS = 'oidc_apis.scopes.CombinedScopeClaims'
 OIDC_AFTER_USERLOGIN_HOOK = 'oidc_apis.utils.after_userlogin_hook'
-OIDC_IDTOKEN_PROCESSING_HOOK = 'oidc_apis.utils.add_heltunnistussuomifi_loa_claim'
+OIDC_IDTOKEN_PROCESSING_HOOK = 'oidc_apis.utils.additional_tunnistamo_id_token_claims'
 
 # key_manager settings for RSA Key
 KEY_MANAGER_RSA_KEY_LENGTH = 4096

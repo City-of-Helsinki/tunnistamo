@@ -3,9 +3,10 @@ from collections import OrderedDict
 from django.contrib.auth import logout as django_user_logout
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
-from oidc_provider import settings
+from social_django.models import UserSocialAuth
 
-from users.models import OidcClientOptions
+from oidc_provider import settings
+from users.models import OidcClientOptions, TunnistamoSession
 
 
 def combine_uniquely(iterable1, iterable2):
@@ -60,15 +61,24 @@ def after_userlogin_hook(request, user, client):
     return None
 
 
-def add_heltunnistussuomifi_loa_claim(dic, request, **kwargs):
-    """Add "loa" to the claims dictionary
+def additional_tunnistamo_id_token_claims(dic, user, token, request, **kwargs):
+    # Set the current client id to the "azp" claim (Authorized party - the party
+    # to which the ID Token was issued).
+    dic['azp'] = token.client.client_id
 
-    This can be used in the OIDC_IDTOKEN_PROCESSING_HOOK setting to add the value of
-    the "heltunnistussuomifi_loa" session key to the id_token claims dictionary.
+    tunnistamo_session = TunnistamoSession.objects.get_by_element(token)
+    if not tunnistamo_session:
+        return dic
 
-    The session value is set in the save_loa_to_session pipeline operation if
-    the provider used was HelsinkiTunnistus."""
-    if request.session and request.session.get("heltunnistussuomifi_loa"):
-        dic["loa"] = request.session.get("heltunnistussuomifi_loa")
+    # Set the social auth backend name as the "amr" (Authentication Methods Reference)
+    user_social_auth = tunnistamo_session.get_content_object_by_model(UserSocialAuth)
+    if user_social_auth:
+        # TODO: By the OIDC spec the value of amr should be a list of strings,
+        #       but Tunnistamo sets it erroneously to a string. The error is kept
+        #       for backwards compatibility for now.
+        dic['amr'] = user_social_auth.provider
+
+    # Get the "loa" (Level of Assurance) value from the Tunnistamo Session
+    dic['loa'] = tunnistamo_session.get_data('loa', 'low')
 
     return dic

@@ -1,14 +1,26 @@
 import datetime
+import json
+from urllib.parse import parse_qs, urlparse
 
+import jwt
 import pytest
 from django.test import Client as TestClient
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
-from oidc_provider.models import Code
+from oidc_provider.models import Client as OidcClient, Code, RESPONSE_TYPE_CHOICES, ResponseType
 
 from oidc_apis.models import Api, ApiDomain, ApiScope
-from users.tests.conftest import DummyOidcBackendBase
+from oidc_apis.views import get_api_tokens_view
+from tunnistamo.tests.test_restricted_auth import create_rsa_key
+from users.tests.conftest import (  # noqa
+    DummyOidcBackendBase,
+    loginmethod_factory,
+    oidcclient_factory,
+    user,
+    tunnistamosession_factory,
+    usersocialauth_factory,
+)
 
 
 @pytest.fixture
@@ -157,3 +169,147 @@ def social_login(settings, test_client=None, trust_loa=True):
     session.save()
 
     test_client.get(complete_url, data={'state': state_value}, follow=False)
+
+
+def create_oidc_clients_and_api():
+    """Creates OIDC client for the user and the api
+
+    Additionally creates an RSA key, an API, and an API scope"""
+    create_rsa_key()
+
+    oidc_client = OidcClient.objects.create(
+        name='Test Client',
+        client_id='test_client',
+        client_secret=get_random_string(),
+        require_consent=False,
+        _scope='profile'
+    )
+    oidc_client.redirect_uris = ('https://test_client.example.com/redirect_uri',)
+    oidc_client.post_logout_redirect_uris = (
+        'https://test_client.example.com/redirect_uri',
+    )
+    oidc_client.save()
+
+    for response_type, desc in RESPONSE_TYPE_CHOICES:
+        oidc_client.response_types.add(ResponseType.objects.get(value=response_type))
+
+    api_name = 'test_api'
+    api_domain = ApiDomain.objects.create(
+        identifier='https://test_api.example.com/'
+    )
+    api_oidc_client = OidcClient.objects.create(
+        client_id=f'{api_domain.identifier}{api_name}',
+        redirect_uris=[f'{api_domain.identifier}redirect_uri'],
+    )
+    api = Api.objects.create(
+        name=api_name,
+        domain=api_domain,
+        oidc_client=api_oidc_client,
+    )
+    api_scope = ApiScope.objects.create(api=api)
+    api_scope.identifier = api_scope._generate_identifier()
+    api_scope.save()
+    api_scope.allowed_apps.set([oidc_client])
+
+    return oidc_client
+
+
+def flatten_single_values(values):
+    return {
+        k: v[0] if len(v) == 1 else v for k, v in values.items()
+    }
+
+
+def get_tokens(test_client, oidc_client, response_type, scopes=None):
+    if scopes is None:
+        scopes = ['openid']
+
+    response_types = response_type.split(' ')
+
+    authorize_url = reverse('authorize')
+    token_url = reverse('oidc_provider:token')
+
+    authorize_request_data = {
+        'client_id': oidc_client.client_id,
+        'redirect_uri': oidc_client.redirect_uris[0],
+        'scope': ' '.join(scopes),
+        'response_type': response_type,
+        'response_mode': 'form_post',
+        'nonce': get_random_string(),
+    }
+
+    response = test_client.get(authorize_url, authorize_request_data, follow=False)
+
+    assert response.status_code == 302, response.content
+
+    response_uri = response['location']
+    parse_result = urlparse(response_uri)
+    query_values = flatten_single_values(parse_qs(parse_result.query))
+    fragment_values = flatten_single_values(parse_qs(parse_result.fragment))
+
+    result = {}
+    if 'id_token' in response_types:
+        result.update(fragment_values)
+
+    if 'code' in response_types:
+        # Use a different client to emulate a fetch made in a browser where
+        # cookies are not delivered.
+        second_test_client = TestClient()
+
+        token_request_data = {
+            'client_id': oidc_client.client_id,
+            'client_secret': oidc_client.client_secret,
+            'redirect_uri': oidc_client.redirect_uris[0],
+            'code': query_values.get('code', fragment_values.get('code')),
+            'grant_type': 'authorization_code',
+        }
+        response = second_test_client.post(token_url, token_request_data, follow=False)
+
+        response_data = json.loads(response.content)
+        result.update(response_data)
+
+    if 'id_token' in result:
+        result['id_token_decoded'] = jwt.decode(result.get('id_token'), verify=False)
+
+    return result
+
+
+def oidc_provider_get(access_token, endpoint):
+    test_client = TestClient()
+    url = reverse(endpoint)
+
+    response = test_client.get(
+        url,
+        HTTP_AUTHORIZATION=f'Bearer {access_token}'
+    )
+
+    return json.loads(response.content)
+
+
+def get_api_tokens(access_token):
+    return oidc_provider_get(access_token, get_api_tokens_view)
+
+
+def get_userinfo(access_token):
+    return oidc_provider_get(access_token, 'oidc_provider:userinfo')
+
+
+def refresh_token(oidc_client, tokens):
+    token_url = reverse('oidc_provider:token')
+
+    test_client = TestClient()
+
+    token_request_data = {
+        'client_id': oidc_client.client_id,
+        'client_secret': oidc_client.client_secret,
+        'redirect_uri': oidc_client.redirect_uris[0],
+        'refresh_token': tokens['refresh_token'],
+        'grant_type': 'refresh_token',
+    }
+    response = test_client.post(token_url, token_request_data)
+    result = json.loads(response.content)
+
+    if 'id_token' in result:
+        result['id_token_decoded'] = jwt.decode(result.get('id_token'), verify=False)
+
+    return result
