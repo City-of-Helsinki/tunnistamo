@@ -4,6 +4,7 @@ import pytest
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount, SocialApp
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from django.utils.crypto import get_random_string
 from oidc_provider.models import Client, ResponseType
 from rest_framework.test import APIClient
@@ -12,7 +13,7 @@ from social_django.models import UserSocialAuth
 
 from services.factories import ServiceFactory
 from users.factories import UserFactory
-from users.models import Application, LoginMethod, OidcClientOptions
+from users.models import Application, LoginMethod, OidcClientOptions, TunnistamoSession
 
 
 @pytest.fixture()
@@ -181,6 +182,20 @@ def user_api_client(user):
 @pytest.fixture
 def service():
     return ServiceFactory(target='client')
+
+
+@pytest.fixture()
+def tunnistamosession_factory():
+    def make_instance(**args):
+        args.setdefault('data', {})
+        args.setdefault('created_at', timezone.now())
+
+        instance = TunnistamoSession.objects.create(**args)
+        instance.save()
+
+        return instance
+
+    return make_instance
 
 
 class DummyOidcBackendBase(OpenIdConnectAuth):
