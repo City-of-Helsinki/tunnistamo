@@ -8,18 +8,16 @@ from django.test import Client as TestClient
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
-from oidc_provider.models import Client as OidcClient, Code, RESPONSE_TYPE_CHOICES, ResponseType
+from oidc_provider.models import RESPONSE_TYPE_CHOICES
+from oidc_provider.models import Client as OidcClient
+from oidc_provider.models import Code, ResponseType
 
 from oidc_apis.models import Api, ApiDomain, ApiScope
 from oidc_apis.views import get_api_tokens_view
 from tunnistamo.tests.test_restricted_auth import create_rsa_key
 from users.tests.conftest import (  # noqa
-    DummyOidcBackendBase,
-    loginmethod_factory,
-    oidcclient_factory,
-    user,
-    tunnistamosession_factory,
-    usersocialauth_factory,
+    DummyOidcBackendBase, loginmethod_factory, oidcclient_factory, tunnistamosession_factory, user,
+    usersocialauth_factory
 )
 
 
