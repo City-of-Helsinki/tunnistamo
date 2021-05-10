@@ -1,12 +1,12 @@
 import json
 from datetime import timedelta
-from pydoc import locate
 from urllib.parse import parse_qs, urlparse
 
 import pytest
 from django.conf import settings
 from django.urls import reverse
 from django.utils import timezone
+from django.utils.module_loading import import_string
 from freezegun import freeze_time
 from oidc_provider.models import Client, Code, ResponseType, UserConsent
 
@@ -46,7 +46,7 @@ def create_user(user_model):
     return user_model.objects.create_user(
         username=TEST_USER,
         password=TEST_PASSWORD,
-        last_login_backend=locate(RESTRICTED_AUTH_BACKEND).name)
+        last_login_backend=import_string(RESTRICTED_AUTH_BACKEND).name)
 
 
 def give_oidc_userconsent(user, oidc_client):
@@ -80,11 +80,26 @@ def create_rsa_key():
 
 @pytest.mark.django_db
 @freeze_time('2019-01-01 12:00:00', tz_offset=2)
-def test_restricted_auth_omit_refresh_token(django_client, django_user_model):
+def test_restricted_auth_omit_refresh_token(
+    django_client,
+    django_user_model,
+    tunnistamosession_factory,
+    usersocialauth_factory,
+):
     oidc_client = create_oidc_client('code')
     user = create_user(django_user_model)
     create_rsa_key()
+
+    tunnistamo_session = tunnistamosession_factory(user=user)
+
+    social_auth = usersocialauth_factory(
+        provider=import_string(RESTRICTED_AUTH_BACKEND).name,
+        user=user
+    )
+    tunnistamo_session.add_element(social_auth)
+
     code = create_oidc_code(user, oidc_client)
+    tunnistamo_session.add_element(code)
 
     token_url = reverse('token')
     post_data = {
