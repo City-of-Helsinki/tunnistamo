@@ -1,11 +1,12 @@
 from crequest.middleware import CrequestMiddleware
+from django.contrib.auth import user_logged_in
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from oauth2_provider.models import AccessToken, get_application_model
 from oidc_provider.models import Client, Token
 
 from services.models import Service
-from users.models import AllowedOrigin, Application, UserLoginEntry
+from users.models import AllowedOrigin, Application, TunnistamoSession, UserLoginEntry
 from users.utils import generate_origin
 
 
@@ -70,3 +71,24 @@ post_save.connect(generate_and_save_allowed_origins_from_client_configurations, 
 post_save.connect(generate_and_save_allowed_origins_from_client_configurations, sender=Client)
 post_delete.connect(generate_and_save_allowed_origins_from_client_configurations, sender=Application)
 post_delete.connect(generate_and_save_allowed_origins_from_client_configurations, sender=Client)
+
+
+@receiver(user_logged_in)
+def create_tunnistamo_session_after_login(sender, user, request, **kwargs):
+    # During login the Django session might be flushed and therefore doesn't
+    # have a session_key yet. Saving the session will generate a key.
+    if not request.session.session_key:
+        request.session.save()
+
+    tunnistamo_session = TunnistamoSession.objects.get_or_create_from_request(
+        request,
+        user=user,
+    )
+
+    # Save django session key to the tunnistamo session
+    if not tunnistamo_session.get_data('django_session_key'):
+        tunnistamo_session.set_data(
+            'django_session_key',
+            request.session.session_key,
+            save=True
+        )
