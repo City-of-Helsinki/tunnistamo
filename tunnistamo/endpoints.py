@@ -4,7 +4,16 @@ from jwkest.jwt import JWT
 from oidc_provider.lib.endpoints.authorize import AuthorizeEndpoint
 from oidc_provider.lib.endpoints.token import TokenEndpoint
 
-from users.models import TunnistamoSession
+from services.models import Service
+from users.models import TunnistamoSession, UserLoginEntry
+
+
+def _create_userloginentry_for_client(request, client):
+    try:
+        service = Service.objects.get(client=client)
+        UserLoginEntry.objects.create_from_request(request, service)
+    except Service.DoesNotExist:
+        pass
 
 
 class TunnistamoAuthorizeEndpoint(AuthorizeEndpoint):
@@ -36,6 +45,8 @@ class TunnistamoAuthorizeEndpoint(AuthorizeEndpoint):
             token.save()
             tunnistamo_session.add_element(token)
 
+        _create_userloginentry_for_client(self.request, token.client)
+
         return token
 
 
@@ -53,6 +64,8 @@ class TunnistamoTokenEndpoint(TokenEndpoint):
         if tunnistamo_session:
             token.save()
             tunnistamo_session.add_element(token)
+
+        _create_userloginentry_for_client(self.request, token.client)
 
         return token
 
