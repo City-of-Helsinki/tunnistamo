@@ -3,9 +3,9 @@ from collections import OrderedDict
 from django.contrib.auth import logout as django_user_logout
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
+from oidc_provider import settings
 from social_django.models import UserSocialAuth
 
-from oidc_provider import settings
 from users.models import OidcClientOptions, TunnistamoSession
 
 
