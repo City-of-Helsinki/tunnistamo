@@ -178,7 +178,7 @@ def test_tunnistamo_session_get_elements_by_model(user, tunnistamosession_factor
 
 
 @pytest.mark.django_db
-def test_tunnistamo_session_get_content_object_by_model_returns_latest(settings, user, tunnistamosession_factory):
+def test_tunnistamo_session_get_content_object_by_model_returns_latest(user, tunnistamosession_factory):
     tunnistamo_session = tunnistamosession_factory(user=user)
 
     social_auth = UserSocialAuth.objects.create(
@@ -200,7 +200,7 @@ def test_tunnistamo_session_get_content_object_by_model_returns_latest(settings,
 
 
 @pytest.mark.django_db
-def test_tunnistamo_session_get_content_object_by_model_deleted(settings, user, tunnistamosession_factory):
+def test_tunnistamo_session_get_content_object_by_model_deleted(user, tunnistamosession_factory):
     tunnistamo_session = tunnistamosession_factory(user=user)
 
     social_auth = UserSocialAuth.objects.create(
@@ -217,21 +217,13 @@ def test_tunnistamo_session_get_content_object_by_model_deleted(settings, user, 
 
 
 @pytest.mark.django_db
-def test_manager_get_or_create_from_request_no_user_in_request(rf):
-    request = _create_request_with_anonymous_user(rf)
-
-    tunnistamo_session = TunnistamoSession.objects.get_or_create_from_request(request)
-
-    assert tunnistamo_session is None
-
-
-@pytest.mark.django_db
-def test_manager_get_or_create_from_request_anonymous_user_given(rf):
+@pytest.mark.parametrize('user_value', (None, AnonymousUser()))
+def test_manager_get_or_create_from_request_no_session_for_anonymous_user(rf, user_value):
     request = _create_request_with_anonymous_user(rf)
 
     tunnistamo_session = TunnistamoSession.objects.get_or_create_from_request(
         request,
-        user=AnonymousUser()
+        user=user_value,
     )
 
     assert tunnistamo_session is None
@@ -306,7 +298,7 @@ def test_manager_get_or_create_from_request_session_id_not_in_django_session(rf,
 
 @pytest.mark.django_db
 @pytest.mark.parametrize('add_element', (True, False))
-def test_manager_get_by_element(settings, user, tunnistamosession_factory, add_element):
+def test_manager_get_by_element(user, tunnistamosession_factory, add_element):
     tunnistamo_session = tunnistamosession_factory(user=user)
     social_auth = UserSocialAuth.objects.create(
         user=user,
