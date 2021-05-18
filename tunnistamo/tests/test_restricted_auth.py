@@ -70,14 +70,6 @@ def create_oidc_code(user, oidc_client):
     return code
 
 
-def create_rsa_key():
-    from Cryptodome.PublicKey import RSA
-    from oidc_provider.models import RSAKey
-    key = RSA.generate(2048)
-    rsakey = RSAKey.objects.create(key=key.exportKey('PEM').decode('utf8'))
-    return rsakey
-
-
 @pytest.mark.django_db
 @freeze_time('2019-01-01 12:00:00', tz_offset=2)
 def test_restricted_auth_omit_refresh_token(
@@ -85,10 +77,10 @@ def test_restricted_auth_omit_refresh_token(
     django_user_model,
     tunnistamosession_factory,
     usersocialauth_factory,
+    rsa_key,
 ):
     oidc_client = create_oidc_client('code')
     user = create_user(django_user_model)
-    create_rsa_key()
 
     tunnistamo_session = tunnistamosession_factory(user=user)
 
@@ -120,12 +112,11 @@ def test_restricted_auth_omit_refresh_token(
 
 @pytest.mark.django_db
 @pytest.mark.parametrize('tick_minutes,allow_access', [(59, True), (61, False)])
-def test_restricted_auth_timeout(django_client, django_user_model, tick_minutes, allow_access):
+def test_restricted_auth_timeout(django_client, django_user_model, rsa_key, tick_minutes, allow_access):
     with freeze_time('2019-01-01 12:00:00', tz_offset=2) as timer:
         oidc_client = create_oidc_client('id_token token')
         user = create_user(django_user_model)
         give_oidc_userconsent(user, oidc_client)
-        create_rsa_key()
 
         django_client.login(username=TEST_USER, password=TEST_PASSWORD)
         session = django_client.session

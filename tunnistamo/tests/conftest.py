@@ -21,8 +21,7 @@ from users.tests.conftest import (  # noqa
 )
 
 
-@pytest.fixture
-def rsa_key():
+def create_rsa_key():
     from Cryptodome.PublicKey import RSA
     from oidc_provider.models import RSAKey
 
@@ -30,6 +29,11 @@ def rsa_key():
     rsakey = RSAKey.objects.create(key=key.exportKey('PEM').decode('utf8'))
 
     return rsakey
+
+
+@pytest.fixture
+def rsa_key():
+    return create_rsa_key()
 
 
 @pytest.fixture()
