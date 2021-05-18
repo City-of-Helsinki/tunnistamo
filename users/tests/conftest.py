@@ -29,13 +29,13 @@ def assertCountEqual():
 def user_factory():
     User = get_user_model()  # NOQA
 
-    def make_instance(**args):
-        args.setdefault('username', get_random_string())
-        args.setdefault('password', get_random_string())
-        args.setdefault('email', u'{}@example.com'.format(get_random_string()))
+    def make_instance(**kwargs):
+        kwargs.setdefault('username', get_random_string())
+        kwargs.setdefault('password', get_random_string())
+        kwargs.setdefault('email', u'{}@example.com'.format(get_random_string()))
 
-        instance = User.objects.create(**args)
-        instance.set_password(args.pop('password'))
+        instance = User.objects.create(**kwargs)
+        instance.set_password(kwargs.pop('password'))
         instance.save()
 
         return instance
@@ -45,59 +45,50 @@ def user_factory():
 
 @pytest.fixture()
 def socialaccount_factory():
-    def make_instance(**args):
-        args.setdefault('provider', None)
-        args.setdefault('uid', get_random_string())
+    def make_instance(**kwargs):
+        kwargs.setdefault('provider', None)
+        kwargs.setdefault('uid', get_random_string())
 
-        instance = SocialAccount.objects.create(**args)
-        instance.save()
-
-        return instance
+        return SocialAccount.objects.create(**kwargs)
 
     return make_instance
 
 
 @pytest.fixture()
 def usersocialauth_factory():
-    def make_instance(**args):
-        args.setdefault('uid', get_random_string())
+    def make_instance(**kwargs):
+        kwargs.setdefault('uid', get_random_string())
 
-        instance = UserSocialAuth.objects.create(**args)
-        return instance
+        return UserSocialAuth.objects.create(**kwargs)
 
     return make_instance
 
 
 @pytest.fixture()
 def application_factory():
-    def make_instance(**args):
-        args.setdefault('name', get_random_string())
-        args.setdefault('client_id', get_random_string())
-        args.setdefault('user', None)
-        args.setdefault('redirect_uris', None)
-        args.setdefault('client_type', Application.CLIENT_PUBLIC)
-        args.setdefault('authorization_grant_type', Application.GRANT_IMPLICIT)
+    def make_instance(**kwargs):
+        kwargs.setdefault('name', get_random_string())
+        kwargs.setdefault('client_id', get_random_string())
+        kwargs.setdefault('user', None)
+        kwargs.setdefault('redirect_uris', None)
+        kwargs.setdefault('client_type', Application.CLIENT_PUBLIC)
+        kwargs.setdefault('authorization_grant_type', Application.GRANT_IMPLICIT)
 
-        instance = Application.objects.create(**args)
-        instance.save()
-
-        return instance
+        return Application.objects.create(**kwargs)
 
     return make_instance
 
 
 @pytest.fixture()
 def oidcclient_factory():
-    def make_instance(**args):
-        args.setdefault('name', get_random_string())
-        args.setdefault('client_type', 'public')
-        args.setdefault('client_id', get_random_string())
-        args.setdefault('redirect_uris', None)
+    def make_instance(**kwargs):
+        kwargs.setdefault('name', get_random_string())
+        kwargs.setdefault('client_type', 'public')
+        kwargs.setdefault('client_id', get_random_string())
+        kwargs.setdefault('redirect_uris', None)
 
-        response_types = args.pop('response_types', ['id_token token'])
-        instance = Client.objects.create(**args)
-
-        instance.save()
+        response_types = kwargs.pop('response_types', ['id_token token'])
+        instance = Client.objects.create(**kwargs)
         for response_type in response_types:
             instance.response_types.add(ResponseType.objects.get(value=response_type))
 
@@ -108,55 +99,43 @@ def oidcclient_factory():
 
 @pytest.fixture()
 def oidcclientoptions_factory():
-    def make_instance(**args):
-        args.setdefault('site_type', 'test')
+    def make_instance(**kwargs):
+        kwargs.setdefault('site_type', 'test')
 
-        instance = OidcClientOptions.objects.create(**args)
-        instance.save()
-
-        return instance
+        return OidcClientOptions.objects.create(**kwargs)
 
     return make_instance
 
 
 @pytest.fixture()
 def socialapp_factory():
-    def make_instance(**args):
-        args.setdefault('name', get_random_string())
-        args.setdefault('client_id', get_random_string())
-        args.setdefault('secret', get_random_string())
-        args.setdefault('key', get_random_string())
+    def make_instance(**kwargs):
+        kwargs.setdefault('name', get_random_string())
+        kwargs.setdefault('client_id', get_random_string())
+        kwargs.setdefault('secret', get_random_string())
+        kwargs.setdefault('key', get_random_string())
 
-        instance = SocialApp.objects.create(**args)
-        instance.save()
-
-        return instance
+        return SocialApp.objects.create(**kwargs)
 
     return make_instance
 
 
 @pytest.fixture()
 def loginmethod_factory():
-    def make_instance(**args):
-        args.setdefault('provider_id', None)
-        args.setdefault('name', get_random_string())
-        args.setdefault('order', 1)
+    def make_instance(**kwargs):
+        kwargs.setdefault('provider_id', None)
+        kwargs.setdefault('name', get_random_string())
+        kwargs.setdefault('order', 1)
 
-        instance = LoginMethod.objects.create(**args)
-        instance.save()
-
-        return instance
+        return LoginMethod.objects.create(**kwargs)
 
     return make_instance
 
 
 @pytest.fixture()
 def emailaddress_factory():
-    def make_instance(**args):
-        instance = EmailAddress.objects.create(**args)
-        instance.save()
-
-        return instance
+    def make_instance(**kwargs):
+        return EmailAddress.objects.create(**kwargs)
 
     return make_instance
 
@@ -186,14 +165,11 @@ def service():
 
 @pytest.fixture()
 def tunnistamosession_factory():
-    def make_instance(**args):
-        args.setdefault('data', {})
-        args.setdefault('created_at', timezone.now())
+    def make_instance(**kwargs):
+        kwargs.setdefault('data', {})
+        kwargs.setdefault('created_at', timezone.now())
 
-        instance = TunnistamoSession.objects.create(**args)
-        instance.save()
-
-        return instance
+        return TunnistamoSession.objects.create(**kwargs)
 
     return make_instance
 
