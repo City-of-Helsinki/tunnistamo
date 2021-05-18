@@ -3,6 +3,7 @@ import time
 import pytest
 from Cryptodome.PublicKey import RSA
 from Cryptodome.PublicKey.RSA import importKey
+from django.test.client import Client
 from django.utils.crypto import get_random_string
 from jwkest import long_to_base64
 from jwkest.jwk import RSAKey as jwk_RSAKey
@@ -19,9 +20,8 @@ from users.tests.conftest import (  # noqa: F401
 
 @pytest.fixture
 def django_client_factory():
-    def make_instance(**args):
-        from django.test.client import Client
-        return Client(**args)
+    def make_instance(**kwargs):
+        return Client(**kwargs)
 
     return make_instance
 
@@ -51,13 +51,13 @@ class DummyOidcBackchannelLogoutBackend(
 
 @pytest.fixture
 def logout_token_factory():
-    def make_instance(backend, **args):
-        args.setdefault('iss', backend.oidc_config().get('issuer'))
-        args.setdefault('sub', get_random_string())
-        args.setdefault('aud', backend.setting('KEY'))
-        args.setdefault('iat', int(time.time()) - 10)
-        args.setdefault('jti', get_random_string())
-        args.setdefault(
+    def make_instance(backend, **kwargs):
+        kwargs.setdefault('iss', backend.oidc_config().get('issuer'))
+        kwargs.setdefault('sub', get_random_string())
+        kwargs.setdefault('aud', backend.setting('KEY'))
+        kwargs.setdefault('iat', int(time.time()) - 10)
+        kwargs.setdefault('jti', get_random_string())
+        kwargs.setdefault(
             'events',
             {
                 'http://schemas.openid.net/event/backchannel-logout': {},
@@ -68,7 +68,7 @@ def logout_token_factory():
         for rsakey in RSAKey.objects.all():
             keys.append(jwk_RSAKey(key=importKey(rsakey.key), kid=rsakey.kid))
 
-        _jws = JWS(args, alg='RS256')
+        _jws = JWS(kwargs, alg='RS256')
         return _jws.sign_compact(keys)
 
     return make_instance

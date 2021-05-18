@@ -34,15 +34,15 @@ def rsa_key():
 
 @pytest.fixture()
 def oidc_code_factory():
-    def make_instance(**args):
-        args.setdefault(
+    def make_instance(**kwargs):
+        kwargs.setdefault(
             'expires_at',
             timezone.now() + datetime.timedelta(hours=1)
         )
-        args.setdefault("scope", ["openid"])
-        args.setdefault("is_authentication", True)
+        kwargs.setdefault("scope", ["openid"])
+        kwargs.setdefault("is_authentication", True)
 
-        instance = Code.objects.create(**args)
+        instance = Code.objects.create(**kwargs)
 
         return instance
 
@@ -51,11 +51,11 @@ def oidc_code_factory():
 
 @pytest.fixture()
 def api_scope_factory():
-    def make_instance(**args):
-        args.setdefault('name', get_random_string())
-        args.setdefault('description', get_random_string())
+    def make_instance(**kwargs):
+        kwargs.setdefault('name', get_random_string())
+        kwargs.setdefault('description', get_random_string())
 
-        instance = ApiScope.objects.create(**args)
+        instance = ApiScope.objects.create(**kwargs)
         instance.identifier = instance._generate_identifier()
         instance.save()
 
@@ -66,10 +66,10 @@ def api_scope_factory():
 
 @pytest.fixture()
 def api_factory():
-    def make_instance(**args):
-        args.setdefault('name', get_random_string())
+    def make_instance(**kwargs):
+        kwargs.setdefault('name', get_random_string())
 
-        instance = Api.objects.create(**args)
+        instance = Api.objects.create(**kwargs)
 
         return instance
 
@@ -78,10 +78,10 @@ def api_factory():
 
 @pytest.fixture()
 def api_domain_factory():
-    def make_instance(**args):
-        args.setdefault('identifier', get_random_string())
+    def make_instance(**kwargs):
+        kwargs.setdefault('identifier', get_random_string())
 
-        instance = ApiDomain.objects.create(**args)
+        instance = ApiDomain.objects.create(**kwargs)
 
         return instance
 
