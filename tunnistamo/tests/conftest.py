@@ -14,11 +14,21 @@ from oidc_provider.models import Code, ResponseType
 
 from oidc_apis.models import Api, ApiDomain, ApiScope
 from oidc_apis.views import get_api_tokens_view
-from tunnistamo.tests.test_restricted_auth import create_rsa_key
 from users.tests.conftest import (  # noqa
     DummyOidcBackendBase, loginmethod_factory, oidcclient_factory, tunnistamosession_factory, user,
     usersocialauth_factory
 )
+
+
+def reload_social_django_utils():
+    """Reloads social_django.utils module
+
+    We need to reload the social_django.utils module in the tests because the social
+    auth AUTHENTICATION_BACKENDS setting is read when the utils module is loaded.
+    """
+    import social_django.utils
+    from importlib import reload
+    reload(social_django.utils)
 
 
 def create_rsa_key():
@@ -155,9 +165,6 @@ def social_login(settings, test_client=None, trust_loa=True):
 
     if not test_client:
         test_client = TestClient()
-
-    # Import in method to prevent circular import
-    from auth_backends.tests.test_oidc_backchannel_logout import reload_social_django_utils
 
     reload_social_django_utils()
 

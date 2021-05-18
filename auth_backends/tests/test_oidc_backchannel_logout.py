@@ -6,6 +6,8 @@ from django.urls import reverse
 from django.utils.crypto import get_random_string
 from social_core.exceptions import AuthException, AuthTokenError
 
+from tunnistamo.tests.conftest import reload_social_django_utils
+
 from .conftest import DummyOidcBackchannelLogoutBackend, DummyOidcBackend
 
 
@@ -250,17 +252,6 @@ def test_logout_token_no_social_auth(
         backend.backchannel_logout()
 
     assert 'User not authenticated with this backend' in str(excinfo.value)
-
-
-def reload_social_django_utils():
-    """Reloads social_django.utils module
-
-    We need to reload the social_django.utils module in the tests because the social
-    auth AUTHENTICATION_BACKENDS setting is read when the utils module is loaded.
-    """
-    import social_django.utils
-    from importlib import reload
-    reload(social_django.utils)
 
 
 @pytest.mark.django_db
