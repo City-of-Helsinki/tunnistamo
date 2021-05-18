@@ -14,10 +14,7 @@ from oidc_provider.models import Code, ResponseType
 
 from oidc_apis.models import Api, ApiDomain, ApiScope
 from oidc_apis.views import get_api_tokens_view
-from users.tests.conftest import (  # noqa
-    DummyOidcBackendBase, loginmethod_factory, oidcclient_factory, tunnistamosession_factory, user,
-    usersocialauth_factory
-)
+from users.tests.conftest import DummyOidcBackendBase, tunnistamosession_factory, user, usersocialauth_factory  # noqa
 
 
 def reload_social_django_utils():
