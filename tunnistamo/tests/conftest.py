@@ -1,4 +1,3 @@
-import datetime
 import json
 from urllib.parse import parse_qs, urlparse
 
@@ -6,11 +5,10 @@ import jwt
 import pytest
 from django.test import Client as TestClient
 from django.urls import reverse
-from django.utils import timezone
 from django.utils.crypto import get_random_string
 from oidc_provider.models import RESPONSE_TYPE_CHOICES
 from oidc_provider.models import Client as OidcClient
-from oidc_provider.models import Code, ResponseType
+from oidc_provider.models import ResponseType
 
 from oidc_apis.models import Api, ApiDomain, ApiScope
 from oidc_apis.views import get_api_tokens_view
@@ -41,62 +39,6 @@ def create_rsa_key():
 @pytest.fixture
 def rsa_key():
     return create_rsa_key()
-
-
-@pytest.fixture()
-def oidc_code_factory():
-    def make_instance(**kwargs):
-        kwargs.setdefault(
-            'expires_at',
-            timezone.now() + datetime.timedelta(hours=1)
-        )
-        kwargs.setdefault("scope", ["openid"])
-        kwargs.setdefault("is_authentication", True)
-
-        instance = Code.objects.create(**kwargs)
-
-        return instance
-
-    return make_instance
-
-
-@pytest.fixture()
-def api_scope_factory():
-    def make_instance(**kwargs):
-        kwargs.setdefault('name', get_random_string())
-        kwargs.setdefault('description', get_random_string())
-
-        instance = ApiScope.objects.create(**kwargs)
-        instance.identifier = instance._generate_identifier()
-        instance.save()
-
-        return instance
-
-    return make_instance
-
-
-@pytest.fixture()
-def api_factory():
-    def make_instance(**kwargs):
-        kwargs.setdefault('name', get_random_string())
-
-        instance = Api.objects.create(**kwargs)
-
-        return instance
-
-    return make_instance
-
-
-@pytest.fixture()
-def api_domain_factory():
-    def make_instance(**kwargs):
-        kwargs.setdefault('identifier', get_random_string())
-
-        instance = ApiDomain.objects.create(**kwargs)
-
-        return instance
-
-    return make_instance
 
 
 class DummyFixedOidcBackend(DummyOidcBackendBase):
