@@ -35,11 +35,8 @@ class HelsinkiTunnistus(OidcBackchannelLogoutMixin, OpenIdConnectAuth):
 
         return extra_arguments
 
-    def get_loa(self, social=None):
-        claims = {}
-        if self.id_token:
-            claims = self.id_token
-        elif social and social.extra_data and 'id_token' in social.extra_data:
-            claims = social.extra_data['id_token']
-
-        return claims.get("loa", "low")
+    def get_loa(self, social):
+        try:
+            return social.extra_data.get('id_token', {}).get("loa", "low")
+        except AttributeError:
+            return "low"
