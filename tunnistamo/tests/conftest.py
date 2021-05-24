@@ -70,15 +70,11 @@ class DummyFixedOidcBackend(DummyOidcBackendBase):
             'id_token': self.id_token,
         }
 
-    def get_loa(self, social=None):
-        claims = {}
-        if self.id_token:
-            claims = self.id_token
-
-        if social and social.extra_data and 'id_token' in social.extra_data:
-            claims = social.extra_data['id_token']
-
-        return claims.get("loa", "low")
+    def get_loa(self, social):
+        try:
+            return social.extra_data.get('id_token', {}).get("loa", "low")
+        except AttributeError:
+            return "low"
 
 
 def social_login(settings, test_client=None, trust_loa=True):
