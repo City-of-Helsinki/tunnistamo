@@ -35,8 +35,8 @@ class HelsinkiTunnistus(OidcBackchannelLogoutMixin, OpenIdConnectAuth):
 
         return extra_arguments
 
-    def get_loa(self, social):
+    def get_loa(self):
         try:
-            return social.extra_data.get('id_token', {}).get("loa", "low")
+            return self.id_token.get('loa', 'low')
         except AttributeError:
-            return "low"
+            return 'low'
