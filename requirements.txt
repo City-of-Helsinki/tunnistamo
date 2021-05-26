@@ -99,7 +99,7 @@ jwcrypto==0.6.0
     # via -r requirements.in
 libsass==0.14.5
     # via -r requirements.in
-lxml==4.6.2
+lxml==4.6.3
     # via xmlsec
 markupsafe==1.1
     # via jinja2
