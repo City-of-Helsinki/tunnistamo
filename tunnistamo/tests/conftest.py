@@ -1,15 +1,20 @@
 import json
+import time
 from urllib.parse import parse_qs, urlparse
 
 import jwt
 import pytest
+from Cryptodome.PublicKey.RSA import importKey
 from django.test import Client as TestClient
 from django.urls import reverse
 from django.utils.crypto import get_random_string
+from jwkest.jwk import RSAKey as jwk_RSAKey
+from jwkest.jws import JWS
 from oidc_provider.models import RESPONSE_TYPE_CHOICES
 from oidc_provider.models import Client as OidcClient
-from oidc_provider.models import ResponseType
+from oidc_provider.models import ResponseType, RSAKey
 
+from auth_backends.helsinki_tunnistus_suomifi import HelsinkiTunnistus
 from oidc_apis.models import Api, ApiDomain, ApiScope
 from oidc_apis.views import get_api_tokens_view
 from users.tests.conftest import DummyOidcBackendBase, tunnistamosession_factory, user, usersocialauth_factory  # noqa
@@ -41,6 +46,26 @@ def rsa_key():
     return create_rsa_key()
 
 
+def create_id_token(backend, **kwargs):
+    kwargs.setdefault('iss', backend.oidc_config().get('issuer'))
+    kwargs.setdefault('sub', get_random_string())
+    kwargs.setdefault('aud', backend.setting('KEY'))
+    kwargs.setdefault('azp', backend.setting('KEY'))
+    kwargs.setdefault('exp', int(time.time()) + 60 * 5)
+    kwargs.setdefault('iat', int(time.time()) - 10)
+    kwargs.setdefault('jti', get_random_string())
+    kwargs.setdefault('name', get_random_string())
+    kwargs.setdefault('given_name', get_random_string())
+    kwargs.setdefault('family_name', get_random_string())
+
+    keys = []
+    for rsakey in RSAKey.objects.all():
+        keys.append(jwk_RSAKey(key=importKey(rsakey.key), kid=rsakey.kid))
+
+    _jws = JWS(kwargs, alg='RS256')
+    return _jws.sign_compact(keys)
+
+
 class DummyFixedOidcBackend(DummyOidcBackendBase):
     """Dummy OIDC social auth backend that returns fixed access and id tokens"""
     name = 'dummyfixedoidcbackend'
@@ -54,27 +79,28 @@ class DummyFixedOidcBackend(DummyOidcBackendBase):
             'sub': '00000000-0000-4000-b000-000000000000'
         }
 
-    def request_access_token(self, *args, **kwargs):
-        self.id_token = {
-            'aud': 'tunnistamo',
-            'sub': '00000000-0000-4000-b000-000000000000',
-            'email_verified': False,
-            'name': 'Test User',
-            'given_name': 'User',
-            'family_name': 'Test',
-            'loa': 'substantial'
-        }
+    def get_json(self, url, *args, **kwargs):
+        if url == self.oidc_config()['token_endpoint']:
+            nonce = self.get_and_store_nonce(self.authorization_url(), get_random_string())
+            id_token = create_id_token(
+                self,
+                nonce=nonce,
+                sub='00000000-0000-4000-b000-000000000000',
+                email_verified=False,
+                name='Test User',
+                given_name='User',
+                family_name='Test',
+                loa='substantial',
+            )
 
-        return {
-            'access_token': 'access_token_abcd123',
-            'id_token': self.id_token,
-        }
+            return {
+                'access_token': 'access_token_abcd123',
+                'id_token': id_token,
+            }
 
-    def get_loa(self, social):
-        try:
-            return social.extra_data.get('id_token', {}).get("loa", "low")
-        except AttributeError:
-            return "low"
+        return super().get_json(url, *args, **kwargs)
+
+    get_loa = HelsinkiTunnistus.get_loa
 
 
 def social_login(settings, test_client=None, trust_loa=True):
@@ -85,9 +111,14 @@ def social_login(settings, test_client=None, trust_loa=True):
 
     After calling this function the `client` has a session key in cookies where
     the user is logged in."""
+    create_rsa_key()
+
     settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
         'tunnistamo.tests.conftest.DummyFixedOidcBackend',
     )
+
+    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_KEY = 'tunnistamo'
+    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_SECRET = 'abcdefg'
 
     settings.EMAIL_EXEMPT_AUTH_BACKENDS = [
         DummyFixedOidcBackend.name
