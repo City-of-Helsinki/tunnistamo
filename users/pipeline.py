@@ -218,4 +218,4 @@ def add_loa_to_tunnistamo_session(backend, social=None, tunnistamo_session=None,
         return
 
     if backend.name in settings.TRUSTED_LOA_BACKENDS and hasattr(backend, 'get_loa'):
-        tunnistamo_session.set_data("loa", backend.get_loa(social))
+        tunnistamo_session.set_data("loa", backend.get_loa())
