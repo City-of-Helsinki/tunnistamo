@@ -74,8 +74,9 @@ django==2.2.24
     #   django-multiselectfield
     #   django-oauth-toolkit
     #   django-translation-checker
+    #   djangorestframework
     #   drf-oidc-auth
-djangorestframework==3.10.2
+djangorestframework==3.12.4
     # via
     #   -r requirements.in
     #   drf-oidc-auth
