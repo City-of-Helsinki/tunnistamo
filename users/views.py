@@ -89,7 +89,7 @@ class LoginView(TemplateView):
                     continue
                 if re.match(getattr(settings, 'SOCIAL_AUTH_SUOMIFI_CALLBACK_MATCH'), next_url) is None:
                     continue
-                m.login_url += '&amp;idp=' + m.provider_id
+                m.login_url += '&idp=' + m.provider_id
 
             methods.append(m)
 
