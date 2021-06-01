@@ -16,7 +16,7 @@ coreapi==2.3.3
     # via -r requirements.in
 coreschema==0.0.4
     # via coreapi
-cryptography==3.3.2
+cryptography==3.4.7
     # via
     #   -r requirements.in
     #   jwcrypto
@@ -175,7 +175,6 @@ ruamel.yaml==0.15.89
     # via -r requirements.in
 six==1.11.0
     # via
-    #   cryptography
     #   ecdsa
     #   isodate
     #   libsass
