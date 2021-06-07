@@ -1,6 +1,7 @@
 import pytest
+from Cryptodome.PublicKey import RSA
 from django.urls import reverse
-from oidc_provider.models import UserConsent
+from oidc_provider.models import RESPONSE_TYPE_CHOICES, RSAKey, UserConsent
 
 from oidc_apis.factories import ApiFactory, ApiScopeFactory
 from users.factories import OIDCClientFactory, UserFactory
@@ -127,3 +128,69 @@ def test_original_client_id_is_saved_to_the_session(
         assert session_client_id == oidc_client.client_id
     else:
         assert "oidc_authorize_original_client_id" not in client.session
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('with_pkce', (True, False))
+@pytest.mark.parametrize('response_type', [key for key, val in RESPONSE_TYPE_CHOICES])
+def test_public_clients_ability_to_skip_consent(
+    client,
+    user,
+    oidcclient_factory,
+    with_pkce,
+    response_type,
+):
+    key = RSA.generate(1024)
+    rsakey = RSAKey(key=key.exportKey('PEM').decode('utf8'))
+    rsakey.save()
+
+    oidc_client = oidcclient_factory(
+        client_type='public',
+        require_consent=False,
+        response_types=[key for key, val in RESPONSE_TYPE_CHOICES],
+        redirect_uris=['https://example.com/callback'],
+    )
+    client.force_login(user)
+
+    url = reverse('authorize')
+
+    data = {
+        'client_id': oidc_client.client_id,
+        'redirect_uri': oidc_client.redirect_uris[0],
+        'scope': 'openid profile',
+        'response_type': response_type,
+        'nonce': 'testnonce',
+    }
+
+    if with_pkce:
+        data.update({
+            # The code challenge value doesn't matter as only its existence is checked
+            # in the authorize endpoint. The value would be verified in the token endpoint.
+            'code_challenge': 'abcdefg',
+            'code_challenge_method': 'S256'
+        })
+
+    response = client.get(url, data)
+
+    # Consent skip should happen when using implicit flow, or code flow with pkce.
+    should_redirect_to_client_map = {
+        ('code', True): True,
+        ('code', False): False,
+        ('id_token', True): True,
+        ('id_token', False): True,
+        ('id_token token', True): True,
+        ('id_token token', False): True,
+        ('code token', True): True,
+        ('code token', False): False,
+        ('code id_token', True): True,
+        ('code id_token', False): False,
+        ('code id_token token', True): True,
+        ('code id_token token', False): False,
+    }
+    if should_redirect_to_client_map[(response_type, with_pkce)]:
+        assert response.status_code == 302
+        assert response['Location'].startswith(oidc_client.redirect_uris[0])
+        assert 'error' not in response['Location']
+    else:
+        assert response.status_code == 200
+        assert 'name="allow" type="submit"' in response.content.decode('utf-8')
