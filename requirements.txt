@@ -53,7 +53,7 @@ django-npm==1.0.0
     # via -r requirements.in
 django-oauth-toolkit==1.2.0
     # via -r requirements.in
-git+https://github.com/City-of-Helsinki/django-oidc-provider.git@extract-token-creation
+git+https://github.com/City-of-Helsinki/django-oidc-provider.git@tunnistamo
     # via -r requirements.in
 django-parler==2.2
     # via
