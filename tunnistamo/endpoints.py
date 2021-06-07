@@ -49,6 +49,13 @@ class TunnistamoAuthorizeEndpoint(AuthorizeEndpoint):
 
         return token
 
+    def is_client_allowed_to_skip_consent(self):
+        return (
+            self.client.client_type == 'confidential'
+            or self.grant_type == 'implicit'
+            or self.params['code_challenge'] != ''
+        )
+
 
 class TunnistamoTokenEndpoint(TokenEndpoint):
     def _get_tunnistamo_session(self):
