@@ -1,3 +1,9 @@
+import time
+import uuid
+
+from oidc_provider.lib.utils.token import encode_id_token
+
+
 def sub_generator(user):
     return str(user.uuid)
 
@@ -47,3 +53,22 @@ def get_userinfo(claims, user):
     claims['zoneinfo'] = None
 
     return claims
+
+
+def create_logout_token(oidc_client, iss, sub, sid=None):
+    logout_token_dic = {
+        'iss': iss,
+        'sub': sub,
+        'aud': oidc_client.client_id,
+        'iat': int(time.time()),
+        'jti': str(uuid.uuid4()),
+        'events': {
+            'http://schemas.openid.net/event/backchannel-logout': {},
+        },
+    }
+    if sid:
+        logout_token_dic['sid'] = sid
+
+    logout_token = encode_id_token(logout_token_dic, oidc_client)
+
+    return logout_token
