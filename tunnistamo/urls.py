@@ -9,7 +9,6 @@ from django.urls import include, path, re_path
 from django.utils import translation
 from django.views.decorators.csrf import csrf_exempt
 from django.views.defaults import permission_denied
-from oidc_provider.views import ProviderInfoView as OIDCProviderInfoView
 from rest_framework.documentation import include_docs_urls
 from rest_framework.routers import SimpleRouter
 from rest_framework.schemas import SchemaGenerator
@@ -25,7 +24,7 @@ from tunnistamo import social_auth_urls
 from users.api import TunnistamoAuthorizationView, UserConsentViewSet, UserLoginEntryViewSet
 from users.views import (
     AuthoritativeLogoutRedirectView, LoginView, TunnistamoOidcAuthorizeView, TunnistamoOidcEndSessionView,
-    TunnistamoOidcTokenView, TunnistamoTokenIntrospectionView, userinfo
+    TunnistamoOidcProviderInfoView, TunnistamoOidcTokenView, TunnistamoTokenIntrospectionView, userinfo
 )
 
 from .api import GetJWTView, UserView
@@ -82,7 +81,8 @@ urlpatterns = [
     re_path(r'^openid/userinfo/?$', csrf_exempt(userinfo), name='userinfo'),
     re_path(r'^openid/introspect/?$', TunnistamoTokenIntrospectionView.as_view(), name='token-introspection'),
     path('openid/', include(oidc_provider.urls, namespace='oidc_provider')),
-    re_path(r'^\.well-known/openid-configuration/?$', OIDCProviderInfoView.as_view(), name='root-provider-info'),
+    re_path(r'^\.well-known/openid-configuration/?$', TunnistamoOidcProviderInfoView.as_view(),
+            name='root-provider-info'),
     re_path(r'^user/(?P<username>[\w.@+-]+)/?$', UserView.as_view()),
     path('user/', UserView.as_view()),
     path('jwt-token/', GetJWTView.as_view()),
