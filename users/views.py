@@ -1,10 +1,11 @@
+import json
 import logging
 import re
 from collections import defaultdict
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from django.conf import settings
-from django.http import HttpResponse
+from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import translation
@@ -16,7 +17,7 @@ from oidc_provider.lib.errors import BearerTokenError
 from oidc_provider.lib.utils.oauth2 import protected_resource_view
 from oidc_provider.lib.utils.token import client_id_from_id_token
 from oidc_provider.models import Client, Token
-from oidc_provider.views import AuthorizeView, EndSessionView, TokenIntrospectionView, TokenView
+from oidc_provider.views import AuthorizeView, EndSessionView, ProviderInfoView, TokenIntrospectionView, TokenView
 from oidc_provider.views import userinfo as oidc_provider_userinfo
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 from social_core.backends.utils import get_backend
@@ -394,3 +395,17 @@ def _add_api_scopes(scope_string):
     scopes = scope_string.split()
     extended_scopes = ApiScope.extend_scope(scopes)
     return ' '.join(extended_scopes)
+
+
+class TunnistamoOidcProviderInfoView(ProviderInfoView):
+    def get(self, request, *args, **kwargs):
+        response = super().get(request, *args, **kwargs)
+
+        dic = json.loads(response.content)
+        dic['backchannel_logout_supported'] = True
+        dic['backchannel_logout_session_supported'] = True
+
+        response = JsonResponse(dic)
+        response['Access-Control-Allow-Origin'] = '*'
+
+        return response
