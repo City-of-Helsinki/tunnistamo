@@ -198,6 +198,7 @@ class TunnistamoSession(models.Model):
         on_delete=models.CASCADE,
     )
     created_at = models.DateTimeField(verbose_name=_('Created at'))
+    ended_at = models.DateTimeField(verbose_name=_('Ended at'), null=True, blank=True)
 
     objects = TunnistamoSessionManager()
 
@@ -258,6 +259,13 @@ class TunnistamoSession(models.Model):
             return None
 
         return session_element.content_object
+
+    def end(self):
+        self.ended_at = now()
+        self.save()
+
+    def has_ended(self):
+        return self.ended_at is not None and self.ended_at <= now()
 
 
 class SessionElement(models.Model):

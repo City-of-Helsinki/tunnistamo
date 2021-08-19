@@ -7,6 +7,7 @@ from django.utils.crypto import get_random_string
 from social_core.exceptions import AuthException, AuthTokenError
 
 from tunnistamo.tests.conftest import reload_social_django_utils
+from users.models import TunnistamoSession
 
 from .conftest import DummyOidcBackchannelLogoutBackend, DummyOidcBackend
 
@@ -317,6 +318,8 @@ def test_backchannel_successful_logout(
 
     user_django_client = django_client_factory()
     user_django_client.login(username=user.username, password=password)
+    tunnistamo_session_id = user_django_client.session.get('tunnistamo_session_id')
+    tunnistamo_session = TunnistamoSession.objects.get(id=tunnistamo_session_id)
 
     op_django_client = django_client_factory()
     backchannel_logout_url = reverse(
@@ -337,6 +340,9 @@ def test_backchannel_successful_logout(
                20,
                f'Deleted a session for user {user.pk}'
            ) in caplog.record_tuples
+
+    tunnistamo_session.refresh_from_db()
+    assert tunnistamo_session.ended_at is not None
 
     response = user_django_client.get('/accounts/profile/')
 
