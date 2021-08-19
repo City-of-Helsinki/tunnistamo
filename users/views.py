@@ -291,12 +291,10 @@ class TunnistamoOidcEndSessionView(EndSessionView):
         # Check if the authenticated user has active Suomi.fi login
         suomifi_social_user = self._active_suomi_fi_social_user(user)
 
-        # clear Django session and get redirect URL
-        response = super(TunnistamoOidcEndSessionView, self).dispatch(request, *args, **kwargs)
-
         if suomifi_social_user is not None:
             # Case 1: Suomi.fi
             # create Suomi.fi logout redirect if needed
+            response = super(TunnistamoOidcEndSessionView, self).dispatch(request, *args, **kwargs)
             return self._create_suomifi_logout_response(suomifi_social_user, user, request, response.url)
 
         # Case 2: default case
