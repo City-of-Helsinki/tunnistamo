@@ -159,7 +159,7 @@ def create_oidc_clients_and_api():
         client_id='test_client',
         client_secret=get_random_string(),
         require_consent=False,
-        _scope='profile'
+        _scope='profile token_introspection'
     )
     oidc_client.redirect_uris = ('https://test_client.example.com/redirect_uri',)
     oidc_client.post_logout_redirect_uris = (
@@ -197,7 +197,7 @@ def flatten_single_values(values):
     }
 
 
-def get_tokens(test_client, oidc_client, response_type, scopes=None):
+def get_tokens(test_client, oidc_client, response_type, scopes=None, fetch_token=True):
     if scopes is None:
         scopes = ['openid']
 
@@ -224,11 +224,13 @@ def get_tokens(test_client, oidc_client, response_type, scopes=None):
     query_values = flatten_single_values(parse_qs(parse_result.query))
     fragment_values = flatten_single_values(parse_qs(parse_result.fragment))
 
-    result = {}
+    result = {
+        'access_code': query_values.get('code', fragment_values.get('code')),
+    }
     if 'id_token' in response_types:
         result.update(fragment_values)
 
-    if 'code' in response_types:
+    if fetch_token and 'code' in response_types:
         # Use a different client to emulate a fetch made in a browser where
         # cookies are not delivered.
         second_test_client = TestClient()
@@ -248,10 +250,12 @@ def get_tokens(test_client, oidc_client, response_type, scopes=None):
     if 'id_token' in result:
         result['id_token_decoded'] = jwt.decode(result.get('id_token'), verify=False)
 
+    result['tunnistamo_session_id'] = test_client.session.get('tunnistamo_session_id')
+
     return result
 
 
-def oidc_provider_get(access_token, endpoint):
+def oidc_provider_get(access_token, endpoint, only_return_content=False):
     test_client = TestClient()
     url = reverse(endpoint)
 
@@ -260,18 +264,21 @@ def oidc_provider_get(access_token, endpoint):
         HTTP_AUTHORIZATION=f'Bearer {access_token}'
     )
 
-    return json.loads(response.content)
+    if only_return_content:
+        return json.loads(response.content)
+    else:
+        return response
 
 
-def get_api_tokens(access_token):
-    return oidc_provider_get(access_token, get_api_tokens_view)
+def get_api_tokens(access_token, only_return_content=False):
+    return oidc_provider_get(access_token, get_api_tokens_view, only_return_content)
 
 
-def get_userinfo(access_token):
-    return oidc_provider_get(access_token, 'oidc_provider:userinfo')
+def get_userinfo(access_token, only_return_content=False):
+    return oidc_provider_get(access_token, 'oidc_provider:userinfo', only_return_content)
 
 
-def refresh_token(oidc_client, tokens):
+def refresh_token(oidc_client, tokens, only_return_content=False):
     token_url = reverse('oidc_provider:token')
 
     test_client = TestClient()
@@ -284,6 +291,10 @@ def refresh_token(oidc_client, tokens):
         'grant_type': 'refresh_token',
     }
     response = test_client.post(token_url, token_request_data)
+
+    if not only_return_content:
+        return response
+
     result = json.loads(response.content)
 
     if 'id_token' in result:
