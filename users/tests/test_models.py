@@ -14,7 +14,7 @@ from oidc_provider.models import Code, RSAKey
 
 from services.models import Service
 from users.factories import ApplicationFactory, OIDCClientFactory
-from users.models import User, UserLoginEntry
+from users.models import TunnistamoSession, User, UserLoginEntry
 from users.tests.utils import get_basic_auth_header
 
 
@@ -144,7 +144,7 @@ def test_implicit_oidc_login_id_token_content(
 
     expected_keys = {
         'aud', 'sub', 'exp', 'iat', 'iss',  'nonce',
-        'at_hash', 'auth_time', 'azp', 'loa'
+        'at_hash', 'auth_time', 'azp', 'loa',
     } | ({
         'name', 'family_name', 'given_name', 'nickname',
     } if 'profile' in scope else set()) | ({
@@ -196,6 +196,9 @@ def test_authorization_code_oidc_login_user_login_entry_creation(client, oidc_cl
         service = Service.objects.create(name='test service with an application', client=oidc_client)
 
     code = Code.objects.create(user=user, client=oidc_client, code='123', expires_at=now() + timedelta(days=30))
+
+    tunnistamo_session = TunnistamoSession.objects.get(id=client.session.get('tunnistamo_session_id'))
+    tunnistamo_session.add_element(code)
 
     data = {
         'grant_type': 'authorization_code',
