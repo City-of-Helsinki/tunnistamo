@@ -101,5 +101,13 @@ class OidcBackchannelLogoutMixin:
             if session_user_id != social_auth.user.id:
                 continue
 
-            logger.info(f'Deleted a session for user {session_user_id}')
+            if 'tunnistamo_session_id' in session_data:
+                from users.models import TunnistamoSession
+                try:
+                    tunnistamo_session = TunnistamoSession.objects.get(pk=session_data['tunnistamo_session_id'])
+                    tunnistamo_session.end()
+                except TunnistamoSession.DoesNotExist:
+                    pass
+
             session.delete()
+            logger.info(f'Deleted a session for user {session_user_id}')

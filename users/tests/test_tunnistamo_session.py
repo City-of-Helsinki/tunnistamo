@@ -311,3 +311,21 @@ def test_manager_get_by_element(user, tunnistamosession_factory, add_element):
         assert TunnistamoSession.objects.get_by_element(social_auth) == tunnistamo_session
     else:
         assert TunnistamoSession.objects.get_by_element(social_auth) is None
+
+
+@pytest.mark.django_db
+def test_session_gets_ended_on_logout(client, user_factory):
+    user = user_factory()
+    client.force_login(user)
+
+    tunnistamo_session_id = client.session.get('tunnistamo_session_id')
+    tunnistamo_session = TunnistamoSession.objects.get(id=tunnistamo_session_id)
+
+    assert tunnistamo_session.ended_at is None
+
+    response = client.get('/logout/', follow=True)
+
+    assert response.status_code == 200
+
+    tunnistamo_session.refresh_from_db()
+    assert tunnistamo_session.ended_at is not None

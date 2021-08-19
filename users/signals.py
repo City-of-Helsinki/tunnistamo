@@ -1,5 +1,5 @@
 from crequest.middleware import CrequestMiddleware
-from django.contrib.auth import user_logged_in
+from django.contrib.auth import user_logged_in, user_logged_out
 from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 from oauth2_provider.models import AccessToken, get_application_model
@@ -77,3 +77,12 @@ def create_tunnistamo_session_after_login(sender, user, request, **kwargs):
             request.session.session_key,
             save=True
         )
+
+
+@receiver(user_logged_out)
+def end_tunnistamo_session_when_user_logs_out(sender, user, request, **kwargs):
+    try:
+        tunnistamo_session = TunnistamoSession.objects.get(id=request.session.get('tunnistamo_session_id'))
+        tunnistamo_session.end()
+    except TunnistamoSession.DoesNotExist:
+        pass
