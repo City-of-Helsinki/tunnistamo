@@ -18,6 +18,7 @@ def test_token_endpoint_requires_code_verifier(
     user,
     rsa_key,
     oidcclient_factory,
+    tunnistamosession_factory,
     code_verifier,
     should_succeed
 ):
@@ -28,6 +29,7 @@ def test_token_endpoint_requires_code_verifier(
     the code_verifier even if code_challenge was provided in the authorize call.
 
     See https://github.com/juanifioren/django-oidc-provider/pull/361"""
+    tunnistamo_session = tunnistamosession_factory(user=user)
     oidc_client = oidcclient_factory(redirect_uris=['https://example.com/callback'])
 
     nonce = get_random_string()
@@ -45,6 +47,7 @@ def test_token_endpoint_requires_code_verifier(
         code_challenge_method='S256'
     )
     code.save()
+    tunnistamo_session.add_element(code)
 
     token_url = reverse('oidc_provider:token')
     token_request_data = {

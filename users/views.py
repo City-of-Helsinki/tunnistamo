@@ -4,15 +4,20 @@ from collections import defaultdict
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from django.conf import settings
+from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import translation
 from django.utils.http import quote
+from django.views.decorators.http import require_http_methods
 from django.views.generic.base import RedirectView, TemplateView
 from oauth2_provider.models import get_application_model
+from oidc_provider.lib.errors import BearerTokenError
+from oidc_provider.lib.utils.oauth2 import protected_resource_view
 from oidc_provider.lib.utils.token import client_id_from_id_token
 from oidc_provider.models import Client, Token
-from oidc_provider.views import AuthorizeView, EndSessionView, TokenView
+from oidc_provider.views import AuthorizeView, EndSessionView, TokenIntrospectionView, TokenView
+from oidc_provider.views import userinfo as oidc_provider_userinfo
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 from social_core.backends.utils import get_backend
 from social_core.exceptions import MissingBackend
@@ -20,9 +25,11 @@ from social_django.models import UserSocialAuth
 from social_django.utils import load_backend, load_strategy
 
 from oidc_apis.models import ApiScope
-from tunnistamo.endpoints import TunnistamoAuthorizeEndpoint, TunnistamoTokenEndpoint
+from tunnistamo.endpoints import (
+    TunnistamoAuthorizeEndpoint, TunnistamoTokenEndpoint, TunnistamoTokenIntrospectionEndpoint
+)
 
-from .models import LoginMethod, OidcClientOptions
+from .models import LoginMethod, OidcClientOptions, TunnistamoSession
 
 logger = logging.getLogger(__name__)
 
@@ -353,6 +360,26 @@ class TunnistamoOidcEndSessionView(EndSessionView):
 
 class TunnistamoOidcTokenView(TokenView):
     token_endpoint_class = TunnistamoTokenEndpoint
+
+
+class TunnistamoTokenIntrospectionView(TokenIntrospectionView):
+    token_instrospection_endpoint_class = TunnistamoTokenIntrospectionEndpoint
+
+
+@require_http_methods(['GET', 'POST', 'OPTIONS'])
+@protected_resource_view(['openid'])
+def userinfo(request, *args, **kwargs):
+    # Check that a Tunnistamo Session exists and has not ended
+    tunnistamo_session = TunnistamoSession.objects.get_by_element(kwargs['token'])
+    if not tunnistamo_session or tunnistamo_session.has_ended():
+        error = BearerTokenError('invalid_token')
+        response = HttpResponse(status=error.status)
+        response['WWW-Authenticate'] = 'error="{0}", error_description="{1}"'.format(
+            error.code, error.description
+        )
+        return response
+
+    return oidc_provider_userinfo(request, *args, **kwargs)
 
 
 def _extend_scope_in_query_params(query_params):

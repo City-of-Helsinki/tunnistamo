@@ -14,7 +14,7 @@ from oidc_provider.models import Client, Token
 from onelogin.saml2.utils import OneLogin_Saml2_Utils as SAMLUtils
 from social_django.models import UserSocialAuth
 
-from users.models import Application, LoginMethod, OidcClientOptions
+from users.models import Application, LoginMethod, OidcClientOptions, TunnistamoSession
 from users.views import LoginView
 
 SERVER_NAME = 'tunnistamo.test'
@@ -408,8 +408,10 @@ def test_suomifi_access_levels(django_client, django_user_model, suomifi_scope):
     populate_suomifi_attributes()
     user = create_user(django_user_model)
     create_social_user(user)
+    django_client.force_login(user)
     token = create_oidc_token(user, oidc_client, additional_scopes=[suomifi_scope])
-    django_client.login(username=TEST_USER, password=TEST_PASSWORD)
+    tunnistamo_session = TunnistamoSession.objects.get(id=django_client.session.get('tunnistamo_session_id'))
+    tunnistamo_session.add_element(token)
     userinfo_url = reverse('oidc_provider:userinfo')
     userinfo_response = django_client.get(
         userinfo_url,

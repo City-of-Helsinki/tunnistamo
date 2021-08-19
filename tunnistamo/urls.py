@@ -25,7 +25,7 @@ from tunnistamo import social_auth_urls
 from users.api import TunnistamoAuthorizationView, UserConsentViewSet, UserLoginEntryViewSet
 from users.views import (
     AuthoritativeLogoutRedirectView, LoginView, TunnistamoOidcAuthorizeView, TunnistamoOidcEndSessionView,
-    TunnistamoOidcTokenView
+    TunnistamoOidcTokenView, TunnistamoTokenIntrospectionView, userinfo
 )
 
 from .api import GetJWTView, UserView
@@ -79,6 +79,8 @@ urlpatterns = [
     re_path(r'^openid/authorize/?$', TunnistamoOidcAuthorizeView.as_view(), name='authorize'),
     re_path(r'^openid/end-session/?$', TunnistamoOidcEndSessionView.as_view(), name='end-session'),
     re_path(r'^openid/token/?$', csrf_exempt(TunnistamoOidcTokenView.as_view()), name='token'),
+    re_path(r'^openid/userinfo/?$', csrf_exempt(userinfo), name='userinfo'),
+    re_path(r'^openid/introspect/?$', TunnistamoTokenIntrospectionView.as_view(), name='token-introspection'),
     path('openid/', include(oidc_provider.urls, namespace='oidc_provider')),
     re_path(r'^\.well-known/openid-configuration/?$', OIDCProviderInfoView.as_view(), name='root-provider-info'),
     re_path(r'^user/(?P<username>[\w.@+-]+)/?$', UserView.as_view()),
