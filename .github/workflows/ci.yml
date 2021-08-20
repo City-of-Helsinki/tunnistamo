@@ -9,6 +9,100 @@ on:
       types: [opened, synchronize, reopened]
 name: CI Workflow
 jobs:
+  test:
+    name: Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:9.6
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_USER: tunnistamo
+          POSTGRES_PASSWORD: tunnistamo
+          POSTGRES_DB: tunnistamo
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+
+      - name: Cache pip packages
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-pip-modules
+        with:
+          path: ~/.pip-cache
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements-dev.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install system packages
+        run: sudo apt update && sudo apt-get install -y libxmlsec1-dev xmlsec1 gettext
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt codecov
+
+      - name: Compile translations
+        run: python manage.py compilemessages
+
+      - name: Run tests
+        run: pytest -ra -vvv --cov=.
+        env:
+          DATABASE_URL: postgres://tunnistamo:tunnistamo@localhost:5432/tunnistamo
+
+      - name: Coverage
+        run: codecov
+
+  coding-style:
+    name: Coding style
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.6'
+
+      - name: Cache pip packages
+        uses: actions/cache@v2
+        env:
+          cache-name: cache-pip-modules
+        with:
+          path: ~/.pip-cache
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements-dev.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-build-${{ env.cache-name }}-
+            ${{ runner.os }}-build-
+            ${{ runner.os }}-
+
+      - name: Install system packages
+        run: sudo apt update && sudo apt-get install -y libxmlsec1-dev xmlsec1
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt -r requirements-dev.txt
+
+      - name: Linting
+        run: flake8
+
+      - name: Import sorting
+        run: isort -c
+
   sonarcloud:
     runs-on: ubuntu-latest
     steps:
