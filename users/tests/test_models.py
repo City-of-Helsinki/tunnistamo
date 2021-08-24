@@ -144,7 +144,7 @@ def test_implicit_oidc_login_id_token_content(
 
     expected_keys = {
         'aud', 'sub', 'exp', 'iat', 'iss',  'nonce',
-        'at_hash', 'auth_time', 'azp', 'loa',
+        'at_hash', 'auth_time', 'azp', 'loa', 'sid',
     } | ({
         'name', 'family_name', 'given_name', 'nickname',
     } if 'profile' in scope else set()) | ({
@@ -169,6 +169,10 @@ def test_implicit_oidc_login_id_token_content(
     assert auth_time >= time.time() - 30
     assert abs(iat - auth_time) < 5
     assert exp == iat + 600  # ID token expires in 10 min
+
+    # Session ID
+    tunnistamo_session_id = client.session.get('tunnistamo_session_id')
+    assert id_token_data['sid'] == tunnistamo_session_id
 
     # Requested claims
     if 'profile' in scope:

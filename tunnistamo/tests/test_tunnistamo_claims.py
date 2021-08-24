@@ -49,11 +49,17 @@ def test_loa_in_id_token_trust(settings, response_type, trust_loa):
     assert tokens['id_token_decoded']['loa'] == expected_loa
 
 
-CLAIMS_TO_CHECK = {
-    'loa': 'substantial',
-    'azp': 'test_client',  # oidc_client.client_id
-    'amr': DummyFixedOidcBackend.name,
-}
+def _check_claims(decoded_token, oidc_client_id, tunnistamo_session_id):
+    CLAIMS_TO_CHECK = {
+        'loa': 'substantial',
+        'azp': oidc_client_id,
+        'amr': DummyFixedOidcBackend.name,
+        'sid': tunnistamo_session_id,
+    }
+
+    for claim, expected_value in CLAIMS_TO_CHECK.items():
+        assert claim in decoded_token
+        assert decoded_token[claim] == expected_value
 
 
 @pytest.mark.django_db
@@ -76,9 +82,7 @@ def test_claims_in_id_token(settings, response_type):
     assert 'id_token' in tokens
     assert 'id_token_decoded' in tokens
 
-    for claim, expected_value in CLAIMS_TO_CHECK.items():
-        assert claim in tokens['id_token_decoded']
-        assert tokens['id_token_decoded'][claim] == expected_value
+    _check_claims(tokens['id_token_decoded'], oidc_client.client_id, tokens['tunnistamo_session_id'])
 
 
 @pytest.mark.django_db
@@ -100,9 +104,7 @@ def test_claims_in_api_token(settings, response_type):
     test_api_token = api_tokens[api_scope.identifier]
     decoded_token = jwt.decode(test_api_token, verify=False)
 
-    for claim, expected_value in CLAIMS_TO_CHECK.items():
-        assert claim in decoded_token
-        assert decoded_token[claim] == expected_value
+    _check_claims(decoded_token, oidc_client.client_id, tokens['tunnistamo_session_id'])
 
 
 @pytest.mark.django_db
@@ -123,9 +125,7 @@ def test_claims_in_id_token_after_refresh(settings, response_type):
     assert 'id_token' in new_tokens
     assert 'id_token_decoded' in new_tokens
 
-    for claim, expected_value in CLAIMS_TO_CHECK.items():
-        assert claim in new_tokens['id_token_decoded']
-        assert new_tokens['id_token_decoded'][claim] == expected_value
+    _check_claims(new_tokens['id_token_decoded'], oidc_client.client_id, tokens['tunnistamo_session_id'])
 
 
 @pytest.mark.django_db
@@ -149,6 +149,9 @@ def test_claims_not_in_userinfo(settings, response_type):
 
     userinfo = get_userinfo(tokens['access_token'], only_return_content=True)
 
+    assert 'sub' in userinfo
+
     assert 'loa' not in userinfo
     assert 'azp' not in userinfo
     assert 'amr' not in userinfo
+    assert 'sid' not in userinfo
