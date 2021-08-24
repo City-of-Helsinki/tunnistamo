@@ -70,6 +70,9 @@ def additional_tunnistamo_id_token_claims(dic, user, token, request, **kwargs):
     if not tunnistamo_session:
         return dic
 
+    # Add Tunnistamo Session id as the "sid" (Session ID) claim
+    dic['sid'] = str(tunnistamo_session.id)
+
     # Set the social auth backend name as the "amr" (Authentication Methods Reference)
     user_social_auth = tunnistamo_session.get_content_object_by_model(UserSocialAuth)
     if user_social_auth:
