@@ -105,7 +105,7 @@ class OidcBackchannelLogoutMixin:
                 from users.models import TunnistamoSession
                 try:
                     tunnistamo_session = TunnistamoSession.objects.get(pk=session_data['tunnistamo_session_id'])
-                    tunnistamo_session.end()
+                    tunnistamo_session.end(send_logout_to_apis=True, request=self.strategy.request)
                 except TunnistamoSession.DoesNotExist:
                     pass
 

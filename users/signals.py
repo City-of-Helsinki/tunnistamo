@@ -83,6 +83,6 @@ def create_tunnistamo_session_after_login(sender, user, request, **kwargs):
 def end_tunnistamo_session_when_user_logs_out(sender, user, request, **kwargs):
     try:
         tunnistamo_session = TunnistamoSession.objects.get(id=request.session.get('tunnistamo_session_id'))
-        tunnistamo_session.end()
+        tunnistamo_session.end(send_logout_to_apis=True, request=request)
     except TunnistamoSession.DoesNotExist:
         pass
