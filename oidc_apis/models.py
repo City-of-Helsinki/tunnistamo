@@ -43,7 +43,7 @@ class ApiDomain(models.Model):
 class Api(models.Model):
     domain = models.ForeignKey(
         ApiDomain,
-        verbose_name=("domain"),
+        verbose_name=_("domain"),
         on_delete=models.CASCADE
     )
     name = models.CharField(
@@ -63,6 +63,15 @@ class Api(models.Model):
         Client, related_name='+',
         on_delete=models.CASCADE,
         verbose_name=_("OIDC client")
+    )
+    backchannel_logout_url = models.URLField(
+        null=True, blank=True,
+        verbose_name=_("Back-channel log out URL"),
+        help_text=_(
+            "If this URL is given Tunnistamo will send an OIDC Log Out token to the "
+            "API when the user logs out. e.g. in APIs using Helusers the URL would "
+            "be [helusers.urls path]/logout/oidc/backchannel/"
+        )
     )
 
     class Meta:
