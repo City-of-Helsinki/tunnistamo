@@ -31,29 +31,27 @@ class DummyOidcBackchannelLogoutBackend(
     name = 'dummyoidclogoutbackend'
 
 
+def create_backend_logout_token(backend, **kwargs):
+    kwargs.setdefault('iss', backend.oidc_config().get('issuer'))
+    kwargs.setdefault('sub', get_random_string())
+    kwargs.setdefault('aud', backend.setting('KEY'))
+    kwargs.setdefault('iat', int(time.time()) - 10)
+    kwargs.setdefault('jti', get_random_string())
+    kwargs.setdefault('events', {
+        'http://schemas.openid.net/event/backchannel-logout': {},
+    })
+
+    keys = []
+    for rsakey in RSAKey.objects.all():
+        keys.append(jwk_RSAKey(key=importKey(rsakey.key), kid=rsakey.kid))
+
+    _jws = JWS(kwargs, alg='RS256')
+    return _jws.sign_compact(keys)
+
+
 @pytest.fixture
 def logout_token_factory():
-    def make_instance(backend, **kwargs):
-        kwargs.setdefault('iss', backend.oidc_config().get('issuer'))
-        kwargs.setdefault('sub', get_random_string())
-        kwargs.setdefault('aud', backend.setting('KEY'))
-        kwargs.setdefault('iat', int(time.time()) - 10)
-        kwargs.setdefault('jti', get_random_string())
-        kwargs.setdefault(
-            'events',
-            {
-                'http://schemas.openid.net/event/backchannel-logout': {},
-            }
-        )
-
-        keys = []
-        for rsakey in RSAKey.objects.all():
-            keys.append(jwk_RSAKey(key=importKey(rsakey.key), kid=rsakey.kid))
-
-        _jws = JWS(kwargs, alg='RS256')
-        return _jws.sign_compact(keys)
-
-    return make_instance
+    return create_backend_logout_token
 
 
 class DummyStrategy:
