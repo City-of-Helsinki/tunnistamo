@@ -182,6 +182,7 @@ def create_oidc_clients_and_api():
         name=api_name,
         domain=api_domain,
         oidc_client=api_oidc_client,
+        backchannel_logout_url='https://test_api.example.com/backchannel_logout'
     )
     api_scope = ApiScope.objects.create(api=api)
     api_scope.identifier = api_scope._generate_identifier()
