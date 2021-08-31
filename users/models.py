@@ -14,7 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from helusers.models import AbstractUser
 from ipware import get_client_ip
 from oauth2_provider.models import AbstractApplication
-from oidc_provider.models import Client
+from oidc_provider.models import Client, Token
 
 from users.utils import get_geo_location_data_for_ip
 
@@ -260,9 +260,23 @@ class TunnistamoSession(models.Model):
 
         return session_element.content_object
 
-    def end(self):
+    def end(self, send_logout_to_apis=False, request=None):
+        """Marks session ended by setting ended_at to current time
+
+        Additionally by setting the "send_logout_to_apis"-parameter to True will send
+        backchannel logouts to APIs the user might have used. In which case the
+        "request"-parameter is required to generate the issuer-claim in the log out
+        token.
+        """
         self.ended_at = now()
         self.save()
+
+        if send_logout_to_apis and request:
+            from oidc_apis.backchannel_logout import send_backchannel_logout_to_apis_in_token_scope
+
+            tokens = [se.content_object for se in self.get_elements_by_model(Token)]
+            for token in tokens:
+                send_backchannel_logout_to_apis_in_token_scope(token, request, sid=str(self.id))
 
     def has_ended(self):
         return self.ended_at is not None and self.ended_at <= now()
