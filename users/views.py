@@ -25,10 +25,12 @@ from social_core.exceptions import MissingBackend
 from social_django.models import UserSocialAuth
 from social_django.utils import load_backend, load_strategy
 
+from auth_backends.adfs.base import BaseADFS
 from oidc_apis.models import ApiScope
 from tunnistamo.endpoints import (
     TunnistamoAuthorizeEndpoint, TunnistamoTokenEndpoint, TunnistamoTokenIntrospectionEndpoint
 )
+from tunnistamo.middleware import add_params_to_url
 
 from .models import LoginMethod, OidcClientOptions, TunnistamoSession
 
@@ -215,6 +217,25 @@ class TunnistamoOidcEndSessionView(EndSessionView):
         except UserSocialAuth.DoesNotExist:
             return None
 
+    def get_adfs_logout_url(self, social_users):
+        """Returns a logout URL for an ADFS backend the user has used"""
+        for social_user in social_users:
+            try:
+                backend_class = get_backend_class(social_user.provider)
+            except MissingBackend:
+                continue
+
+            if not issubclass(backend_class, BaseADFS):
+                continue
+
+            if hasattr(backend_class, 'LOGOUT_URL') and backend_class.LOGOUT_URL:
+                if self.post_logout_redirect_uri:
+                    return add_params_to_url(backend_class.LOGOUT_URL, {
+                        'post_logout_redirect_uri': self.post_logout_redirect_uri,
+                    })
+
+                return backend_class.LOGOUT_URL
+
     def get_active_social_users(self, user):
         if not user.is_authenticated:
             return []
@@ -318,6 +339,12 @@ class TunnistamoOidcEndSessionView(EndSessionView):
             self.post_logout_redirect_uri = None
 
         self.next_page = None
+
+        # Check if the user has used an ADFS backend and redirect user
+        # directly to the backends logout url without showing the log out view.
+        adfs_logout_url = self.get_adfs_logout_url(social_users)
+        if adfs_logout_url:
+            self.next_page = adfs_logout_url
 
         self.backend = None
         for su in social_users:

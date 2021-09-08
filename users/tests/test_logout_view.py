@@ -2,6 +2,8 @@ import pytest
 from django.contrib import auth
 from django.utils.crypto import get_random_string
 
+from users.tests.conftest import DummyADFSBackend
+
 
 def link_to_url_found_in_response(response, url):
     return 'href="{}"'.format(url) in str(response.content)
@@ -224,3 +226,52 @@ def test_logout_redirect_to_two_third_party_oidc_end_sessions(
 
     assert response.status_code == 200
     assert link_to_url_found_in_response(response, 'https://example.com/')
+
+
+@pytest.mark.parametrize('logout_url, post_logout_redirect_uri, expected_redirect_url', (
+    (None, None, None),
+    (None, 'https://example.com', None),
+    ('https://dummyadfs.example.com/logout', None, 'https://dummyadfs.example.com/logout'),
+    (
+        'https://dummyadfs.example.com/logout',
+        'https://example.com',
+        'https://dummyadfs.example.com/logout?post_logout_redirect_uri=https%3A%2F%2Fexample.com',
+    ),
+    (
+        'https://dummyadfs.example.com/logout?existing_param=something',
+        'https://example.com',
+        'https://dummyadfs.example.com/logout?existing_param=something'
+        '&post_logout_redirect_uri=https%3A%2F%2Fexample.com',
+    ),
+))
+@pytest.mark.django_db
+def test_logout_redirect_to_adfs_logout(
+    settings,
+    client,
+    user,
+    usersocialauth_factory,
+    oidcclient_factory,
+    logout_url,
+    post_logout_redirect_uri,
+    expected_redirect_url,
+):
+    settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
+        'users.tests.conftest.DummyADFSBackend',
+    )
+    client.force_login(user=user)
+    usersocialauth_factory(provider='dummy_adfs', user=user)
+
+    DummyADFSBackend.LOGOUT_URL = logout_url
+
+    data = {}
+    if post_logout_redirect_uri:
+        data['post_logout_redirect_uri'] = post_logout_redirect_uri
+        oidcclient_factory(redirect_uris=[], post_logout_redirect_uris=[post_logout_redirect_uri])
+
+    response = client.get('/openid/end-session', data=data, follow=False)
+
+    if expected_redirect_url:
+        assert response.status_code == 302
+        assert response.url == expected_redirect_url
+    else:
+        assert response.status_code == 200
