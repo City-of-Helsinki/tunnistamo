@@ -8,6 +8,7 @@ class HelsinkiADFS(BaseADFS):
     name = 'helsinki_adfs'
     AUTHORIZATION_URL = 'https://fs.hel.fi/adfs/oauth2/authorize'
     ACCESS_TOKEN_URL = 'https://fs.hel.fi/adfs/oauth2/token'
+    LOGOUT_URL = 'https://fs.hel.fi/adfs/oauth2/logout'
 
     resource = 'https://api.hel.fi/sso/adfs'
     domain_uuid = uuid.UUID('1c8974a1-1f86-41a0-85dd-94a643370621')

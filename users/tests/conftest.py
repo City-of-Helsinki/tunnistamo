@@ -13,6 +13,7 @@ from rest_framework.test import APIClient
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 from social_django.models import UserSocialAuth
 
+from auth_backends.adfs.base import BaseADFS
 from services.factories import ServiceFactory
 from users.factories import UserFactory
 from users.models import Application, LoginMethod, OidcClientOptions, TunnistamoSession
@@ -225,3 +226,10 @@ class DummyOidcBackend(DummyOidcBackendBase):
 
 class DummyOidcBackend2(DummyOidcBackendBase):
     name = 'dummyoidcbackend2'
+
+
+class DummyADFSBackend(BaseADFS):
+    name = 'dummy_adfs'
+    AUTHORIZATION_URL = 'https://dummyadfs.example.com/adfs/oauth2/authorize'
+    ACCESS_TOKEN_URL = 'https://dummyadfs.example.com/adfs/oauth2/token'
+    LOGOUT_URL = 'https://dummyadfs.example.com/adfs/oauth2/logout'
