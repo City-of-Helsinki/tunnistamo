@@ -27,6 +27,19 @@ defusedxml==0.5.0
     #   python3-openid
     #   python3-saml
     #   social-auth-core
+django==2.2.24
+    # via
+    #   -r requirements.in
+    #   django-allauth
+    #   django-cors-headers
+    #   django-crequest
+    #   django-filter
+    #   django-helusers
+    #   django-multiselectfield
+    #   django-oauth-toolkit
+    #   django-translation-checker
+    #   djangorestframework
+    #   drf-oidc-auth
 django-allauth==0.44.0
     # via -r requirements.in
 django-appconf==1.0.2
@@ -63,19 +76,6 @@ django-sass-processor==0.7
     # via -r requirements.in
 git+https://github.com/City-of-Helsinki/django-translation-checker.git@master
     # via -r requirements.in
-django==2.2.24
-    # via
-    #   -r requirements.in
-    #   django-allauth
-    #   django-cors-headers
-    #   django-crequest
-    #   django-filter
-    #   django-helusers
-    #   django-multiselectfield
-    #   django-oauth-toolkit
-    #   django-translation-checker
-    #   djangorestframework
-    #   drf-oidc-auth
 djangorestframework==3.12.4
     # via
     #   -r requirements.in
@@ -152,10 +152,6 @@ raven==6.9.0
     # via -r requirements.in
 rcssmin==1.0.6
     # via django-compressor
-requests-oauthlib==1.0.0
-    # via
-    #   django-allauth
-    #   social-auth-core
 requests==2.24.0
     # via
     #   -r requirements.in
@@ -166,6 +162,10 @@ requests==2.24.0
     #   geoip2
     #   pyjwkest
     #   requests-oauthlib
+    #   social-auth-core
+requests-oauthlib==1.0.0
+    # via
+    #   django-allauth
     #   social-auth-core
 rjsmin==1.0.12
     # via django-compressor
@@ -188,7 +188,7 @@ social-auth-core[openidconnect,saml]==3.3.3
     # via
     #   -r requirements.in
     #   social-auth-app-django
-sqlparse==0.4.1
+sqlparse==0.4.2
     # via django
 uritemplate==3.0.0
     # via coreapi
