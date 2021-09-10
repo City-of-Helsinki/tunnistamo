@@ -47,7 +47,7 @@ django-helusers==0.4.2
     # via -r requirements.in
 django-ipware==2.1.0
     # via -r requirements.in
-django-multiselectfield==0.1.8
+django-multiselectfield==0.1.12
     # via -r requirements.in
 django-npm==1.0.0
     # via -r requirements.in
