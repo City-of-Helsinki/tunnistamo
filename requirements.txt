@@ -134,7 +134,7 @@ pyjwt[crypto]==1.7.1
     #   -r requirements.in
     #   django-allauth
     #   social-auth-core
-python-jose==3.2.0
+python-jose==3.3.0
     # via
     #   -r requirements.in
     #   social-auth-core
@@ -169,7 +169,7 @@ requests==2.24.0
     #   social-auth-core
 rjsmin==1.0.12
     # via django-compressor
-rsa==4.6
+rsa==4.7.2
     # via python-jose
 ruamel.yaml==0.15.89
     # via -r requirements.in
@@ -179,7 +179,6 @@ six==1.11.0
     #   isodate
     #   libsass
     #   pyjwkest
-    #   python-jose
     #   social-auth-app-django
     #   social-auth-core
 social-auth-app-django==2.1.0
