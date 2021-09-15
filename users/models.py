@@ -275,7 +275,7 @@ class TunnistamoSession(models.Model):
             from oidc_apis.backchannel_logout import send_backchannel_logout_to_apis_in_token_scope
 
             tokens = [se.content_object for se in self.get_elements_by_model(Token)]
-            for token in tokens:
+            for token in filter(None, tokens):
                 send_backchannel_logout_to_apis_in_token_scope(token, request, sid=str(self.id))
 
     def has_ended(self):
