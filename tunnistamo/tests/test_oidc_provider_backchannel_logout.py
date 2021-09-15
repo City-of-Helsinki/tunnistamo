@@ -237,6 +237,37 @@ def test_end_session_should_send_backchannel_logout_to_api(user):
 
 @pytest.mark.django_db
 @httprettified
+def test_end_session_should_tolerate_deleted_token(user):
+    django_test_client = DjangoTestClient()
+    django_test_client.force_login(user)
+
+    oidc_client = create_oidc_clients_and_api()
+    api_scope = ApiScope.objects.filter(allowed_apps=oidc_client).first()
+
+    tokens = get_tokens(
+        django_test_client,
+        oidc_client,
+        'id_token token',
+        scopes=['openid', 'profile', api_scope.identifier],
+    )
+    tunnistamo_session = TunnistamoSession.objects.get(pk=tokens['tunnistamo_session_id'])
+
+    # Delete the token
+    from oidc_provider.models import Token
+    tokens = [se.content_object for se in tunnistamo_session.get_elements_by_model(Token)]
+    for token in tokens:
+        token.delete()
+
+    response = django_test_client.get(reverse('end-session'), follow=False)
+
+    assert response.status_code == 200
+
+    latest_requests = fix_httpretty_latest_requests_list(httpretty.latest_requests)
+    assert len(latest_requests) == 0
+
+
+@pytest.mark.django_db
+@httprettified
 def test_rp_backchannel_logout_should_send_backchannel_logout_to_api(settings, user, usersocialauth_factory):
     settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
         'auth_backends.tests.conftest.DummyOidcBackchannelLogoutBackend',
