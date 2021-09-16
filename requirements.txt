@@ -6,7 +6,7 @@
 #
 --no-binary psycopg2
 
-certifi==2018.4.16
+certifi==2021.5.30
     # via requests
 cffi==1.14.4
     # via cryptography
