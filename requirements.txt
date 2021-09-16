@@ -187,7 +187,7 @@ social-auth-core[openidconnect,saml]==3.3.3
     # via
     #   -r requirements.in
     #   social-auth-app-django
-sqlparse==0.4.1
+sqlparse==0.4.2
     # via django
 uritemplate==3.0.0
     # via coreapi
