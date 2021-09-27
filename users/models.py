@@ -22,6 +22,8 @@ logger = logging.getLogger(__name__)
 
 
 class User(AbstractUser):
+    first_name = models.CharField(_('first name'), max_length=255, blank=True)
+    last_name = models.CharField(_('last name'), max_length=255, blank=True)
     primary_sid = models.CharField(max_length=100, unique=True)
     last_login_backend = models.CharField(max_length=100, null=True, blank=True)
 
