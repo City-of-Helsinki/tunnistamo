@@ -6,6 +6,7 @@ from urllib.parse import parse_qs, urlparse
 import jwt
 import pytest
 from Cryptodome.PublicKey import RSA
+from django.db import DataError
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.timezone import now
@@ -225,3 +226,16 @@ def test_authorization_code_oidc_login_user_login_entry_creation(client, oidc_cl
         assert entry.service == service
     else:
         assert UserLoginEntry.objects.count() == 0
+
+
+def test_user_names_max_length():
+    try:
+        user = User.objects.create(
+            first_name=get_random_string(255),
+            last_name=get_random_string(255),
+        )
+
+        assert len(user.first_name) == 255
+        assert len(user.last_name) == 255
+    except DataError:
+        assert False, 'It should be possible to have first or last name with length of 255 characters'
