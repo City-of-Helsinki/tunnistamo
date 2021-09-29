@@ -118,10 +118,10 @@ class SessionElementInline(admin.TabularInline):
 @admin.register(TunnistamoSession)
 class TunnistamoSessionAdmin(admin.ModelAdmin):
     model = TunnistamoSession
-    list_display = ('id', 'user', 'created_at')
-    list_filter = ('created_at',)
-    fields = ('id', 'user', 'get_formatted_data', 'created_at')
-    readonly_fields = ('id', 'user', 'get_formatted_data', 'created_at')
+    list_display = ('id', 'user', 'created_at', 'ended_at')
+    list_filter = ('created_at', 'ended_at')
+    fields = ('id', 'user', 'get_formatted_data', 'created_at', 'ended_at')
+    readonly_fields = ('id', 'user', 'get_formatted_data', 'created_at', 'ended_at')
     autocomplete_fields = ('user',)
     inlines = (SessionElementInline,)
     search_fields = (
