@@ -49,7 +49,11 @@ def fix_httpretty_latest_requests_list(latest_requests):
 
 
 def _check_logout_token(logout_token, client, user, sid=None):
-    logout_token_decoded = jwt.decode(logout_token, verify=False)
+    logout_token_decoded = jwt.decode(
+        logout_token,
+        algorithms=["RS256"],
+        options={"verify_signature": False},
+    )
 
     assert logout_token_decoded['aud'] == client.client_id
     assert logout_token_decoded['sub'] == str(user.uuid)
@@ -76,7 +80,11 @@ def test_create_logout_token(rsa_key, oidcclient_factory):
     oidc_client = oidcclient_factory(redirect_uris=['https://example.com'])
 
     logout_token = create_logout_token(oidc_client, iss='test-iss', sub='test-sub', sid='test-sid')
-    logout_token_decoded = jwt.decode(logout_token, verify=False)
+    logout_token_decoded = jwt.decode(
+        logout_token,
+        algorithms=["RS256"],
+        options={"verify_signature": False},
+    )
 
     assert logout_token_decoded['iss'] == 'test-iss'
     assert logout_token_decoded['aud'] == oidc_client.client_id

@@ -249,7 +249,11 @@ def get_tokens(test_client, oidc_client, response_type, scopes=None, fetch_token
         result.update(response_data)
 
     if 'id_token' in result:
-        result['id_token_decoded'] = jwt.decode(result.get('id_token'), verify=False)
+        result['id_token_decoded'] = jwt.decode(
+            result.get('id_token'),
+            algorithms=["RS256"],
+            options={"verify_signature": False},
+        )
 
     result['tunnistamo_session_id'] = test_client.session.get('tunnistamo_session_id')
 
@@ -299,6 +303,10 @@ def refresh_token(oidc_client, tokens, only_return_content=False):
     result = json.loads(response.content)
 
     if 'id_token' in result:
-        result['id_token_decoded'] = jwt.decode(result.get('id_token'), verify=False)
+        result['id_token_decoded'] = jwt.decode(
+            result.get('id_token'),
+            algorithms=["RS256"],
+            options={"verify_signature": False},
+        )
 
     return result

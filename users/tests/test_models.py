@@ -141,7 +141,11 @@ def test_implicit_oidc_login_id_token_content(
     params = parse_qs(parsed_loc.fragment)
 
     id_token = params['id_token'][0]
-    id_token_data = jwt.decode(id_token, verify=False)
+    id_token_data = jwt.decode(
+        id_token,
+        algorithms=["RS256"],
+        options={"verify_signature": False},
+    )
 
     expected_keys = {
         'aud', 'sub', 'exp', 'iat', 'iss',  'nonce',
