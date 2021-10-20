@@ -45,7 +45,7 @@ tOXZmDzg
 
 
 @pytest.mark.django_db
-@freeze_time('2017-12-15 12:25:55', tz_offset=2)
+@freeze_time('2017-12-15 12:25:55')
 def test_login_and_ad_groups(client, httpretty, monkeypatch):
     access_token_body = json.dumps({
         'access_token': ACCESS_TOKEN,

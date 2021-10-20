@@ -129,7 +129,7 @@ pyjwkest==1.4.0
     # via
     #   django-oidc-provider
     #   drf-oidc-auth
-pyjwt[crypto]==1.7.1
+pyjwt[crypto]==2.3.0
     # via
     #   -r requirements.in
     #   django-allauth
@@ -179,11 +179,9 @@ six==1.11.0
     #   isodate
     #   libsass
     #   pyjwkest
-    #   social-auth-app-django
-    #   social-auth-core
-social-auth-app-django==2.1.0
+social-auth-app-django==5.0.0
     # via -r requirements.in
-social-auth-core[openidconnect,saml]==3.3.3
+social-auth-core[openidconnect,saml]==4.1.0
     # via
     #   -r requirements.in
     #   social-auth-app-django

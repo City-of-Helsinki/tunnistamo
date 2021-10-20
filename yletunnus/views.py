@@ -18,7 +18,12 @@ class YleTunnusOAuth2Adapter(OAuth2Adapter):
         super(YleTunnusOAuth2Adapter, self).__init__(*args, **kwargs)
 
     def complete_login(self, request, app, token, **kwargs):
-        data = jwt.decode(token.token, secret=app.secret, verify=False)
+        data = jwt.decode(
+            token.token,
+            secret=app.secret,
+            algorithms=('HS256', 'HS512'),
+            options={"verify_signature": False},
+        )
         return self.get_provider().sociallogin_from_response(request, data)
 
 
