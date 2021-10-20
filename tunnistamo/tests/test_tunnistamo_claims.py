@@ -102,7 +102,11 @@ def test_claims_in_api_token(settings, response_type):
     api_tokens = get_api_tokens(tokens['access_token'], only_return_content=True)
 
     test_api_token = api_tokens[api_scope.identifier]
-    decoded_token = jwt.decode(test_api_token, verify=False)
+    decoded_token = jwt.decode(
+        test_api_token,
+        algorithms=["RS256"],
+        options={"verify_signature": False},
+    )
 
     _check_claims(decoded_token, oidc_client.client_id, tokens['tunnistamo_session_id'])
 
