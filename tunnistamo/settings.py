@@ -390,6 +390,9 @@ TEST_NON_SERIALIZED_APPS = ['adfs_provider']
 
 # Social Auth
 
+# Use native JSON field in the database
+SOCIAL_AUTH_JSONFIELD_ENABLED = True
+
 # Social Auth by default protects the email field (among others) from changes
 # We want to set the email from the incoming login.
 NO_DEFAULT_PROTECTED_USER_FIELDS = True
