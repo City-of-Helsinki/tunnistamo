@@ -2,8 +2,8 @@ import uuid
 
 from django.contrib.auth import get_user_model
 from django.contrib.auth.hashers import check_password, make_password
-from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.db.models import JSONField
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 
