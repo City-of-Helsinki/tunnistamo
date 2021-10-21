@@ -5,9 +5,9 @@ import uuid
 
 from django.contrib.contenttypes.fields import GenericForeignKey
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.db.models import JSONField
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from helusers.models import AbstractUser
