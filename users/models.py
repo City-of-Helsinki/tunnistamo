@@ -8,7 +8,6 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.postgres.fields import JSONField
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.utils.encoding import python_2_unicode_compatible
 from django.utils.timezone import now
 from django.utils.translation import ugettext_lazy as _
 from helusers.models import AbstractUser
@@ -39,7 +38,6 @@ def get_provider_ids():
     return [(name, name) for name in load_backends(settings.AUTHENTICATION_BACKENDS).keys()]
 
 
-@python_2_unicode_compatible
 class LoginMethod(models.Model):
     provider_id = models.CharField(
         max_length=50, unique=True,
