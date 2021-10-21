@@ -5,7 +5,7 @@ from django.contrib.auth.hashers import check_password, make_password
 from django.db import models
 from django.db.models import JSONField
 from django.utils.timezone import now
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
