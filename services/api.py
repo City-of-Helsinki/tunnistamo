@@ -1,6 +1,6 @@
 from django.db.models import Exists, OuterRef
 from django.db.models.functions import Greatest
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django_filters import rest_framework as filters
 from django_filters.widgets import BooleanWidget
 from oauth2_provider.models import AccessToken
