@@ -1,4 +1,4 @@
-django>2.1.15,<3.0
+django<4.0
 django-multiselectfield
 django-oauth-toolkit
 django-parler>2.1
