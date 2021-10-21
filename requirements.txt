@@ -6,6 +6,8 @@
 #
 --no-binary psycopg2
 
+asgiref==3.4.1
+    # via django
 certifi==2021.5.30
     # via requests
 cffi==1.14.4
@@ -29,11 +31,11 @@ defusedxml==0.5.0
     #   social-auth-core
 django-allauth==0.44.0
     # via -r requirements.in
-django-appconf==1.0.2
+django-appconf==1.0.5
     # via django-compressor
 django-bootstrap3==10.0.1
     # via -r requirements.in
-django-compressor==2.2
+django-compressor==2.4.1
     # via -r requirements.in
 django-cors-headers==3.6.0
     # via -r requirements.in
@@ -59,14 +61,15 @@ django-parler==2.2
     # via
     #   -r requirements.in
     #   django-translation-checker
-django-sass-processor==0.7
+django-sass-processor==1.1
     # via -r requirements.in
 git+https://github.com/City-of-Helsinki/django-translation-checker.git@master
     # via -r requirements.in
-django==2.2.24
+django==3.2.8
     # via
     #   -r requirements.in
     #   django-allauth
+    #   django-appconf
     #   django-cors-headers
     #   django-crequest
     #   django-filter
@@ -167,14 +170,15 @@ requests==2.26.0
     #   pyjwkest
     #   requests-oauthlib
     #   social-auth-core
-rjsmin==1.0.12
+rjsmin==1.1.0
     # via django-compressor
 rsa==4.7.2
     # via python-jose
 ruamel.yaml==0.15.89
     # via -r requirements.in
-six==1.11.0
+six==1.16.0
     # via
+    #   django-compressor
     #   ecdsa
     #   isodate
     #   libsass
@@ -187,6 +191,8 @@ social-auth-core[openidconnect,saml]==4.1.0
     #   social-auth-app-django
 sqlparse==0.4.2
     # via django
+typing-extensions==3.10.0.2
+    # via asgiref
 uritemplate==3.0.0
     # via coreapi
 urllib3==1.26.6

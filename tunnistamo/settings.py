@@ -272,6 +272,8 @@ STATICFILES_DIRS = [
 
 SITE_ID = 1
 
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
+
 PARLER_LANGUAGES = {SITE_ID: [{'code': code} for (code, name) in LANGUAGES]}
 
 LOGGING = {
