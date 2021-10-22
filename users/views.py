@@ -147,12 +147,12 @@ class TunnistamoOidcAuthorizeView(AuthorizeView):
                 # validated again in the parent get method.
                 pass
 
-        request_locales = [l.strip() for l in request.GET.get('ui_locales', '').split(' ') if l]
-        available_locales = [l[0] for l in settings.LANGUAGES]
+        request_languages = [lang.strip() for lang in request.GET.get('ui_locales', '').split(' ') if lang]
+        available_languages = [lang[0] for lang in settings.LANGUAGES]
 
-        for locale in request_locales:
-            if locale in available_locales:
-                with translation.override(locale):
+        for lang in request_languages:
+            if lang in available_languages:
+                with translation.override(lang):
                     return super().get(request, *args, **kwargs)
 
         return super().get(request, *args, **kwargs)

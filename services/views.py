@@ -48,7 +48,7 @@ def report_oidc_clients():
             options = client.options
             status = options.site_type
             AD_enabled = options.include_ad_groups
-            login_methods = [l.provider_id for l in options.login_methods.all()]
+            login_methods = [login_method.provider_id for login_method in options.login_methods.all()]
         except OidcClientOptions.DoesNotExist:
             status = None
             AD_enabled = None
@@ -91,7 +91,7 @@ def report_oauth_clients():
         return 'unknown'
 
     for client in Application.objects.all():
-        login_methods = [l.provider_id for l in client.login_methods.all()]
+        login_methods = [login_method.provider_id for login_method in client.login_methods.all()]
         cdata = dict(
             authentication_protocol='OAuth2',
             client_id=client.client_id,
