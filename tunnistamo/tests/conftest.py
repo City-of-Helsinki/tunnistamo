@@ -28,8 +28,9 @@ def reload_social_django_utils():
     We need to reload the social_django.utils module in the tests because the social
     auth AUTHENTICATION_BACKENDS setting is read when the utils module is loaded.
     """
-    import social_django.utils
     from importlib import reload
+
+    import social_django.utils
     reload(social_django.utils)
 
 
