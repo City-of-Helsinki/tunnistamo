@@ -101,7 +101,7 @@ jobs:
         run: flake8
 
       - name: Import sorting
-        run: isort -c
+        run: isort -c .
 
   sonarcloud:
     runs-on: ubuntu-latest
