@@ -12,8 +12,8 @@ class Command(BaseCommand):
                             help='YAML file with attribute mappings')
 
     def handle(self, *args, **options):
-        def flatten(l):
-            return [item for sublist in l for item in sublist]
+        def flatten(value):
+            return [item for sublist in value for item in sublist]
 
         yaml = YAML()
         with open(options['yaml']) as yamlfile:

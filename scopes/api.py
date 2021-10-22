@@ -11,7 +11,7 @@ from tunnistamo.pagination import DefaultPagination
 from tunnistamo.utils import TranslatableSerializer
 
 ENGLISH_LANGUAGE_CODE = 'en'
-LANGUAGE_CODES = [l[0] for l in settings.LANGUAGES]
+LANGUAGE_CODES = [lang[0] for lang in settings.LANGUAGES]
 assert ENGLISH_LANGUAGE_CODE in LANGUAGE_CODES
 
 
