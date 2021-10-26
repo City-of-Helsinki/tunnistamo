@@ -36,6 +36,13 @@ WORKDIR /app
 COPY --chown=appuser:appuser requirements.txt /app/requirements.txt
 COPY --chown=appuser:appuser requirements-prod.txt /app/requirements-prod.txt
 
+COPY ./hdiv_agent-1.0.0b1-cp37-cp37m-manylinux2014_x86_64.whl /root
+RUN mkdir -p /root/.config/hdiv/
+COPY ./hdiv_python_configurator.ini /root/.config/hdiv/hdiv_python_configurator.ini
+COPY ./license.hdiv /app/license.hdiv
+
+RUN mkdir -p /usr/share/man/man1/
+
 # Install main project dependencies and clean up
 # Note that production dependencies are installed here as well since
 # that is the default state of the image and development stages are
@@ -48,10 +55,12 @@ RUN apt-install.sh \
       libxmlsec1-dev \
       libxml2-dev \
       netcat \
+      default-jdk \
       pkg-config \
     && pip install -U pip \
     && pip install --no-cache-dir  -r /app/requirements.txt \
     && pip install --no-cache-dir  -r /app/requirements-prod.txt \
+    && pip install --ignore-installed /root/hdiv_agent-1.0.0b1-cp37-cp37m-manylinux2014_x86_64.whl \
     && apt-cleanup.sh build-essential pkg-config git
 
 COPY docker-entrypoint.sh /app
@@ -74,6 +83,7 @@ RUN pip install --no-cache-dir  -r /app/requirements-dev.txt \
 ENV DEV_SERVER=1
 
 COPY --chown=appuser:appuser . /app/
+RUN hdiv init -c
 
 USER appuser
 EXPOSE 8000/tcp

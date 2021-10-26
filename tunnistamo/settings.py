@@ -171,7 +171,8 @@ MIDDLEWARE = (
     'crequest.middleware.CrequestMiddleware',
     'tunnistamo.middleware.InterruptedSocialAuthMiddleware',
     'tunnistamo.middleware.OIDCExceptionMiddleware',
-    'tunnistamo.middleware.ContentSecurityPolicyMiddleware'
+    'tunnistamo.middleware.ContentSecurityPolicyMiddleware',
+    'hdiv_agent.core.frameworks.django.middleware.InputTaintMiddleware'
 )
 
 AUTHENTICATION_BACKENDS = (
