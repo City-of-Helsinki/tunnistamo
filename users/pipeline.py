@@ -157,10 +157,10 @@ def associate_by_email(strategy, details, user=None, *args, **kwargs):
 def update_ad_groups(details, backend, user=None, *args, **kwargs):
     """Update users AD groups.
 
-    Updates the users `ADGroup`s if the user authenticated through an ADFS
+    Updates the users `ADGroup`s if the user authenticated through an AD
     backend.
     """
-    if not isinstance(backend, (BaseADFS, Tunnistamo)) or not user or 'ad_groups' not in details:
+    if not isinstance(backend, (BaseADFS, Tunnistamo, AzureADOAuth2)) or not user or 'ad_groups' not in details:
         return
 
     user.update_ad_groups(details['ad_groups'])
