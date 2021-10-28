@@ -429,6 +429,9 @@ SOCIAL_AUTH_PIPELINE = (
     # defined).
     'social_core.pipeline.social_auth.auth_allowed',
 
+    # Associates social logins between on-prem AD and Azure AD
+    'users.pipeline.associate_between_helsinki_on_prem_ad_and_azure_ad',
+
     # Checks if the current social-account is already associated in the site.
     'social_core.pipeline.social_auth.social_user',
 
