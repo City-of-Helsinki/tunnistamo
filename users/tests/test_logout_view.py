@@ -1,3 +1,4 @@
+import httpretty
 import pytest
 from django.contrib import auth
 from django.utils.crypto import get_random_string
@@ -275,3 +276,93 @@ def test_logout_redirect_to_adfs_logout(
         assert response.url == expected_redirect_url
     else:
         assert response.status_code == 200
+
+
+@httpretty.activate(allow_net_connect=False)
+@pytest.mark.django_db
+def test_logout_redirect_to_azuread_logout(
+    settings,
+    client,
+    user,
+    usersocialauth_factory,
+    oidcclient_factory,
+):
+    settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
+        'auth_backends.helsinki_azure_ad.HelsinkiAzureADTenantOAuth2',
+    )
+    settings.SOCIAL_AUTH_HELSINKIAZUREAD_TENANT_ID = 'fake-tenant-id'
+
+    httpretty.register_uri(
+        httpretty.GET,
+        'https://login.microsoftonline.com/fake-tenant-id/.well-known/openid-configuration',
+        body='''
+        {
+            "end_session_endpoint": "https://example.com/end-session"
+        }
+        '''
+    )
+
+    client.force_login(user=user)
+    usersocialauth_factory(provider='helsinkiazuread', user=user)
+    usersocialauth_factory(provider='helsinkiazuread', user=user)
+
+    response = client.get('/openid/end-session', follow=False)
+
+    assert response.status_code == 302
+    assert response.url == 'https://example.com/end-session'
+
+
+@httpretty.activate(allow_net_connect=False)
+@pytest.mark.parametrize('last_login_backend,expected_redirect_url', (
+    (None, 'https://example.com/azuread/end-session'),
+    ('dummy_adfs', 'https://example.com/adfs/end-session'),
+    ('helsinkiazuread', 'https://example.com/azuread/end-session'),
+))
+@pytest.mark.parametrize('last_login_in_session', (True, False))
+@pytest.mark.django_db
+def test_logout_redirect_to_last_used_ad(
+    settings,
+    client,
+    user,
+    usersocialauth_factory,
+    oidcclient_factory,
+    last_login_backend,
+    expected_redirect_url,
+    last_login_in_session,
+):
+    settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
+        'users.tests.conftest.DummyADFSBackend',
+        'auth_backends.helsinki_azure_ad.HelsinkiAzureADTenantOAuth2',
+    )
+
+    DummyADFSBackend.LOGOUT_URL = 'https://example.com/adfs/end-session'
+
+    settings.SOCIAL_AUTH_HELSINKIAZUREAD_TENANT_ID = 'fake-tenant-id'
+
+    httpretty.register_uri(
+        httpretty.GET,
+        'https://login.microsoftonline.com/fake-tenant-id/.well-known/openid-configuration',
+        body='''
+        {
+            "end_session_endpoint": "https://example.com/azuread/end-session"
+        }
+        '''
+    )
+
+    client.force_login(user=user)
+
+    if last_login_in_session:
+        session = client.session
+        session['social_auth_last_login_backend'] = last_login_backend
+        session.save()
+    else:
+        user.last_login_backend = last_login_backend
+        user.save()
+
+    usersocialauth_factory(provider='dummy_adfs', user=user)
+    usersocialauth_factory(provider='helsinkiazuread', user=user)
+
+    response = client.get('/openid/end-session', follow=False)
+
+    assert response.status_code == 302
+    assert response.url == expected_redirect_url

@@ -5,6 +5,7 @@ from collections import defaultdict
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from django.conf import settings
+from django.db.models import Case, Value, When
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
@@ -19,6 +20,7 @@ from oidc_provider.lib.utils.token import client_id_from_id_token
 from oidc_provider.models import Client, Token
 from oidc_provider.views import AuthorizeView, EndSessionView, ProviderInfoView, TokenIntrospectionView, TokenView
 from oidc_provider.views import userinfo as oidc_provider_userinfo
+from social_core.backends.azuread import AzureADOAuth2
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 from social_core.backends.utils import get_backend
 from social_core.exceptions import MissingBackend
@@ -217,29 +219,36 @@ class TunnistamoOidcEndSessionView(EndSessionView):
         except UserSocialAuth.DoesNotExist:
             return None
 
-    def get_adfs_logout_url(self, social_users):
-        """Returns a logout URL for an ADFS backend the user has used"""
-        for social_user in social_users:
+    def get_ad_logout_url(self, social_users, last_login_backend=None):
+        """Returns a logout URL for an AD backend the user has used"""
+        last_used_first_social_users = social_users.annotate(
+            is_last_used=Case(
+                When(provider=last_login_backend, then=Value(1))
+            )
+        ).order_by('is_last_used', '-modified')
+
+        for social_user in last_used_first_social_users:
             try:
                 backend_class = get_backend_class(social_user.provider)
             except MissingBackend:
                 continue
 
-            if not issubclass(backend_class, BaseADFS):
+            if not issubclass(backend_class, (BaseADFS, AzureADOAuth2)):
                 continue
 
-            if hasattr(backend_class, 'LOGOUT_URL') and backend_class.LOGOUT_URL:
+            backend = backend_class()
+            if hasattr(backend, 'LOGOUT_URL') and backend.LOGOUT_URL:
                 if self.post_logout_redirect_uri:
-                    return add_params_to_url(backend_class.LOGOUT_URL, {
+                    return add_params_to_url(backend.LOGOUT_URL, {
                         'post_logout_redirect_uri': self.post_logout_redirect_uri,
                     })
 
-                return backend_class.LOGOUT_URL
+                return backend.LOGOUT_URL
 
     def get_active_social_users(self, user):
         if not user.is_authenticated:
-            return []
-        return UserSocialAuth.objects.filter(user=user)
+            return UserSocialAuth.objects.none()
+        return UserSocialAuth.objects.filter(user=user).order_by('-modified')
 
     def get_oidc_backends_end_session_url(self, request, social_users):
         """Return end session url of the first OIDC backend the user has a
@@ -293,7 +302,7 @@ class TunnistamoOidcEndSessionView(EndSessionView):
         user = request.user
 
         social_users = self.get_active_social_users(user)
-        if len(social_users) > 1:
+        if social_users.count() > 1:
             logger.warning(
                 'Multiple active social core backends for user {}'.format(
                     user.pk
@@ -340,11 +349,15 @@ class TunnistamoOidcEndSessionView(EndSessionView):
 
         self.next_page = None
 
-        # Check if the user has used an ADFS backend and redirect user
+        last_login_backend = request.session.get('social_auth_last_login_backend')
+        if not last_login_backend and hasattr(user, 'last_login_backend'):
+            last_login_backend = user.last_login_backend
+
+        # Check if the user has used an AD backend and redirect user
         # directly to the backends logout url without showing the log out view.
-        adfs_logout_url = self.get_adfs_logout_url(social_users)
-        if adfs_logout_url:
-            self.next_page = adfs_logout_url
+        ad_logout_url = self.get_ad_logout_url(social_users, last_login_backend=last_login_backend)
+        if ad_logout_url:
+            self.next_page = ad_logout_url
 
         self.backend = None
         for su in social_users:
