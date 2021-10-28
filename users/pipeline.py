@@ -6,8 +6,12 @@ from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.urls import reverse
 from helusers.utils import uuid_to_username
+from social_core.backends.azuread import AzureADOAuth2
+from social_django.models import UserSocialAuth
 
 from auth_backends.adfs.base import BaseADFS
+from auth_backends.adfs.helsinki import HelsinkiADFS
+from auth_backends.helsinki_azure_ad import HelsinkiAzureADTenantOAuth2
 from auth_backends.tunnistamo import Tunnistamo
 from users.models import LoginMethod, TunnistamoSession
 from users.views import AuthenticationErrorView
@@ -176,6 +180,16 @@ def check_existing_social_associations(backend, strategy, user=None, social=None
         social_set = user.social_auth.all()
         providers = [a.provider for a in social_set]
         logger.debug(f"social does not exist; providers: {providers}")
+
+        # This is an exception to the only-one-social-auth -rule because we want to
+        # allow the user to use both on-prem AD and Azure AD simultaneously.
+        if (
+            (backend.name == 'helsinkiazuread' and 'helsinki_adfs' in providers) or
+            (backend.name == 'helsinki_adfs' and 'helsinkiazuread' in providers)
+        ):
+            logger.debug('User is an AD user. Ok to have both on-prem AD and Azure AD in social auth.')
+            return
+
         if providers and backend.name not in providers:
             strategy.request.other_logins = LoginMethod.objects.filter(provider_id__in=providers)
             error_view = AuthenticationErrorView(request=strategy.request)
@@ -219,3 +233,39 @@ def add_loa_to_tunnistamo_session(backend, social=None, tunnistamo_session=None,
 
     if backend.name in settings.TRUSTED_LOA_BACKENDS and hasattr(backend, 'get_loa'):
         tunnistamo_session.set_data("loa", backend.get_loa())
+
+
+# TODO: Tests for this
+def associate_between_helsinki_on_prem_ad_and_azure_ad(backend, details, user=None, *args, **kwargs):
+    """Associates social logins between on-prem AD and Azure AD
+
+    If the user logs in using Azure AD and there is an existing social login with
+    the on-prem AD for the same AD user, we can use the same Tunnistamo user for both.
+    Same thing the other way round."""
+    if user:
+        return
+
+    if isinstance(backend, HelsinkiAzureADTenantOAuth2):
+        existing_provider = 'helsinki_adfs'
+        existing_sid_field = 'primary_sid'
+        current_sid_field = 'onprem_sid'
+    elif isinstance(backend, HelsinkiADFS):
+        existing_provider = 'helsinkiazuread'
+        existing_sid_field = 'onprem_sid'
+        current_sid_field = 'primary_sid'
+    else:
+        return
+
+    if not details.get(current_sid_field):
+        return
+
+    filter_args = {
+        "provider": existing_provider,
+        f"extra_data__{existing_sid_field}": details[current_sid_field],
+    }
+    existing_social_auth = UserSocialAuth.objects.filter(**filter_args).first()
+    if existing_social_auth:
+        logger.debug('Found existing AD user. Associating this login with the old.')
+        return {
+            'user': existing_social_auth.user,
+        }
