@@ -281,9 +281,11 @@ LOGGING = {
     'disable_existing_loggers': True,
     'formatters': {
         'verbose': {
+            '()': 'tunnistamo.log_tools.LogfmtFormatter',
             'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
         'simple': {
+            '()': 'tunnistamo.log_tools.LogfmtFormatter',
             'format': '%(module)s %(asctime)s %(levelname)s %(message)s'
         },
     },
