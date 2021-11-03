@@ -11,6 +11,8 @@ if [ -z "$SKIP_DATABASE_CHECK" -o "$SKIP_DATABASE_CHECK" = "0" ]; then
   echo "Database is up!"
 fi
 
+sed -i 's/^#####//g' ./manage.py
+
 # Apply database migrations
 if [[ "$APPLY_MIGRATIONS" = "1" ]]; then
     echo "Applying database migrations..."
