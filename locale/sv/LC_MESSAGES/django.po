@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tunnistamo\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-14 15:14+0000\n"
+"POT-Creation-Date: 2021-11-10 16:49+0200\n"
 "PO-Revision-Date: 2019-08-12 13:51+0300\n"
 "Last-Translator: Henrik Andersson <dev@hel.fi>, 2019\n"
 "Language-Team: Swedish (https://www.transifex.com/city-of-helsinki-1/"
@@ -109,7 +109,36 @@ msgctxt "go to []"
 msgid "Google"
 msgstr ""
 
-#: devices/models.py:18 identities/models.py:11 users/models.py:115
+#: auth_backends/helsinki_azure_ad.py:11
+msgid "Azure AD"
+msgstr ""
+
+#: auth_backends/helsinki_azure_ad.py:12
+msgctxt "access to []"
+msgid "Azure AD"
+msgstr ""
+
+#: auth_backends/helsinki_azure_ad.py:13
+msgctxt "genetive form"
+msgid "Azure AD's"
+msgstr ""
+
+#: auth_backends/helsinki_azure_ad.py:14
+msgctxt "logged in to []"
+msgid "Azure AD"
+msgstr ""
+
+#: auth_backends/helsinki_azure_ad.py:15
+msgctxt "log out from []"
+msgid "Azure AD"
+msgstr ""
+
+#: auth_backends/helsinki_azure_ad.py:16
+msgctxt "go to []"
+msgid "Azure AD"
+msgstr ""
+
+#: devices/models.py:18 identities/models.py:11 users/models.py:118
 msgid "user"
 msgstr "användare"
 
@@ -153,7 +182,7 @@ msgstr "användarens enheter"
 msgid "allowed OAuth scopes"
 msgstr ""
 
-#: identities/models.py:12 services/models.py:29 users/models.py:117
+#: identities/models.py:12 services/models.py:29 users/models.py:120
 msgid "service"
 msgstr "tjänst"
 
@@ -161,7 +190,7 @@ msgstr "tjänst"
 msgid "Helmet"
 msgstr ""
 
-#: identities/models.py:13 oidc_apis/models.py:32 oidc_apis/models.py:127
+#: identities/models.py:13 oidc_apis/models.py:32 oidc_apis/models.py:136
 msgid "identifier"
 msgstr "identifierare"
 
@@ -197,7 +226,7 @@ msgstr "Adress"
 msgid "GitHub username"
 msgstr "användarnamn på GitHub"
 
-#: oidc_apis/models.py:25 oidc_apis/scopes.py:67
+#: oidc_apis/models.py:25 oidc_apis/scopes.py:68
 msgid "AD Groups"
 msgstr "AD-grupper"
 
@@ -213,11 +242,15 @@ msgstr ""
 msgid "API domains"
 msgstr ""
 
-#: oidc_apis/models.py:52 oidc_apis/models.py:192 services/models.py:12
+#: oidc_apis/models.py:46
+msgid "domain"
+msgstr ""
+
+#: oidc_apis/models.py:52 oidc_apis/models.py:201 services/models.py:12
 msgid "name"
 msgstr "namn"
 
-#: oidc_apis/models.py:56 oidc_apis/models.py:84
+#: oidc_apis/models.py:56 oidc_apis/models.py:93
 msgid "required scopes"
 msgstr ""
 
@@ -231,66 +264,77 @@ msgstr ""
 msgid "OIDC client"
 msgstr ""
 
-#: oidc_apis/models.py:70 oidc_apis/models.py:134
-msgid "API"
+#: oidc_apis/models.py:69
+msgid "Back-channel log out URL"
 msgstr ""
 
 #: oidc_apis/models.py:71
+msgid ""
+"If this URL is given Tunnistamo will send an OIDC Log Out token to the API "
+"when the user logs out. e.g. in APIs using Helusers the URL would be "
+"[helusers.urls path]/logout/oidc/backchannel/"
+msgstr ""
+
+#: oidc_apis/models.py:79 oidc_apis/models.py:143
+msgid "API"
+msgstr ""
+
+#: oidc_apis/models.py:80
 msgid "APIs"
 msgstr ""
 
-#: oidc_apis/models.py:93
+#: oidc_apis/models.py:102
 msgid "OIDC Client ID must match with the identifier"
 msgstr ""
 
-#: oidc_apis/models.py:129
+#: oidc_apis/models.py:138
 msgid ""
 "The scope identifier as known by the API application (i.e. the Resource "
 "Server).  Generated automatically from the API identifier and the scope "
 "specifier."
 msgstr ""
 
-#: oidc_apis/models.py:135
+#: oidc_apis/models.py:144
 msgid "The API that this scope is for."
 msgstr ""
 
-#: oidc_apis/models.py:139
+#: oidc_apis/models.py:148
 msgid "specifier"
 msgstr ""
 
-#: oidc_apis/models.py:141
+#: oidc_apis/models.py:150
 msgid ""
 "If there is a need for multiple scopes per API, this can specify what kind "
 "of scope this is about, e.g. \"readonly\".  For general API scope just leave "
 "this empty."
 msgstr ""
 
-#: oidc_apis/models.py:149
+#: oidc_apis/models.py:158
 msgid "allowed applications"
 msgstr ""
 
-#: oidc_apis/models.py:150
+#: oidc_apis/models.py:159
 msgid ""
 "Select client applications which are allowed to get access to this API scope."
 msgstr ""
 
-#: oidc_apis/models.py:157 oidc_apis/models.py:190
+#: oidc_apis/models.py:166 oidc_apis/models.py:199
 msgid "API scope"
 msgstr ""
 
-#: oidc_apis/models.py:158
+#: oidc_apis/models.py:167
 msgid "API scopes"
 msgstr ""
 
-#: oidc_apis/models.py:194 services/models.py:14
+#: oidc_apis/models.py:203 services/models.py:14
 msgid "description"
 msgstr ""
 
-#: oidc_apis/models.py:198
+#: oidc_apis/models.py:207
 msgid "API scope translation"
 msgstr ""
 
-#: oidc_apis/models.py:199
+#: oidc_apis/models.py:208
 msgid "API scope translations"
 msgstr ""
 
@@ -298,74 +342,74 @@ msgstr ""
 msgid "Access to your GitHub username."
 msgstr "Åtkomst till ditt användarnamn på GitHub."
 
-#: oidc_apis/scopes.py:48
+#: oidc_apis/scopes.py:49
 msgid "Devices"
 msgstr "Enheter"
 
-#: oidc_apis/scopes.py:48
+#: oidc_apis/scopes.py:49
 msgid "Permission to link devices to your user account identities."
 msgstr "Tillstånd att länka enheter till identiteterna på ditt användarkonto."
 
-#: oidc_apis/scopes.py:53
+#: oidc_apis/scopes.py:54
 msgid "Identities"
 msgstr "Identiteter"
 
-#: oidc_apis/scopes.py:53
+#: oidc_apis/scopes.py:54
 msgid "Access to cards and other identity information."
 msgstr "Åtkomst till kort och annan identitetsinformation."
 
-#: oidc_apis/scopes.py:58
+#: oidc_apis/scopes.py:59
 msgid "Login history"
 msgstr "Inloggningshistorik"
 
-#: oidc_apis/scopes.py:58
+#: oidc_apis/scopes.py:59
 msgid "Access to your login history."
 msgstr "Åtkomst till din inloggningshistorik."
 
-#: oidc_apis/scopes.py:63
+#: oidc_apis/scopes.py:64
 msgid "Consents"
 msgstr "Medgivanden"
 
-#: oidc_apis/scopes.py:63
+#: oidc_apis/scopes.py:64
 msgid "Permission to view and delete your consents for services."
 msgstr "Tillstånd att granska och stryka dina medgivanden till tjänster."
 
-#: oidc_apis/scopes.py:67
+#: oidc_apis/scopes.py:68
 msgid "Access to your AD Group memberships."
 msgstr "Åtkomst till dina AD gruppmedlemskaper."
 
-#: oidc_apis/scopes.py:77
+#: oidc_apis/scopes.py:78
 msgid "Basic profile"
 msgstr "Grundläggande profil"
 
-#: oidc_apis/scopes.py:78
+#: oidc_apis/scopes.py:79
 msgid ""
 "Access to your basic information. Includes names and possibly a user picture."
 msgstr ""
 "Åtkomst till din grundläggande information. Innehåller namn och eventuellt "
 "en användarbild."
 
-#: oidc_apis/scopes.py:81
+#: oidc_apis/scopes.py:82
 msgid "Email"
 msgstr "E-postadress"
 
-#: oidc_apis/scopes.py:82
+#: oidc_apis/scopes.py:83
 msgid "Access to your email address."
 msgstr "Åtkomst till din e-postadress"
 
-#: oidc_apis/scopes.py:85
+#: oidc_apis/scopes.py:86
 msgid "Phone number"
 msgstr "Telefonnummer"
 
-#: oidc_apis/scopes.py:86
+#: oidc_apis/scopes.py:87
 msgid "Access to your phone number."
 msgstr "Åtkomst till ditt telefonnummer"
 
-#: oidc_apis/scopes.py:89
+#: oidc_apis/scopes.py:90
 msgid "Address information"
 msgstr "Adressinformation"
 
-#: oidc_apis/scopes.py:90
+#: oidc_apis/scopes.py:91
 msgid ""
 "Access to your address. Includes country, locality, street and other "
 "information."
@@ -406,6 +450,16 @@ msgstr "tjänster"
 msgid "Cannot set both application and client."
 msgstr ""
 
+#: tunnistamo/middleware.py:103 tunnistamo/tests/test_auth_error_redirect.py:97
+msgid "Authentication cancelled or failed"
+msgstr ""
+
+#: tunnistamo/middleware.py:106 tunnistamo/tests/test_auth_error_redirect.py:95
+#: tunnistamo/tests/test_auth_error_redirect.py:96
+#: tunnistamo/tests/test_auth_error_redirect.py:163
+msgid "Authentication failed"
+msgstr ""
+
 #: tunnistamo/utils.py:50
 #, python-format
 msgid "Not a valid translation format. Expecting {\"lang_code\": %(data)s}"
@@ -416,45 +470,109 @@ msgstr "Ej giltigt översättningsformat. {\"lang_code\": %(data)s}förväntas"
 msgid "%(lang)s is not a supported language (%(allowed)s)"
 msgstr ""
 
+#: users/admin.py:72
+msgid "Type"
+msgstr ""
+
+#: users/admin.py:78
+msgid "[deleted]"
+msgstr ""
+
+#: users/admin.py:106
+msgid "Content object"
+msgstr ""
+
+#: users/admin.py:187
+msgid "Data"
+msgstr ""
+
 #: users/apps.py:7
 msgid "Users"
 msgstr "Användare"
 
-#: users/models.py:73
+#: users/models.py:24
+#, fuzzy
+#| msgid "First name"
+msgid "first name"
+msgstr "Förnamn"
+
+#: users/models.py:25
+#, fuzzy
+#| msgid "Last name"
+msgid "last name"
+msgstr "Efternamn"
+
+#: users/models.py:76
 msgid "Post Logout Redirect URIs"
 msgstr ""
 
-#: users/models.py:74
+#: users/models.py:77
 msgid "Enter each URI on a new line."
 msgstr ""
 
-#: users/models.py:82
+#: users/models.py:85
 msgid "OIDC Client"
 msgstr ""
 
-#: users/models.py:88 users/models.py:89
+#: users/models.py:91 users/models.py:92
 msgid "OIDC Client Options"
 msgstr ""
 
-#: users/models.py:119
+#: users/models.py:122
 msgid "timestamp"
 msgstr "tidsstämpel"
 
-#: users/models.py:120
+#: users/models.py:123
 msgid "IP address"
 msgstr "IP-adress"
 
-#: users/models.py:121
+#: users/models.py:124
 msgid "geo location"
 msgstr "geolokaliseringsdata"
 
-#: users/models.py:126
+#: users/models.py:129
 msgid "user login entry"
 msgstr "inloggningspost"
 
-#: users/models.py:127
+#: users/models.py:130
 msgid "user login entries"
 msgstr "inloggningposter"
+
+#: users/models.py:193
+msgid "Session data"
+msgstr ""
+
+#: users/models.py:196
+#, fuzzy
+#| msgid "Users"
+msgid "User"
+msgstr "Användare"
+
+#: users/models.py:200 users/models.py:295
+#, fuzzy
+#| msgid "last used at"
+msgid "Created at"
+msgstr "användes senast"
+
+#: users/models.py:201
+msgid "Ended at"
+msgstr ""
+
+#: users/models.py:206 users/models.py:288
+msgid "Tunnistamo Session"
+msgstr ""
+
+#: users/models.py:207
+msgid "Tunnistamo Sessions"
+msgstr ""
+
+#: users/models.py:298
+msgid "Tunnistamo Session Element"
+msgstr ""
+
+#: users/models.py:299
+msgid "Tunnistamo Session Elements"
+msgstr ""
 
 #: users/templates/oidc_provider/authorize.html:4
 msgid "Permission request"
@@ -512,40 +630,34 @@ msgstr ""
 msgid "Return"
 msgstr ""
 
-#: yletunnus/backends.py:54
+#: yletunnus/backends.py:80
 msgid "Yle Tunnus"
 msgstr ""
 
-#: yletunnus/backends.py:55
+#: yletunnus/backends.py:81
 msgctxt "access to []"
 msgid "Yle Tunnus"
 msgstr ""
 
-#: yletunnus/backends.py:56
+#: yletunnus/backends.py:82
 msgctxt "genetive form"
 msgid "Yle Tunnus"
 msgstr ""
 
-#: yletunnus/backends.py:57
+#: yletunnus/backends.py:83
 msgctxt "logged in to []"
 msgid "Yle Tunnus"
 msgstr ""
 
-#: yletunnus/backends.py:58
+#: yletunnus/backends.py:84
 msgctxt "log out from []"
 msgid "Yle Tunnus"
 msgstr ""
 
-#: yletunnus/backends.py:59
+#: yletunnus/backends.py:85
 msgctxt "go to []"
 msgid "Yle Tunnus"
 msgstr ""
 
 #~ msgid "Username"
 #~ msgstr "Användarnamn"
-
-#~ msgid "First name"
-#~ msgstr "Förnamn"
-
-#~ msgid "Last name"
-#~ msgstr "Efternamn"
