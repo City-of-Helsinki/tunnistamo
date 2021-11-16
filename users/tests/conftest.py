@@ -5,15 +5,21 @@ import pytest
 from allauth.account.models import EmailAddress
 from allauth.socialaccount.models import SocialAccount, SocialApp
 from Cryptodome.PublicKey import RSA
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.http import HttpResponse
+from django.test.client import Client as DjangoTestClient
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.crypto import get_random_string
+from httpretty import httpretty
 from jwkest import long_to_base64
 from jwkest.jwk import RSAKey as jwk_RSAKey
 from jwkest.jws import JWS
 from oidc_provider.models import Client, ResponseType, RSAKey
 from rest_framework.test import APIClient
 from social_core.backends.open_id_connect import OpenIdConnectAuth
+from social_core.backends.utils import get_backend
 from social_django.models import UserSocialAuth
 
 from auth_backends.adfs.base import BaseADFS
@@ -252,6 +258,16 @@ def create_id_token(backend, **kwargs):
     return _jws.sign_compact(keys)
 
 
+class CancelExampleComRedirectClient(DjangoTestClient):
+    def get(self, path, data=None, follow=False, secure=False, **extra):
+        # If the request is to a remote example.com address just return an empty response
+        # without really making the request
+        if 'example.com' in extra.get('SERVER_NAME', ''):
+            return HttpResponse()
+
+        return super().get(path, data=data, follow=follow, secure=secure, **extra)
+
+
 class DummyFixedOidcBackend(DummyOidcBackendBase):
     """Dummy OIDC social auth backend that returns fixed access and id tokens"""
     name = 'dummyfixedoidcbackend'
@@ -287,6 +303,56 @@ class DummyFixedOidcBackend(DummyOidcBackendBase):
         return super().get_json(url, *args, **kwargs)
 
     get_loa = HelsinkiTunnistus.get_loa
+
+
+def start_oidc_authorize(django_client, oidcclient_factory, backend_name=DummyFixedOidcBackend.name, state=None):
+    """Start OIDC authorization flow
+
+    The client will be redirected to the Tunnistamo login view and from there to the
+    "Test login method". The redirects are required to have the "next" parameter in the
+    django_clients session."""
+    LoginMethod.objects.create(
+        provider_id=backend_name,
+        name='Test login method',
+        order=1,
+    )
+
+    redirect_uris = ['https://example.com/callback']
+    oidc_client = oidcclient_factory(redirect_uris=redirect_uris)
+
+    authorize_url = reverse('authorize')
+    authorize_data = {
+        'client_id': oidc_client.client_id,
+        'response_type': 'id_token token',
+        'redirect_uri': redirect_uris[0],
+        'scope': 'openid',
+        'response_mode': 'form_post',
+        'nonce': 'abcdefg',
+    }
+    if state:
+        authorize_data['state'] = state
+
+    backend = get_backend(settings.AUTHENTICATION_BACKENDS, backend_name)
+    backend_oidc_config_url = backend().setting('OIDC_ENDPOINT') + '/.well-known/openid-configuration'
+    backend_authorize_url = backend().setting('OIDC_ENDPOINT') + '/authorize'
+
+    # Mock the open id connect configuration url so that the open id connect social auth
+    # backend can generate the authorization url without calling the external server.
+    httpretty.register_uri(
+        httpretty.GET,
+        backend_oidc_config_url,
+        body='''
+        {{
+            "authorization_endpoint": "{}"
+        }}
+        '''.format(backend_authorize_url)
+    )
+
+    httpretty.enable()
+    django_client.get(authorize_url, authorize_data, follow=True)
+    httpretty.disable()
+
+    return oidc_client
 
 
 class DummyADFSBackend(BaseADFS):

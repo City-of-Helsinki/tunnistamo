@@ -1,78 +1,13 @@
 from urllib.parse import urlencode
 
 import pytest
-from django.conf import settings
-from django.http import HttpResponse
-from django.test.client import Client
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
-from httpretty import httpretty
-from social_core.backends.utils import get_backend
 
 from auth_backends.helsinki_tunnistus_suomifi import HelsinkiTunnistus
 from tunnistamo.tests.conftest import DummyFixedOidcBackend, reload_social_django_utils
-from users.models import LoginMethod
-
-
-class CancelExampleComRedirectClient(Client):
-    def get(self, path, data=None, follow=False, secure=False, **extra):
-        # If the request is to a remote example.com address just return an empty response
-        # without really making the request
-        if 'example.com' in extra.get('SERVER_NAME', ''):
-            return HttpResponse()
-
-        return super().get(path, data=data, follow=follow, secure=secure, **extra)
-
-
-def _start_oidc_authorize(django_client, oidcclient_factory, backend_name=DummyFixedOidcBackend.name, state=None):
-    """Start OIDC authorization flow
-
-    The client will be redirected to the Tunnistamo login view and from there to the
-    "Test login method". The redirects are required to have the "next" parameter in the
-    django_clients session."""
-    LoginMethod.objects.create(
-        provider_id=backend_name,
-        name='Test login method',
-        order=1,
-    )
-
-    redirect_uris = ['https://example.com/callback']
-    oidc_client = oidcclient_factory(redirect_uris=redirect_uris)
-
-    authorize_url = reverse('authorize')
-    authorize_data = {
-        'client_id': oidc_client.client_id,
-        'response_type': 'id_token token',
-        'redirect_uri': redirect_uris[0],
-        'scope': 'openid',
-        'response_mode': 'form_post',
-        'nonce': 'abcdefg',
-    }
-    if state:
-        authorize_data['state'] = state
-
-    backend = get_backend(settings.AUTHENTICATION_BACKENDS, backend_name)
-    backend_oidc_config_url = backend().setting('OIDC_ENDPOINT') + '/.well-known/openid-configuration'
-    backend_authorize_url = backend().setting('OIDC_ENDPOINT') + '/authorize'
-
-    # Mock the open id connect configuration url so that the open id connect social auth
-    # backend can generate the authorization url without calling the external server.
-    httpretty.register_uri(
-        httpretty.GET,
-        backend_oidc_config_url,
-        body='''
-        {{
-            "authorization_endpoint": "{}"
-        }}
-        '''.format(backend_authorize_url)
-    )
-
-    httpretty.enable()
-    django_client.get(authorize_url, authorize_data, follow=True)
-    httpretty.disable()
-
-    return oidc_client
+from users.tests.conftest import CancelExampleComRedirectClient, start_oidc_authorize
 
 
 def _request_social_auth_complete_with_error(
@@ -108,7 +43,7 @@ def test_redirect_to_client_after_social_auth_error(
 
     # Start the OIDC flow.
     state = get_random_string()
-    oidc_client = _start_oidc_authorize(
+    oidc_client = start_oidc_authorize(
         django_client,
         oidcclient_factory,
         backend_name=HelsinkiTunnistus.name,
@@ -149,7 +84,7 @@ def test_on_auth_error_redirect_to_client_setting(
     django_client = CancelExampleComRedirectClient()
 
     # Start the OIDC flow.
-    oidc_client = _start_oidc_authorize(django_client, oidcclient_factory)
+    oidc_client = start_oidc_authorize(django_client, oidcclient_factory)
 
     # Return the user from the social auth with an error.
     response = _request_social_auth_complete_with_error(django_client)
