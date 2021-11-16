@@ -140,7 +140,7 @@ def test_on_auth_error_redirect_to_client_setting(
     on_error_redirect,
 ):
     settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
-        'tunnistamo.tests.conftest.DummyFixedOidcBackend',
+        'users.tests.conftest.DummyFixedOidcBackend',
     )
     settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_OIDC_ENDPOINT = 'https://dummy.example.com'
     settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_ON_AUTH_ERROR_REDIRECT_TO_CLIENT = on_error_redirect
@@ -176,7 +176,7 @@ def test_should_not_redirect_to_oidc_client_if_the_next_parameter_is_not_to_an_o
     on_error_redirect,
 ):
     settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
-        'tunnistamo.tests.conftest.DummyFixedOidcBackend',
+        'users.tests.conftest.DummyFixedOidcBackend',
     )
     settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_OIDC_ENDPOINT = 'https://dummy.example.com'
     settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_ON_AUTH_ERROR_REDIRECT_TO_CLIENT = on_error_redirect

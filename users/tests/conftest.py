@@ -1,3 +1,4 @@
+import time
 import unittest
 
 import pytest
@@ -8,12 +9,15 @@ from django.contrib.auth import get_user_model
 from django.utils import timezone
 from django.utils.crypto import get_random_string
 from jwkest import long_to_base64
+from jwkest.jwk import RSAKey as jwk_RSAKey
+from jwkest.jws import JWS
 from oidc_provider.models import Client, ResponseType, RSAKey
 from rest_framework.test import APIClient
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 from social_django.models import UserSocialAuth
 
 from auth_backends.adfs.base import BaseADFS
+from auth_backends.helsinki_tunnistus_suomifi import HelsinkiTunnistus
 from services.factories import ServiceFactory
 from users.factories import UserFactory
 from users.models import Application, LoginMethod, OidcClientOptions, TunnistamoSession
@@ -226,6 +230,63 @@ class DummyOidcBackend(DummyOidcBackendBase):
 
 class DummyOidcBackend2(DummyOidcBackendBase):
     name = 'dummyoidcbackend2'
+
+
+def create_id_token(backend, **kwargs):
+    kwargs.setdefault('iss', backend.oidc_config().get('issuer'))
+    kwargs.setdefault('sub', get_random_string())
+    kwargs.setdefault('aud', backend.setting('KEY'))
+    kwargs.setdefault('azp', backend.setting('KEY'))
+    kwargs.setdefault('exp', int(time.time()) + 60 * 5)
+    kwargs.setdefault('iat', int(time.time()) - 10)
+    kwargs.setdefault('jti', get_random_string())
+    kwargs.setdefault('name', get_random_string())
+    kwargs.setdefault('given_name', get_random_string())
+    kwargs.setdefault('family_name', get_random_string())
+
+    keys = []
+    for rsakey in RSAKey.objects.all():
+        keys.append(jwk_RSAKey(key=RSA.importKey(rsakey.key), kid=rsakey.kid))
+
+    _jws = JWS(kwargs, alg='RS256')
+    return _jws.sign_compact(keys)
+
+
+class DummyFixedOidcBackend(DummyOidcBackendBase):
+    """Dummy OIDC social auth backend that returns fixed access and id tokens"""
+    name = 'dummyfixedoidcbackend'
+
+    def user_data(self, access_token, *args, **kwargs):
+        return {
+            'email_verified': False,
+            'family_name': 'User',
+            'given_name': 'Test',
+            'name': 'Test User',
+            'sub': '00000000-0000-4000-b000-000000000000'
+        }
+
+    def get_json(self, url, *args, **kwargs):
+        if url == self.oidc_config()['token_endpoint']:
+            nonce = self.get_and_store_nonce(self.authorization_url(), get_random_string())
+            id_token = create_id_token(
+                self,
+                nonce=nonce,
+                sub='00000000-0000-4000-b000-000000000000',
+                email_verified=False,
+                name='Test User',
+                given_name='User',
+                family_name='Test',
+                loa='substantial',
+            )
+
+            return {
+                'access_token': 'access_token_abcd123',
+                'id_token': id_token,
+            }
+
+        return super().get_json(url, *args, **kwargs)
+
+    get_loa = HelsinkiTunnistus.get_loa
 
 
 class DummyADFSBackend(BaseADFS):
