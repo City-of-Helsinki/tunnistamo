@@ -11,7 +11,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Tunnistamo\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-11-10 16:49+0200\n"
+"POT-Creation-Date: 2021-11-10 17:06+0200\n"
 "PO-Revision-Date: 2019-08-12 13:51+0300\n"
 "Last-Translator: Henrik Andersson <dev@hel.fi>, 2019\n"
 "Language-Team: Swedish (https://www.transifex.com/city-of-helsinki-1/"
@@ -573,6 +573,17 @@ msgstr ""
 #: users/models.py:299
 msgid "Tunnistamo Session Elements"
 msgstr ""
+
+#: users/templates/login.html:4
+msgid "Log in"
+msgstr "SV: Kirjaudu sisään"
+
+#: users/templates/login.html:8
+msgid ""
+"You can log in to this service by using one of these authentication methods."
+msgstr ""
+"SV: Tähän palveluun voit tunnistautua käyttämällä jotain näistä "
+"kirjautumistavoista."
 
 #: users/templates/oidc_provider/authorize.html:4
 msgid "Permission request"

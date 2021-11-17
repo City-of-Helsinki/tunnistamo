@@ -1,11 +1,14 @@
 {% extends 'base.html' %}
+{% load i18n %}
 
-{% block title %}Kirjaudu sisään{% endblock %}
+{% block title %}{% translate 'Log in' %}{% endblock %}
 
 {% block content %}
 <p class="doc">
-  Tähän palveluun voit tunnistautua käyttämällä jotain näistä
-  kirjautumistavoista.
+  {% blocktranslate trimmed %}
+  You can log in to this service by using one of these
+  authentication methods.
+  {% endblocktranslate %}
 </p>
 <div class="hel-login-methods">
   {% for method in login_methods %}
