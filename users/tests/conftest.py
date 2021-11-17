@@ -259,10 +259,15 @@ def create_id_token(backend, **kwargs):
 
 
 class CancelExampleComRedirectClient(DjangoTestClient):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.intercepted_requests = []
+
     def get(self, path, data=None, follow=False, secure=False, **extra):
         # If the request is to a remote example.com address just return an empty response
         # without really making the request
         if 'example.com' in extra.get('SERVER_NAME', ''):
+            self.intercepted_requests.append({"path": path, "data": data})
             return HttpResponse()
 
         return super().get(path, data=data, follow=follow, secure=secure, **extra)

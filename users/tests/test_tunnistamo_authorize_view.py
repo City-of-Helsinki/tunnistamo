@@ -1,10 +1,13 @@
 import pytest
 from Cryptodome.PublicKey import RSA
 from django.urls import reverse
+from django.utils.crypto import get_random_string
 from oidc_provider.models import RESPONSE_TYPE_CHOICES, RSAKey, UserConsent
 
+from auth_backends.helsinki_tunnistus_suomifi import HelsinkiTunnistus
 from oidc_apis.factories import ApiFactory, ApiScopeFactory
 from users.factories import OIDCClientFactory, UserFactory
+from users.tests.conftest import CancelExampleComRedirectClient, start_oidc_authorize
 from users.views import TunnistamoOidcAuthorizeView
 
 
@@ -128,6 +131,28 @@ def test_original_client_id_is_saved_to_the_session(
         assert session_client_id == oidc_client.client_id
     else:
         assert "oidc_authorize_original_client_id" not in client.session
+
+
+@pytest.mark.django_db
+def test_original_client_id_is_passed_to_helsinki_tunnistus_authentication_service(
+    settings,
+    oidcclient_factory,
+):
+    settings.SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_OIDC_ENDPOINT = 'https://heltunnistussuomifi.example.com'
+    django_client = CancelExampleComRedirectClient()
+
+    state = get_random_string()
+    oidc_client = start_oidc_authorize(
+        django_client,
+        oidcclient_factory,
+        backend_name=HelsinkiTunnistus.name,
+        state=state,
+    )
+
+    assert len(django_client.intercepted_requests) == 1
+    intercepted_request = django_client.intercepted_requests[0]
+    assert intercepted_request["path"] == '/authorize'
+    assert intercepted_request["data"].get("original_client_id") == oidc_client.client_id
 
 
 @pytest.mark.django_db
