@@ -1,4 +1,4 @@
-{% load static sass_tags %}
+{% load static sass_tags i18n %}
 <!DOCTYPE html>
 <html{% if request.LANGUAGE_CODE %} lang="{{ request.LANGUAGE_CODE }}"{% endif %}>
 
@@ -8,7 +8,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>
         {% block head_title %}{% block title %}{% endblock %} |
-        Helsingin kaupunki{% endblock %}
+        {% translate 'City of Helsinki' %}{% endblock %}
     </title>
     <link href="{% sass_src 'css/helsinki_theme.scss' %}" rel="stylesheet" type="text/css" />
 </head>

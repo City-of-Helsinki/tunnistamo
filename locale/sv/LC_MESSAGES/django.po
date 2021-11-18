@@ -182,6 +182,10 @@ msgstr "användarens enheter"
 msgid "allowed OAuth scopes"
 msgstr ""
 
+#: helsinki_theme/templates/helsinki_theme/base.html:12
+msgid "City of Helsinki"
+msgstr "Helsingfors stad"
+
 #: identities/models.py:12 services/models.py:29 users/models.py:120
 msgid "service"
 msgstr "tjänst"
