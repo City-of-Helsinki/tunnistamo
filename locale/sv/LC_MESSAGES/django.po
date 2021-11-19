@@ -612,7 +612,7 @@ msgstr "Godkänn"
 
 #: users/templates/registration/logged_out.html:5
 msgid "You have been logged out of City of Helsinki services."
-msgstr ""
+msgstr "SV: You have been logged out of City of Helsinki services."
 
 #: users/templates/registration/logged_out.html:10
 #, python-format
@@ -620,6 +620,8 @@ msgid ""
 "Please note that you are still logged in to %(name_logged_in)s, whose "
 "credentials you originally used to log in to City of Helsinki services."
 msgstr ""
+"SV: Please note that you are still logged in to %(name_logged_in)s, whose "
+"credentials you originally used to log in to City of Helsinki services."
 
 #: users/templates/registration/logged_out.html:17
 #, python-format
@@ -628,6 +630,9 @@ msgid ""
 "able to access your %(name_access)s account unless you explicitly log out "
 "from %(name_logout)s."
 msgstr ""
+"SV: If access to this device is shared by other users, the next user will be "
+"able to access your %(name_access)s account unless you explicitly log out "
+"from %(name_logout)s."
 
 #: users/templates/registration/logged_out.html:26
 #, python-format
@@ -635,15 +640,17 @@ msgid ""
 "Go back to %(name_goto)s to log yourself out using %(name_genetive)s own "
 "logout feature."
 msgstr ""
+"SV: Go back to %(name_goto)s to log yourself out using %(name_genetive)s own "
+"logout feature."
 
 #: users/templates/registration/logged_out.html:31
 #, python-format
 msgid "Go to %(name_goto)s"
-msgstr ""
+msgstr "SV: Go to %(name_goto)s"
 
 #: users/templates/registration/logged_out.html:41
 msgid "Return"
-msgstr ""
+msgstr "SV: Return"
 
 #: yletunnus/backends.py:80
 msgid "Yle Tunnus"
