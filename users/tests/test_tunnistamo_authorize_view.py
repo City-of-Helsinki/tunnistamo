@@ -156,6 +156,29 @@ def test_original_client_id_is_passed_to_helsinki_tunnistus_authentication_servi
 
 
 @pytest.mark.django_db
+def test_ui_locales_parameter_of_authorize_request_is_passed_to_helsinki_tunnistus_authentication_service(
+    settings, oidcclient_factory,
+):
+    settings.SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_OIDC_ENDPOINT = 'https://heltunnistussuomifi.example.com'
+    django_client = CancelExampleComRedirectClient()
+
+    state = get_random_string()
+    ui_locales = "this can be whatever"
+    start_oidc_authorize(
+        django_client,
+        oidcclient_factory,
+        backend_name=HelsinkiTunnistus.name,
+        state=state,
+        ui_locales=ui_locales,
+    )
+
+    assert len(django_client.intercepted_requests) == 1
+    intercepted_request = django_client.intercepted_requests[0]
+    assert intercepted_request["path"] == '/authorize'
+    assert intercepted_request["data"].get("ui_locales") == ui_locales
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize('with_pkce', (True, False))
 @pytest.mark.parametrize('response_type', [key for key, val in RESPONSE_TYPE_CHOICES])
 def test_public_clients_ability_to_skip_consent(

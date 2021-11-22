@@ -33,6 +33,10 @@ class HelsinkiTunnistus(OidcBackchannelLogoutMixin, OpenIdConnectAuth):
         if original_client_id:
             extra_arguments["original_client_id"] = original_client_id
 
+        ui_locales = self.strategy.request.session.get("ui_locales")
+        if ui_locales:
+            extra_arguments["ui_locales"] = ui_locales
+
         return extra_arguments
 
     def get_loa(self):

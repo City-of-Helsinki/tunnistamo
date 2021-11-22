@@ -325,7 +325,9 @@ class DummyFixedOidcBackend(DummyOidcBackendBase):
     get_loa = HelsinkiTunnistus.get_loa
 
 
-def start_oidc_authorize(django_client, oidcclient_factory, backend_name=DummyFixedOidcBackend.name, state=None):
+def start_oidc_authorize(
+    django_client, oidcclient_factory, backend_name=DummyFixedOidcBackend.name, state=None, ui_locales=None
+):
     """Start OIDC authorization flow
 
     The client will be redirected to the Tunnistamo login view and from there to the
@@ -351,6 +353,8 @@ def start_oidc_authorize(django_client, oidcclient_factory, backend_name=DummyFi
     }
     if state:
         authorize_data['state'] = state
+    if ui_locales:
+        authorize_data['ui_locales'] = ui_locales
 
     backend = get_backend(settings.AUTHENTICATION_BACKENDS, backend_name)
     backend_oidc_config_url = backend().setting('OIDC_ENDPOINT') + '/.well-known/openid-configuration'

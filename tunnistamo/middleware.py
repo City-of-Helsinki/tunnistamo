@@ -33,6 +33,8 @@ class LocaleMiddleware(DjangoLocaleMiddleware):
 
         language = None
         if ui_locales is not None:
+            request.session['ui_locales'] = ui_locales
+
             for candidate in ui_locales.split():
                 try:
                     language = translation.get_supported_language_variant(candidate)
