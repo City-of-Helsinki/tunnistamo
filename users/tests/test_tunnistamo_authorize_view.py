@@ -27,7 +27,7 @@ def test_tunnistamo_authorize_view_is_used(client, with_trailing_slash):
     ('bogus      en fi', 'Email'),
 ))
 @pytest.mark.django_db
-def test_tunnistamo_authorize_view_language(client, ui_locales, expected_text):
+def test_tunnistamo_authorize_view_language(client, ui_locales, expected_text, use_translations):
     oidc_client = OIDCClientFactory(require_consent=True)
     user = UserFactory()
     client.force_login(user)

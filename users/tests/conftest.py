@@ -10,7 +10,7 @@ from django.contrib.auth import get_user_model
 from django.http import HttpResponse
 from django.test.client import Client as DjangoTestClient
 from django.urls import reverse
-from django.utils import timezone
+from django.utils import timezone, translation
 from django.utils.crypto import get_random_string
 from httpretty import httpretty
 from jwkest import long_to_base64
@@ -27,6 +27,21 @@ from auth_backends.helsinki_tunnistus_suomifi import HelsinkiTunnistus
 from services.factories import ServiceFactory
 from users.factories import UserFactory
 from users.models import Application, LoginMethod, OidcClientOptions, TunnistamoSession
+
+
+@pytest.fixture
+def use_translations():
+    """After the test, resets the currently active translation
+    to what it was before the test. Useful when a test potentially
+    changes the current active language."""
+    language_before_the_test = translation.get_language()
+
+    yield
+
+    if language_before_the_test:
+        translation.activate(language_before_the_test)
+    else:
+        translation.deactivate()
 
 
 @pytest.fixture()
