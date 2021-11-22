@@ -22,9 +22,10 @@ NON_DEFAULT_LANGUAGE_CODE = list(filter(lambda lang: lang[0] != settings.LANGUAG
 
 @pytest.mark.django_db
 @pytest.mark.parametrize('ui_locales,expected_lang', [
-    (f'{settings.LANGUAGE_CODE}', settings.LANGUAGE_CODE),
-    (f'{NON_DEFAULT_LANGUAGE_CODE}', NON_DEFAULT_LANGUAGE_CODE),
-    (f'{NON_DEFAULT_LANGUAGE_CODE}-SPECIFIER', NON_DEFAULT_LANGUAGE_CODE),
+    (f'{settings.LANGUAGE_CODE} {NON_DEFAULT_LANGUAGE_CODE}', settings.LANGUAGE_CODE),
+    (f'{NON_DEFAULT_LANGUAGE_CODE} {settings.LANGUAGE_CODE}', NON_DEFAULT_LANGUAGE_CODE),
+    (f'{NON_DEFAULT_LANGUAGE_CODE}-SPECIFIER {settings.LANGUAGE_CODE}', NON_DEFAULT_LANGUAGE_CODE),
+    (f'de unknown  {NON_DEFAULT_LANGUAGE_CODE}  ', NON_DEFAULT_LANGUAGE_CODE),
 ])
 def test_language_is_determined_from_ui_locales_query_parameter(ui_locales, expected_lang, client, use_translations):
     data = {'ui_locales': ui_locales}

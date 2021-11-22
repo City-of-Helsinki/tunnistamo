@@ -31,11 +31,19 @@ class LocaleMiddleware(DjangoLocaleMiddleware):
     def process_request(self, request):
         ui_locales = request.GET.get('ui_locales')
 
-        try:
-            language = translation.get_supported_language_variant(ui_locales)
+        language = None
+        if ui_locales is not None:
+            for candidate in ui_locales.split():
+                try:
+                    language = translation.get_supported_language_variant(candidate)
+                    break
+                except LookupError:
+                    pass
+
+        if language:
             translation.activate(language)
             request.LANGUAGE_CODE = translation.get_language()
-        except LookupError:
+        else:
             super().process_request(request)
 
 
