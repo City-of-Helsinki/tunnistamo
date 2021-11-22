@@ -5,8 +5,9 @@ from urllib.parse import parse_qsl, urlencode, urlsplit
 
 from django.conf import settings
 from django.http import HttpResponseForbidden, HttpResponseRedirect
+from django.middleware.locale import LocaleMiddleware as DjangoLocaleMiddleware
 from django.urls import reverse
-from django.utils import timezone
+from django.utils import timezone, translation
 from django.utils.http import quote
 from django.utils.translation import gettext_lazy as _
 from oidc_provider.lib.errors import BearerTokenError
@@ -24,6 +25,18 @@ def add_params_to_url(url, params):
     new_query_parts.update(params)
 
     return url_parts._replace(query=urlencode(new_query_parts)).geturl()
+
+
+class LocaleMiddleware(DjangoLocaleMiddleware):
+    def process_request(self, request):
+        ui_locales = request.GET.get('ui_locales')
+
+        try:
+            language = translation.get_supported_language_variant(ui_locales)
+            translation.activate(language)
+            request.LANGUAGE_CODE = translation.get_language()
+        except LookupError:
+            super().process_request(request)
 
 
 class InterruptedSocialAuthMiddleware(SocialAuthExceptionMiddleware):
