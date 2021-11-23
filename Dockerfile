@@ -63,6 +63,11 @@ ENV NODE_MODULES_ROOT /var/tunnistamo/node_modules
 COPY --from=staticbuilder --chown=appuser:appuser /app/static /var/tunnistamo/static
 COPY --from=staticbuilder --chown=appuser:appuser /app/node_modules /var/tunnistamo/node_modules
 
+COPY --chown=appuser:appuser . /app/
+
+USER appuser
+RUN python manage.py compilemessages
+
 # =========================
 FROM appbase as development
 # =========================
@@ -73,16 +78,12 @@ RUN pip install --no-cache-dir  -r /app/requirements-dev.txt \
 
 ENV DEV_SERVER=1
 
-COPY --chown=appuser:appuser . /app/
-
 USER appuser
 EXPOSE 8000/tcp
 
 # ==========================
 FROM appbase as production
 # ==========================
-
-COPY --chown=appuser:appuser . /app/
 
 USER appuser
 EXPOSE 8000/tcp
