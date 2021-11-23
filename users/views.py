@@ -9,7 +9,6 @@ from django.db.models import Case, Value, When
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
-from django.utils import translation
 from django.utils.http import quote
 from django.views.decorators.http import require_http_methods
 from django.views.generic.base import RedirectView, TemplateView
@@ -148,14 +147,6 @@ class TunnistamoOidcAuthorizeView(AuthorizeView):
                 # We don't care if the client wasn't found because the client will be
                 # validated again in the parent get method.
                 pass
-
-        request_languages = [lang.strip() for lang in request.GET.get('ui_locales', '').split(' ') if lang]
-        available_languages = [lang[0] for lang in settings.LANGUAGES]
-
-        for lang in request_languages:
-            if lang in available_languages:
-                with translation.override(lang):
-                    return super().get(request, *args, **kwargs)
 
         return super().get(request, *args, **kwargs)
 
