@@ -92,5 +92,5 @@ if [[ ! -z "$@" ]]; then
 elif [[ "$DEV_SERVER" = "1" ]]; then
     python ./manage.py runserver 0.0.0.0:8000
 else
-    uwsgi --ini .prod/uwsgi.ini
+    uwsgi --ini .prod/uwsgi.ini $ARGS_UWSGI
 fi
