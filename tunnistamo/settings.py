@@ -29,6 +29,10 @@ env = environ.Env(
     MEDIA_URL=(str, '/media/'),
     NODE_MODULES_ROOT=(str, os.path.join(BASE_DIR, 'node_modules')),
 
+    COOKIE_NAME_PREFIX=(str, 'tunnistamo'),
+    COOKIE_PATH=(str, '/'),
+    COOKIE_SECURE=(bool, True),
+
     ALLOW_DUPLICATE_EMAILS=(bool, False),
     EMAIL_EXEMPT_AUTH_BACKENDS=(list, []),
 
@@ -354,8 +358,12 @@ REST_FRAMEWORK = {
     'TEST_REQUEST_DEFAULT_FORMAT': 'json',
 }
 
-CSRF_COOKIE_NAME = 'sso-csrftoken'
-SESSION_COOKIE_NAME = 'sso-sessionid'
+CSRF_COOKIE_NAME = '{}-csrftoken'.format(env('COOKIE_NAME_PREFIX'))
+CSRF_COOKIE_PATH = env('COOKIE_PATH')
+CSRF_COOKIE_SECURE = env('COOKIE_SECURE')
+SESSION_COOKIE_NAME = '{}-sessionid'.format(env('COOKIE_NAME_PREFIX'))
+SESSION_COOKIE_PATH = env('COOKIE_PATH')
+SESSION_COOKIE_SECURE = env('COOKIE_SECURE')
 
 # You will likely need to allow cross site session cookies, if your
 # tunnistamo instance must support non-interactive renew of tokens
