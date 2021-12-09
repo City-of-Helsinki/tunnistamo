@@ -36,6 +36,9 @@ env = environ.Env(
     ALLOW_DUPLICATE_EMAILS=(bool, False),
     EMAIL_EXEMPT_AUTH_BACKENDS=(list, []),
 
+    LOGIN_URL=(str, "/login/"),
+    LOGIN_REDIRECT_URL=(str, "/accounts/profile/"),
+
     TRUSTED_LOA_BACKENDS=(list, []),
 
     # Authentication settings
@@ -255,8 +258,8 @@ LOCALE_PATHS = (
     os.path.join(BASE_DIR, 'locale'),
 )
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/accounts/profile/'
+LOGIN_URL = env("LOGIN_URL")
+LOGIN_REDIRECT_URL = env("LOGIN_REDIRECT_URL")
 
 SESSION_EXPIRE_AT_BROWSER_CLOSE = True
 AUTH_USER_MODEL = 'users.User'
