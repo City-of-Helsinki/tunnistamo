@@ -580,14 +580,12 @@ msgstr ""
 
 #: users/templates/login.html:4
 msgid "Log in"
-msgstr "SV: Kirjaudu sisään"
+msgstr "Logga in"
 
 #: users/templates/login.html:8
 msgid ""
 "You can log in to this service by using one of these authentication methods."
-msgstr ""
-"SV: Tähän palveluun voit tunnistautua käyttämällä jotain näistä "
-"kirjautumistavoista."
+msgstr "Du kan logga in på denna tjänst med en av dessa autentiseringsmetoder."
 
 #: users/templates/oidc_provider/authorize.html:4
 msgid "Permission request"
@@ -612,7 +610,7 @@ msgstr "Godkänn"
 
 #: users/templates/registration/logged_out.html:5
 msgid "You have been logged out of City of Helsinki services."
-msgstr "SV: You have been logged out of City of Helsinki services."
+msgstr "Du har loggats ut från Helsingfors stads e-tjänst."
 
 #: users/templates/registration/logged_out.html:10
 #, python-format
@@ -620,8 +618,9 @@ msgid ""
 "Please note that you are still logged in to %(name_logged_in)s, whose "
 "credentials you originally used to log in to City of Helsinki services."
 msgstr ""
-"SV: Please note that you are still logged in to %(name_logged_in)s, whose "
-"credentials you originally used to log in to City of Helsinki services."
+"Observera att du fortfarande är inloggad på %(name_logged_in)s, vars "
+"inloggningsuppgifter du ursprungligen använde för att logga in på "
+"Helsingfors stads e-tjänst."
 
 #: users/templates/registration/logged_out.html:17
 #, python-format
@@ -630,9 +629,8 @@ msgid ""
 "able to access your %(name_access)s account unless you explicitly log out "
 "from %(name_logout)s."
 msgstr ""
-"SV: If access to this device is shared by other users, the next user will be "
-"able to access your %(name_access)s account unless you explicitly log out "
-"from %(name_logout)s."
+"Om dessa enhet har flera användare, kommer de att kunna använda ditt "
+"%(name_access)s konto om du inte uttryckligen loggar ut från %(name_logout)s."
 
 #: users/templates/registration/logged_out.html:26
 #, python-format
@@ -640,17 +638,17 @@ msgid ""
 "Go back to %(name_goto)s to log yourself out using %(name_genetive)s own "
 "logout feature."
 msgstr ""
-"SV: Go back to %(name_goto)s to log yourself out using %(name_genetive)s own "
-"logout feature."
+"Gå tillbaka till %(name_goto)s för att logga ut med %(name_genetive)s egen "
+"utloggningsfunktion."
 
 #: users/templates/registration/logged_out.html:31
 #, python-format
 msgid "Go to %(name_goto)s"
-msgstr "SV: Go to %(name_goto)s"
+msgstr "Gå till %(name_goto)s"
 
 #: users/templates/registration/logged_out.html:41
 msgid "Return"
-msgstr "SV: Return"
+msgstr "Gå tillbaka"
 
 #: yletunnus/backends.py:80
 msgid "Yle Tunnus"
