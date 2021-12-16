@@ -295,7 +295,7 @@ def test_suomifi_logout_sp_request_no_social_user(django_client, django_user_mod
     logout_page_response = django_client.get(logout_page_url)
 
     # If social user does not exist only Django logout is performed
-    assert not django_client.cookies.get('sso-sessionid').value
+    assert not django_client.cookies.get(settings.SESSION_COOKIE_NAME).value
     assert logout_page_response.status_code == 200
     assert 'href="{}"'.format(REDIRECT_URI) in str(logout_page_response.content)
 
