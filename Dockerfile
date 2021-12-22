@@ -60,6 +60,7 @@ ENTRYPOINT ["./docker-entrypoint.sh"]
 # STore static files under /var to not conflict with development volume mount
 ENV STATIC_ROOT /var/tunnistamo/static
 ENV NODE_MODULES_ROOT /var/tunnistamo/node_modules
+ENV APP_URL_PATH /
 COPY --from=staticbuilder --chown=appuser:appuser /app/static /var/tunnistamo/static
 COPY --from=staticbuilder --chown=appuser:appuser /app/node_modules /var/tunnistamo/node_modules
 
