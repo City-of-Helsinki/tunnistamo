@@ -65,7 +65,7 @@ django-sass-processor==1.1
     # via -r requirements.in
 git+https://github.com/City-of-Helsinki/django-translation-checker.git@master
     # via -r requirements.in
-django==3.2.8
+django==2.2.26
     # via
     #   -r requirements.in
     #   django-allauth
@@ -114,7 +114,7 @@ oauthlib==2.1.0
     #   django-oauth-toolkit
     #   requests-oauthlib
     #   social-auth-core
-pillow==8.3.2
+pillow==9.0.0
     # via -r requirements.in
 polib==1.1.0
     # via django-translation-checker
