@@ -54,7 +54,7 @@ def test_logout_redirect_next(client, user_factory, _next, expected, application
 @pytest.mark.parametrize('_next', (
     None,
     '',
-    get_random_string(),
+    pytest.param(get_random_string(), id='random_string'),
     12345,
     '//example.com',
     '/foo',

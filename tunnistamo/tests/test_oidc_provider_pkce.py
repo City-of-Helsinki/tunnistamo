@@ -11,7 +11,7 @@ from oidc_provider.lib.utils.token import create_code
 @pytest.mark.django_db
 @pytest.mark.parametrize('code_verifier,should_succeed', (
     ('', False),
-    (get_random_string(), True),
+    pytest.param(get_random_string(), True, id='random_string'),
 ))
 def test_token_endpoint_requires_code_verifier(
     client,
