@@ -12,6 +12,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
 from oauth2_provider.models import get_application_model
 from oidc_provider.models import Code, Token
+from parler.admin import TranslatableAdmin
 from social_django.models import UserSocialAuth
 
 from .models import LoginMethod, SessionElement, TunnistamoSession, User
@@ -53,8 +54,15 @@ admin.site.register(User, ExtendedUserAdmin)
 
 
 @admin.register(LoginMethod)
-class LoginMethodAdmin(admin.ModelAdmin):
-    model = LoginMethod
+class LoginMethodAdmin(TranslatableAdmin):
+    fieldsets = (
+        (None, {
+            'fields': ('name', 'short_description'),
+        }),
+        (_('Not translatable fields'), {
+            'fields': ('provider_id', 'logo_url', 'order')
+        }),
+    )
 
 
 class SessionElementInline(admin.TabularInline):
