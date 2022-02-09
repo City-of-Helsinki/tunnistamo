@@ -92,5 +92,20 @@ if [[ ! -z "$@" ]]; then
 elif [[ "$DEV_SERVER" = "1" ]]; then
     python ./manage.py runserver 0.0.0.0:8000
 else
+    # We want to have a *_URL environment variables configure
+    # both Django static/media files URL generation
+    # and the corresponding file serving in uWSGI.
+    # uWSGI combines app mount path (in APP_URL_PATH) and static
+    # map path (in *_URL). For Django we combine them here.
+
+    # remove trailing slash for uWSGI URLs. uWSGI probably
+    # does this by itself, but it does not hurt
+    export STATIC_URL_ROOTLESS=$(readlink -m $STATIC_URL)
+    export MEDIA_URL_ROOTLESS=$(readlink -m $MEDIA_URL)
+    # Use readlink to remove double initial slashes in case of
+    # APP_URL_PATH="/" and STATIC_URL="/static/". Also Django
+    # needs the ending slash, which readlink removes
+    STATIC_URL=$(readlink -m $APP_URL_PATH$STATIC_URL)/
+    MEDIA_URL=$(readlink -m $APP_URL_PATH$MEDIA_URL)/
     uwsgi --ini .prod/uwsgi.ini
 fi
