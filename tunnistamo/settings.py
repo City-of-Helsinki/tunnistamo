@@ -373,7 +373,7 @@ SESSION_COOKIE_SECURE = env('COOKIE_SECURE')
 # using IFRAME.
 if env('ALLOW_CROSS_SITE_SESSION_COOKIE'):
     # Not setting the attribute allows cookies to be passed across sites
-    SESSION_COOKIE_SAMESITE = None
+    SESSION_COOKIE_SAMESITE = 'None'
 
 USE_X_FORWARDED_HOST = env("TRUST_X_FORWARDED_HOST")
 
