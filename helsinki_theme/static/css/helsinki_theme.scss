@@ -64,11 +64,11 @@ $fa-font-path: "../fonts/font-awesome";
 }
 
 // create bootstrap-social styles for service helsinki_adfs
-.btn-helsinki_adfs {
+.btn-helsinki_adfs, .btn-helsinkiazuread {
   @include btn-social($hel-bus);
 }
 
-.fa-helsinki_adfs {
+.fa-helsinki_adfs, .fa-helsinkiazuread {
   @include helsinki-logo($white);
   background-position: center;
   background-size: 85%;
@@ -107,7 +107,7 @@ $fa-font-path: "../fonts/font-awesome";
   border-color: #00b4c8;
 }
 
-.login-method.login-method-helsinki_adfs a.btn.btn-social {
+.login-method.login-method-helsinki_adfs a.btn.btn-social, .login-method.login-method-helsinkiazuread a.btn.btn-social {
   background-color: #003380;
   border-color: #003380
 }
