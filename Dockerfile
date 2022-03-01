@@ -19,6 +19,7 @@ WORKDIR /app
 
 COPY requirements.txt /app/requirements.txt
 COPY package.json /app/package.json
+COPY package-lock.json /app/package-lock.json
 RUN pip install -U pip \
     && pip install --no-cache-dir  -r /app/requirements.txt
 RUN npm install
