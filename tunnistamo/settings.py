@@ -33,6 +33,7 @@ env = environ.Env(
     COOKIE_PATH=(str, '/'),
     COOKIE_SECURE=(bool, True),
 
+    CONSOLE_LOG_LEVEL=(str, 'DEBUG'),
     ALLOW_DUPLICATE_EMAILS=(bool, False),
     EMAIL_EXEMPT_AUTH_BACKENDS=(list, []),
 
@@ -307,7 +308,7 @@ LOGGING = {
             'class': 'logging.NullHandler',
         },
         'console': {
-            'level': 'DEBUG',
+            'level': env('CONSOLE_LOG_LEVEL'),
             'class': 'logging.StreamHandler',
             'formatter': 'simple'
         },
