@@ -9,6 +9,7 @@ from django.db.models import Case, Value, When
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
+from django.utils import translation
 from django.utils.http import quote
 from django.views.decorators.http import require_http_methods
 from django.views.generic.base import RedirectView, TemplateView
@@ -172,6 +173,21 @@ class AuthoritativeLogoutRedirectView(RedirectView):
         return url
 
 
+def set_language_cookie(response):
+    response.set_cookie(
+        settings.LANGUAGE_COOKIE_NAME,
+        translation.get_language(),
+        max_age=60,  # Set language cookie for one minute
+        path=settings.LANGUAGE_COOKIE_PATH,
+        domain=settings.LANGUAGE_COOKIE_DOMAIN,
+        secure=settings.LANGUAGE_COOKIE_SECURE,
+        httponly=settings.LANGUAGE_COOKIE_HTTPONLY,
+        samesite=settings.LANGUAGE_COOKIE_SAMESITE,
+    )
+
+    return response
+
+
 class TunnistamoOidcEndSessionView(EndSessionView):
     def _validate_client_uri(self, uri):
         """Valid post logout URIs are explicitly managed in the database via
@@ -311,7 +327,12 @@ class TunnistamoOidcEndSessionView(EndSessionView):
                 'oidc_original_post_logout_redirect_uri'
             ] = self.request.GET.get('post_logout_redirect_uri')
 
-            return redirect(end_session_url)
+            # Set language cookie to the redirect response to keep the current language
+            # active when the user returns from the third party end session.
+            # This is done because the third party IDP could send a back-channel log out
+            # request to Tunnistamo before the user returns here. In which case the
+            # user's session doesn't exist anymore when they return.
+            return set_language_cookie(redirect(end_session_url))
 
         oidc_original_post_logout_redirect_uri = request.session.get(
             'oidc_original_post_logout_redirect_uri'
