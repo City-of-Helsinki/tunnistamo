@@ -44,7 +44,7 @@ cd tunnistamo
 
 Initiate a virtualenv and install the Python requirements:
 ```
-pyenv virtualenv 3.6.2 tunnistamo-env
+pyenv virtualenv 3.9.10 tunnistamo-env
 pyenv local tunnistamo-env
 pip install -r requirements.txt
 ```

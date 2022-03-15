@@ -193,8 +193,6 @@ social-auth-core[openidconnect,saml]==4.1.0
     #   social-auth-app-django
 sqlparse==0.4.2
     # via django
-typing-extensions==3.10.0.2
-    # via asgiref
 uritemplate==3.0.0
     # via coreapi
 urllib3==1.26.6

@@ -20,11 +20,6 @@ freezegun==1.1.0
     # via -r requirements-dev.in
 httpretty==1.1.4
     # via -r requirements-dev.in
-importlib-metadata==4.2.0
-    # via
-    #   flake8
-    #   pluggy
-    #   pytest
 iniconfig==1.1.1
     # via pytest
 isort==5.9.3
@@ -68,11 +63,5 @@ tomli==1.2.1
     # via coverage
 traceback2==1.4.0
     # via unittest2
-typing-extensions==3.10.0.2
-    # via
-    #   faker
-    #   importlib-metadata
 unittest2==1.1.0
     # via -r requirements-dev.in
-zipp==3.6.0
-    # via importlib-metadata
