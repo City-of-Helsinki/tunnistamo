@@ -1,5 +1,5 @@
 # =========================================================
-FROM helsinkitest/python-node:3.6-10-slim as staticbuilder
+FROM helsinkitest/python-node:3.9-14-slim as staticbuilder
 # ---------------------------------------------------------
 # Stage for building static files for
 # the project. Installs Node as that
@@ -29,7 +29,7 @@ RUN python manage.py compilescss \
     && python manage.py collectstatic --noinput
 
 # ===========================================
-FROM helsinkitest/python:3.6-slim as appbase
+FROM helsinkitest/python:3.9-slim as appbase
 # ===========================================
 
 WORKDIR /app
