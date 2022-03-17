@@ -1,137 +1,180 @@
-import itertools
-
 import pytest
 
 from users.factories import access_token_factory
-from users.models import AllowedOrigin
+
+# These match the CORS_URLS_REGEX setting
+CORS_PATHS = (
+    '/.well-known/openid-configuration', '/api-tokens/',
+    '/openid/jwks/', '/openid/.well-known/openid-configuration', '/jwt-token/'
+)
+
+NON_CORS_PATHS = (
+    '/login/', '/logout/', '/admin/'
+)
+
+ORIGIN_1 = 'http://localhost:8000'
+ORIGIN_2 = 'https://www.example.com'
+URI_1 = ORIGIN_1
+URI_2 = f'{ORIGIN_2}/path'
+_get_response = None
 
 
-def get_url_combinations():
-    HOSTS = (
-        ['localhost', 'internet.com', 'sub.domain.info', 'sub.sub.domain.info'] +
-        ['{}.fi'.format(c) for c in 'abcdefgh']
-    )
-    combinations = itertools.product(
-        ['http', 'https'],  # scheme
-        HOSTS,
-        ['', ':80'],  # port
-        ['', '/', '/single', '/one/two/three/'],  # path
-        ['', '?foo=bar&bar=foo'])  # query
-    urls = []
-    for combination in combinations:
-        origin = '{}://{}'.format(combination[0], ''.join(combination[1:3]))
-        url = '{}{}'.format(origin, ''.join(combination[3:]))
-        urls.append({'url': url, 'origin': origin})
-    return urls
+@pytest.fixture(autouse=True)
+def auto_mark_django_db(db):
+    return db
 
 
-# @pytest.fixture(autouse=True)
-# def auto_mark_django_db(db):
-#     pass
+@pytest.fixture(params=CORS_PATHS)
+def cors_path(request):
+    return request.param
 
 
-def assert_cors_found(origin, response):
+@pytest.fixture(params=NON_CORS_PATHS)
+def non_cors_path(request):
+    return request.param
+
+
+@pytest.fixture(autouse=True)
+def setup_get_response(user_api_client):
+    token = access_token_factory(scopes=['openid profile email'], user=user_api_client.user)
+
+    def get_response(origin, path):
+        return user_api_client.get(
+            path, HTTP_ORIGIN=origin, HTTP_AUTHORIZATION=f'Bearer {token.access_token}'
+        )
+
+    global _get_response
+    _get_response = get_response
+
+
+def assert_cors_found(origin, path):
+    response = _get_response(origin, path)
     assert response.get('Access-Control-Allow-Origin') == origin
 
 
-def assert_cors_not_found(origin, response):
+def assert_cors_not_found(origin, path):
+    response = _get_response(origin, path)
     assert 'Access-Control-Allow-Origin' not in response, response['Access-Control-Allow-Origin']
 
 
-def assert_database_state_consistent(urls, cut):
-    should_have_origins = set((u['origin'] for u in urls[0:cut]))
-    has_origins = set(AllowedOrigin.objects.values_list('key', flat=True))
-    assert should_have_origins == has_origins
+def test_origins_in_oauth_application_post_logout_uris_get_cors_headers(application_factory, cors_path):
+    application_factory(
+        post_logout_redirect_uris="\n".join([URI_1, URI_2])
+    )
+
+    assert_cors_found(ORIGIN_1, cors_path)
+    assert_cors_found(ORIGIN_2, cors_path)
 
 
-@pytest.mark.parametrize("application_url,cors_enabled,destructive_operation", [  # noqa: C901
-    ('/.well-known/openid-configuration', True, 'delete'),
-    ('/api-tokens/', True, 'erase'),
-    ('/openid/jwks/', True, 'delete'),
-    ('/openid/.well-known/openid-configuration', True, 'erase'),
-    ('/login/', False, 'delete'),
-    ('/logout/', False, 'erase'),
-    ('/admin/', False, 'delete'),
-    ('/jwt-token/', True, 'erase'),
-])
-@pytest.mark.django_db
-def test_cors_headers_got_with_whitelisted_uris_apiendpoints(
-        user_api_client, application_factory, oidcclient_factory,
-        user_factory, application_url, cors_enabled, destructive_operation):
+def test_removing_oauth_application_post_logout_uri_removes_it_from_allowed_origins(application_factory, cors_path):
+    application = application_factory(
+        post_logout_redirect_uris="\n".join([URI_1, URI_2])
+    )
 
-    client = user_api_client
-    token = access_token_factory(scopes=['openid profile email'], user=client.user)
+    application.post_logout_redirect_uris = URI_1
+    application.save()
 
-    if cors_enabled:
-        assert_cors_ok = assert_cors_found
-    else:
-        assert_cors_ok = assert_cors_not_found
+    assert_cors_found(ORIGIN_1, cors_path)
+    assert_cors_not_found(ORIGIN_2, cors_path)
 
-    urls = get_url_combinations()
 
-    index = 0  # index into url combinations
-    STEP = 6
+def test_origins_in_oauth_application_redirect_uris_get_cors_headers(application_factory, cors_path):
+    application_factory(
+        redirect_uris="\n".join([URI_1, URI_2])
+    )
 
-    def get_urls(start_index, amount=2):
-        return [u['url'] for u in urls[start_index:start_index+amount]]
+    assert_cors_found(ORIGIN_1, cors_path)
+    assert_cors_found(ORIGIN_2, cors_path)
 
-    def get_origins(start_index, amount=2):
-        return set((u['origin'] for u in urls[start_index:start_index+amount]))
 
-    def get_response(origin):
-        return client.get(application_url, HTTP_ORIGIN=origin,
-                          HTTP_AUTHORIZATION='Bearer {}'.format(token.access_token))
+def test_removing_oauth_application_redirect_uri_removes_it_from_allowed_origins(application_factory, cors_path):
+    application = application_factory(
+        redirect_uris="\n".join([URI_1, URI_2])
+    )
 
-    applications = []
-    oidc_clients = []
-    while index + STEP <= len(urls):
-        application = application_factory(
-            post_logout_redirect_uris="\n".join(get_urls(index)),
-            redirect_uris="\n".join(get_urls(index + 2)))
-        application.save()
-        applications.append(application)
+    application.redirect_uris = URI_1
+    application.save()
 
-        assert_database_state_consistent(urls, index + 2 + 2)
-        for origin in get_origins(index, amount=4):
-            assert_cors_ok(origin, get_response(origin))
+    assert_cors_found(ORIGIN_1, cors_path)
+    assert_cors_not_found(ORIGIN_2, cors_path)
 
-        oidc_client = oidcclient_factory(
-            # deliberate overlap with previous app
-            post_logout_redirect_uris=get_urls(index + 2),
-            redirect_uris=get_urls(index + 4))
 
-        oidc_client.save()
-        oidc_clients.append(oidc_client)
+def test_deleting_oauth_application_removes_uris_from_allowed_origins(application_factory, cors_path):
+    application = application_factory(
+        post_logout_redirect_uris=URI_1,
+        redirect_uris=URI_2,
+    )
+    application.delete()
 
-        assert_database_state_consistent(urls, index + 6)
-        for origin in get_origins(index + 2, amount=4):
-            assert_cors_ok(origin, get_response(origin))
+    assert_cors_not_found(ORIGIN_1, cors_path)
+    assert_cors_not_found(ORIGIN_2, cors_path)
 
-        index += STEP
 
-    assert_cors_not_found('http://examplez.com', get_response('http://examplez.com'))
+def test_origins_in_oidc_client_post_logout_uris_get_cors_headers(oidcclient_factory, cors_path):
+    oidcclient_factory(
+        post_logout_redirect_uris=[URI_1, URI_2]
+    )
 
-    if cors_enabled is False:
-        return
+    assert_cors_found(ORIGIN_1, cors_path)
+    assert_cors_found(ORIGIN_2, cors_path)
 
-    while index > 0:
-        index -= STEP
-        application = applications.pop()
-        oidc_client = oidc_clients.pop()
-        if destructive_operation == 'delete':
-            oidc_client.delete()
-            application.delete()
-        elif destructive_operation == 'erase':
-            oidc_client.post_logout_redirect_uris = []
-            oidc_client.redirect_uris = []
-            oidc_client.save()
-            application.post_logout_redirect_uris = ''
-            application.redirect_uris = ''
-            application.save()
 
-        assert_database_state_consistent(urls, index)
+def test_removing_oidc_client_post_logout_uri_removes_it_from_allowed_origins(oidcclient_factory, cors_path):
+    oidc_client = oidcclient_factory(
+        post_logout_redirect_uris=[URI_1, URI_2]
+    )
 
-    assert_cors_not_found('http://examplez.com', get_response('http://examplez.com'))
+    oidc_client.post_logout_redirect_uris = [URI_1]
+    oidc_client.save()
 
-    for origin in get_origins(0, len(urls)):
-        assert_cors_not_found(origin, get_response('origin'))
+    assert_cors_found(ORIGIN_1, cors_path)
+    assert_cors_not_found(ORIGIN_2, cors_path)
+
+
+def test_origins_in_oidc_client_redirect_uris_get_cors_headers(oidcclient_factory, cors_path):
+    oidcclient_factory(
+        redirect_uris=[URI_1, URI_2]
+    )
+
+    assert_cors_found(ORIGIN_1, cors_path)
+    assert_cors_found(ORIGIN_2, cors_path)
+
+
+def test_removing_oidc_client_redirect_uri_removes_it_from_allowed_origins(oidcclient_factory, cors_path):
+    oidc_client = oidcclient_factory(
+        redirect_uris=[URI_1, URI_2]
+    )
+
+    oidc_client.redirect_uris = [URI_1]
+    oidc_client.save()
+
+    assert_cors_found(ORIGIN_1, cors_path)
+    assert_cors_not_found(ORIGIN_2, cors_path)
+
+
+def test_deleting_oidc_client_removes_uris_from_allowed_origins(oidcclient_factory, cors_path):
+    oidc_client = oidcclient_factory(
+        post_logout_redirect_uris=[URI_1],
+        redirect_uris=[URI_2],
+    )
+    oidc_client.delete()
+
+    assert_cors_not_found(ORIGIN_1, cors_path)
+    assert_cors_not_found(ORIGIN_2, cors_path)
+
+
+def test_only_requests_with_whitelisted_paths_get_cors_headers(application_factory, oidcclient_factory, non_cors_path):
+    application_factory(
+        post_logout_redirect_uris=URI_1
+    )
+    oidcclient_factory(
+        redirect_uris=[URI_2]
+    )
+
+    assert_cors_not_found(ORIGIN_1, non_cors_path)
+    assert_cors_not_found(ORIGIN_2, non_cors_path)
+
+
+@pytest.mark.parametrize('path', CORS_PATHS + NON_CORS_PATHS)
+def test_unknown_origins_do_not_get_cors_headers(path):
+    assert_cors_not_found(ORIGIN_1, path)
