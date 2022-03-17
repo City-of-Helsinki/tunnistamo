@@ -98,7 +98,7 @@ def application_factory():
         kwargs.setdefault('name', get_random_string())
         kwargs.setdefault('client_id', get_random_string())
         kwargs.setdefault('user', None)
-        kwargs.setdefault('redirect_uris', None)
+        kwargs.setdefault('redirect_uris', '')
         kwargs.setdefault('client_type', Application.CLIENT_PUBLIC)
         kwargs.setdefault('authorization_grant_type', Application.GRANT_IMPLICIT)
 
@@ -113,7 +113,7 @@ def oidcclient_factory():
         kwargs.setdefault('name', get_random_string())
         kwargs.setdefault('client_type', 'public')
         kwargs.setdefault('client_id', get_random_string())
-        kwargs.setdefault('redirect_uris', None)
+        kwargs.setdefault('redirect_uris', list())
 
         response_types = kwargs.pop('response_types', ['id_token token'])
         instance = Client.objects.create(**kwargs)
