@@ -163,6 +163,9 @@ def update_ad_groups(details, backend, user=None, *args, **kwargs):
     if not isinstance(backend, (BaseADFS, Tunnistamo, AzureADOAuth2)) or not user or 'ad_groups' not in details:
         return
 
+    if not details['ad_groups']:
+        details['ad_groups'] = []
+
     user.update_ad_groups(details['ad_groups'])
 
 
