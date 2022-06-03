@@ -2,11 +2,11 @@ from functools import lru_cache
 
 from django.utils.translation import gettext, pgettext
 from requests import RequestException
-from social_core.backends.azuread_tenant import AzureADTenantOAuth2
+from social_core.backends.azuread_tenant import AzureADV2TenantOAuth2
 from social_core.exceptions import AuthFailed
 
 
-class HelsinkiAzureADTenantOAuth2(AzureADTenantOAuth2):
+class HelsinkiAzureADTenantOAuth2(AzureADV2TenantOAuth2):
     name = 'helsinkiazuread'
     name_baseform = gettext('Azure AD')
     name_access = pgettext('access to []', 'Azure AD')
