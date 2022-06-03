@@ -294,7 +294,7 @@ def test_logout_redirect_to_azuread_logout(
 
     httpretty.register_uri(
         httpretty.GET,
-        'https://login.microsoftonline.com/fake-tenant-id/.well-known/openid-configuration',
+        'https://login.microsoftonline.com/fake-tenant-id/v2.0/.well-known/openid-configuration',
         body='''
         {
             "end_session_endpoint": "https://example.com/end-session"
@@ -341,7 +341,7 @@ def test_logout_redirect_to_last_used_ad(
 
     httpretty.register_uri(
         httpretty.GET,
-        'https://login.microsoftonline.com/fake-tenant-id/.well-known/openid-configuration',
+        'https://login.microsoftonline.com/fake-tenant-id/v2.0/.well-known/openid-configuration',
         body='''
         {
             "end_session_endpoint": "https://example.com/azuread/end-session"
