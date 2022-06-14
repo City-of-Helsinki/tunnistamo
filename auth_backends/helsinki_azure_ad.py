@@ -63,6 +63,10 @@ class HelsinkiAzureADTenantOAuth2(AzureADV2TenantOAuth2):
 
         return user_data
 
+    def get_user_id(self, details, response):
+        """Use subject (sub) claim as unique id."""
+        return response.get('sub')
+
     def get_user_details(self, response):
         details = super().get_user_details(response)
         details['ad_groups'] = response.get('groups')

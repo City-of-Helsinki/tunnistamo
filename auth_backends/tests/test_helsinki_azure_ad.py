@@ -3,6 +3,19 @@ import json
 from auth_backends.tests.azure_ad_base import AzureADV2TenantOAuth2Test, _generate_access_token_body
 
 
+class TestSocialAuthOidFromSubClaim(AzureADV2TenantOAuth2Test):
+    backend_path = 'auth_backends.helsinki_azure_ad.HelsinkiAzureADTenantOAuth2'
+    access_token_body = _generate_access_token_body()
+
+    def test_login(self):
+        user = self.do_login()
+
+        self.assertEqual(
+            user.social_auth.first().uid,
+            'v-T_abcdefgABCDEFGabcdefgABCDEFGabcdefgABCD'
+        )
+
+
 class TestNoErrorWhenADGroupsNotInTokenOrGraph(AzureADV2TenantOAuth2Test):
     backend_path = 'auth_backends.helsinki_azure_ad.HelsinkiAzureADTenantOAuth2'
     access_token_body = _generate_access_token_body(extra_payload={

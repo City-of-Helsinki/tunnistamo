@@ -37,6 +37,7 @@ def _generate_access_token_body(extra_payload=None):
         'onprem_sid': 'S-1-5-21-21656339-0000000000-0000000000-00000',
         'sub': 'v-T_abcdefgABCDEFGabcdefgABCDEFGabcdefgABCD',
         'tid': TENANT_ID,
+        'preferred_username': 'foobar@example.com',
         'unique_name': 'foobar@example.com',
         'upn': 'foobar@example.com',
     }
