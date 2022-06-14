@@ -6,7 +6,7 @@
 #
 argparse==1.4.0
     # via unittest2
-attrs==21.2.0
+attrs==21.4.0
     # via pytest
 coverage[toml]==6.0.2
     # via pytest-cov
