@@ -20,9 +20,31 @@ from .models import LoginMethod, SessionElement, TunnistamoSession, User
 Application = get_application_model()
 
 
+class UserSocialAuthInline(admin.StackedInline):
+    model = UserSocialAuth
+    readonly_fields = ['provider', 'uid', 'get_extra_data']
+    exclude = ['extra_data']
+    extra = 0
+
+    def get_extra_data(self, obj=None):
+        if not obj or not obj.extra_data:
+            return ''
+
+        return mark_safe(f'<pre>{escape(json.dumps(obj.extra_data, indent=4))}</pre>')
+
+    get_extra_data.short_description = _('Extra data')
+
+    def has_change_permission(self, request, obj=None):
+        return False
+
+    def has_add_permission(self, request, obj=None):
+        return False
+
+
 class ExtendedUserAdmin(UserAdmin):
     search_fields = ['username', 'uuid', 'email', 'first_name', 'last_name']
     list_display = search_fields + ['is_active', 'is_staff', 'is_superuser']
+    inlines = [UserSocialAuthInline]
 
     def get_fieldsets(self, request, obj=None):
         fieldsets = super(ExtendedUserAdmin, self).get_fieldsets(request, obj)
