@@ -126,7 +126,7 @@ pyasn1==0.4.5
     #   rsa
 pycparser==2.18
     # via cffi
-pycryptodomex==3.6.1
+pycryptodomex==3.15.0
     # via pyjwkest
 pyjwkest==1.4.0
     # via
