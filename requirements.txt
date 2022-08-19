@@ -65,7 +65,7 @@ django-sass-processor==1.1
     # via -r requirements.in
 git+https://github.com/City-of-Helsinki/django-translation-checker.git@master
     # via -r requirements.in
-django==3.2.13
+django==3.2.15
     # via
     #   -r requirements.in
     #   django-allauth
