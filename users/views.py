@@ -299,9 +299,20 @@ class TunnistamoOidcEndSessionView(EndSessionView):
 
             request.session['oidc_backend_end_session_redirected'][backend.name] = True
 
-            end_session_url = '{}?{}'.format(end_session_endpoint, urlencode({
+            end_session_parameters = {
                 'post_logout_redirect_uri': request.build_absolute_uri(request.path)
-            }))
+            }
+
+            # Add id_token_hint to the end session url if the id_token is available
+            # in the extra_data
+            id_token = social_user.extra_data.get('id_token')
+            if id_token:
+                end_session_parameters['id_token_hint'] = id_token
+
+            end_session_url = '{}?{}'.format(
+                end_session_endpoint,
+                urlencode(end_session_parameters)
+            )
 
             return end_session_url
 
