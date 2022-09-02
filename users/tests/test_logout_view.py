@@ -129,6 +129,39 @@ def test_logout_redirect_to_third_party_oidc_end_session(
 
 
 @pytest.mark.django_db
+def test_logout_redirect_to_third_party_oidc_end_session_with_id_token_hint(
+    settings,
+    client,
+    user_factory,
+    usersocialauth_factory,
+):
+    settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
+        'users.tests.conftest.DummyOidcBackend',
+    )
+    settings.SOCIAL_AUTH_DUMMYOIDCBACKEND_REDIRECT_LOGOUT_TO_END_SESSION = True
+
+    password = get_random_string()
+    user = user_factory(password=password)
+
+    usersocialauth_factory(
+        provider='dummyoidcbackend',
+        extra_data={'id_token': 'DUMMY_ID_TOKEN'},
+        user=user
+    )
+
+    client.login(username=user.username, password=password)
+
+    response = client.get('/openid/end-session', follow=False)
+
+    assert response.status_code == 302
+    assert response.url == (
+        'https://dummyoidcbackend.example.com/openid/end-session?'
+        'post_logout_redirect_uri=http%3A%2F%2Ftestserver%2Fopenid%2Fend-session&'
+        'id_token_hint=DUMMY_ID_TOKEN'
+    )
+
+
+@pytest.mark.django_db
 def test_logout_redirect_to_third_party_oidc_end_session_retain_post_logout_redirect(
     settings,
     client,
