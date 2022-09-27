@@ -80,6 +80,9 @@ urlpatterns = [
     re_path(r'^openid/token/?$', csrf_exempt(TunnistamoOidcTokenView.as_view()), name='token'),
     re_path(r'^openid/userinfo/?$', csrf_exempt(userinfo), name='userinfo'),
     re_path(r'^openid/introspect/?$', TunnistamoTokenIntrospectionView.as_view(), name='token-introspection'),
+    # This should shadow the openid-configuration path in the oidc_provider.urls so that
+    # the same TunnistamoOidcProviderInfoView is used in both root, and openid paths.
+    re_path(r'^openid/\.well-known/openid-configuration/?$', TunnistamoOidcProviderInfoView.as_view()),
     path('openid/', include(oidc_provider.urls, namespace='oidc_provider')),
     re_path(r'^\.well-known/openid-configuration/?$', TunnistamoOidcProviderInfoView.as_view(),
             name='root-provider-info'),
