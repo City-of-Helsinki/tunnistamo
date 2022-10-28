@@ -22,6 +22,7 @@ env = environ.Env(
     ALLOWED_HOSTS=(list, []),
     ALLOW_CROSS_SITE_SESSION_COOKIE=(bool, False),
     TRUST_X_FORWARDED_HOST=(bool, False),
+    CORS_ALLOW_CREDENTIALS=(bool, False),
 
     STATIC_URL=(str, "/sso/static/"),
     STATIC_ROOT=(str, os.path.join(BASE_DIR, 'static')),
@@ -387,6 +388,8 @@ if env('ALLOW_CROSS_SITE_SESSION_COOKIE'):
     SESSION_COOKIE_SAMESITE = 'None'
 
 USE_X_FORWARDED_HOST = env("TRUST_X_FORWARDED_HOST")
+
+CORS_ALLOW_CREDENTIALS = env("CORS_ALLOW_CREDENTIALS")
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_SCHEME', 'https')
 
