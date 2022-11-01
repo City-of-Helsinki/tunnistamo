@@ -123,8 +123,6 @@ TEMPLATE_DEBUG = False
 
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 
-X_FRAME_OPTIONS = 'DENY'
-
 # Application definition
 
 INSTALLED_APPS = (
@@ -185,7 +183,6 @@ MIDDLEWARE = (
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'tunnistamo.middleware.RestrictedAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'users.middleware.CustomDatabaseWhitelistCorsMiddleware',
     'crequest.middleware.CrequestMiddleware',
     'tunnistamo.middleware.InterruptedSocialAuthMiddleware',
