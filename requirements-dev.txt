@@ -10,6 +10,8 @@ attrs==21.2.0
     # via pytest
 coverage[toml]==6.0.2
     # via pytest-cov
+exceptiongroup==1.0.4
+    # via pytest
 factory-boy==3.2.0
     # via -r requirements-dev.in
 faker==13.3.2
@@ -32,8 +34,6 @@ packaging==21.0
     # via pytest
 pluggy==1.0.0
     # via pytest
-py==1.10.0
-    # via pytest
 pycodestyle==2.8.0
     # via flake8
 pyflakes==2.4.0
@@ -44,7 +44,7 @@ pytest-cov==3.0.0
     # via -r requirements-dev.in
 pytest-django==4.4.0
     # via -r requirements-dev.in
-pytest==6.2.5
+pytest==7.2.0
     # via
     #   -r requirements-dev.in
     #   pytest-cov
@@ -57,10 +57,10 @@ six==1.16.0
     # via
     #   python-dateutil
     #   unittest2
-toml==0.10.2
-    # via pytest
 tomli==1.2.1
-    # via coverage
+    # via
+    #   coverage
+    #   pytest
 traceback2==1.4.0
     # via unittest2
 unittest2==1.1.0
