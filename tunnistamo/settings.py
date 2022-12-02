@@ -417,8 +417,6 @@ SASS_PROCESSOR_INCLUDE_DIRS = [
 
 SASS_PRECISION = 8
 
-TEST_NON_SERIALIZED_APPS = ['adfs_provider']
-
 # Social Auth
 
 # Use native JSON field in the database
