@@ -4,8 +4,6 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 
-from allauth.socialaccount.providers import registry as providers_registry
-
 
 class Migration(migrations.Migration):
 
@@ -18,7 +16,7 @@ class Migration(migrations.Migration):
             model_name='loginmethod',
             name='provider_id',
             field=models.CharField(
-                choices=providers_registry.as_choices(),
+                choices=[],
                 max_length=50, unique=True),
         ),
     ]
