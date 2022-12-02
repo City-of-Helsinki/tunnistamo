@@ -2,8 +2,6 @@ import time
 import unittest
 
 import pytest
-from allauth.account.models import EmailAddress
-from allauth.socialaccount.models import SocialAccount, SocialApp
 from Cryptodome.PublicKey import RSA
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -72,17 +70,6 @@ def user_factory():
 
 
 @pytest.fixture()
-def socialaccount_factory():
-    def make_instance(**kwargs):
-        kwargs.setdefault('provider', None)
-        kwargs.setdefault('uid', get_random_string())
-
-        return SocialAccount.objects.create(**kwargs)
-
-    return make_instance
-
-
-@pytest.fixture()
 def usersocialauth_factory():
     def make_instance(**kwargs):
         kwargs.setdefault('uid', get_random_string())
@@ -136,19 +123,6 @@ def oidcclientoptions_factory():
 
 
 @pytest.fixture()
-def socialapp_factory():
-    def make_instance(**kwargs):
-        kwargs.setdefault('name', get_random_string())
-        kwargs.setdefault('client_id', get_random_string())
-        kwargs.setdefault('secret', get_random_string())
-        kwargs.setdefault('key', get_random_string())
-
-        return SocialApp.objects.create(**kwargs)
-
-    return make_instance
-
-
-@pytest.fixture()
 def loginmethod_factory():
     def make_instance(**kwargs):
         kwargs.setdefault('provider_id', None)
@@ -156,14 +130,6 @@ def loginmethod_factory():
         kwargs.setdefault('order', 1)
 
         return LoginMethod.objects.create(**kwargs)
-
-    return make_instance
-
-
-@pytest.fixture()
-def emailaddress_factory():
-    def make_instance(**kwargs):
-        return EmailAddress.objects.create(**kwargs)
 
     return make_instance
 

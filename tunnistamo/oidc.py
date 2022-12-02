@@ -25,15 +25,8 @@ def get_userinfo(claims, user):
     claims['name'] = user.get_full_name()
 
     # Email
-    email_address = (
-        user.emailaddress_set.filter(primary=True).first()
-        if hasattr(user, 'emailaddress_set') else None)
-    if email_address:
-        claims['email'] = email_address.email
-        claims['email_verified'] = email_address.verified
-    else:
-        claims['email'] = user.email
-        claims['email_verified'] = False
+    claims['email'] = user.email
+    claims['email_verified'] = False
 
     # Username
     #

@@ -101,12 +101,10 @@ Updates the users `ADGroup`s if the user authenticated through an ADFS backend.
 TODO
 ====
 
-- [ ] Test Espoo ADFS back
-- [ ] Test YleTunnus backend
-- [ ] Tests for the custom social pipeline
-- [ ] More tests for the backends
-- [ ] Remove allauth
-- [ ] Remove adfs_provider package
-- [ ] Implement connection of additional backends to an existing user
-- [ ] If the login is for an app or OIDC Connect Client, make sure that the used backend is an allowed login method.
-- [ ] Convert Suomi.fi allauth provider to a social auth backend
+- [X] Test Espoo ADFS back
+- [X] Test YleTunnus backend
+- [X] Tests for the custom social pipeline
+- [X] More tests for the backends
+- [X] Remove adfs_provider package
+- [X] If the login is for an app or OIDC Connect Client, make sure that the used backend is an allowed login method.
+- [ ] Remove allauth
