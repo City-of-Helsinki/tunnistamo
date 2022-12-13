@@ -38,7 +38,7 @@ class ApiAdmin(admin.ModelAdmin):
 @admin.register(ApiScope)
 class ApiScopeAdmin(DontRequireIdentifier, TranslatableAdmin):
     list_display = ['identifier', 'api', 'specifier', 'name', 'description']
-    search_fields = ['identifier', 'api__identifier', 'specifier',
+    search_fields = ['identifier', 'specifier',
                      'translations__name', 'translations__description']
     readonly_fields = ['identifier']
     fieldsets = (
