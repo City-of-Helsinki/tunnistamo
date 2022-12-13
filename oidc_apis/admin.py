@@ -47,6 +47,7 @@ class ApiScopeAdmin(DontRequireIdentifier, TranslatableAdmin):
                         'name', 'description', 'allowed_apps'),
          }),
     )
+    filter_horizontal = ('allowed_apps',)
 
 
 @admin.register(ApiScopeTranslation)
