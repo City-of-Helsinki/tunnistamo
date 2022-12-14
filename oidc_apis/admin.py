@@ -3,6 +3,7 @@ import oidc_provider.models
 from django.contrib import admin
 from django.contrib.admin.sites import site as admin_site
 from parler.admin import TranslatableAdmin
+from parler.forms import TranslatableModelForm
 
 from users.models import OidcClientOptions
 
@@ -26,6 +27,7 @@ class ApiDomainAdmin(admin.ModelAdmin):
 @admin.register(Api)
 class ApiAdmin(admin.ModelAdmin):
     list_display = ['identifier', 'name', 'required_scopes_string']
+    ordering = ['name']
 
     def formfield_for_dbfield(self, db_field, request, **kwargs):
         field = super(ApiAdmin, self).formfield_for_dbfield(
@@ -33,6 +35,16 @@ class ApiAdmin(admin.ModelAdmin):
         if db_field.name == 'oidc_client':
             field.required = False
         return field
+
+
+class ApiScopeAdminForm(TranslatableModelForm):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Order Allowed apps by name
+        self.fields['allowed_apps'].queryset = (
+            self.fields['allowed_apps'].queryset.order_by('name')
+        )
 
 
 @admin.register(ApiScope)
@@ -48,6 +60,8 @@ class ApiScopeAdmin(DontRequireIdentifier, TranslatableAdmin):
          }),
     )
     filter_horizontal = ('allowed_apps',)
+    ordering = ['identifier']
+    form = ApiScopeAdminForm
 
 
 @admin.register(ApiScopeTranslation)
