@@ -89,7 +89,7 @@ drf-oidc-auth==0.9
     # via django-helusers
 ecdsa==0.14.1
     # via python-jose
-future==0.16.0
+future==0.18.3
     # via pyjwkest
 geoip2==2.9.0
     # via -r requirements.in
