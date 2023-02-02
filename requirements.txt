@@ -57,7 +57,7 @@ django-npm==1.0.0
     # via -r requirements.in
 django-oauth-toolkit==1.2.0
     # via -r requirements.in
-git+https://github.com/City-of-Helsinki/django-oidc-provider.git@tunnistamo
+git+https://github.com/City-of-Helsinki/django-oidc-provider.git@745b7ebf
     # via -r requirements.in
 django-parler==2.2
     # via

@@ -6,6 +6,7 @@ from oidc_provider.lib.endpoints.introspection import TokenIntrospectionEndpoint
 from oidc_provider.lib.endpoints.token import TokenEndpoint
 from oidc_provider.lib.errors import AuthorizeError, TokenError, TokenIntrospectionError
 
+from oidc_apis.utils import get_authorize_endpoint_redirect_to_login_response
 from services.models import Service
 from users.models import TunnistamoSession, UserLoginEntry
 
@@ -75,6 +76,9 @@ class TunnistamoAuthorizeEndpoint(TunnistamoSessionEndpointMixin, AuthorizeEndpo
             or self.grant_type == 'implicit'
             or self.params['code_challenge'] != ''
         )
+
+    def redirect_to_login(self, next_url, login_url):
+        return get_authorize_endpoint_redirect_to_login_response(next_url, login_url)
 
 
 class TunnistamoTokenEndpoint(TunnistamoSessionEndpointMixin, TokenEndpoint):

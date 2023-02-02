@@ -1,3 +1,5 @@
+from urllib.parse import parse_qs, urlparse
+
 import pytest
 from Cryptodome.PublicKey import RSA
 from django.urls import reverse
@@ -6,8 +8,9 @@ from oidc_provider.models import RESPONSE_TYPE_CHOICES, RSAKey, UserConsent
 
 from auth_backends.helsinki_tunnistus_suomifi import HelsinkiTunnistus
 from oidc_apis.factories import ApiFactory, ApiScopeFactory
+from tunnistamo.tests.conftest import create_rsa_key, reload_social_django_utils
 from users.factories import OIDCClientFactory, UserFactory
-from users.tests.conftest import CancelExampleComRedirectClient, start_oidc_authorize
+from users.tests.conftest import CancelExampleComRedirectClient, DummyFixedOidcBackend, start_oidc_authorize
 from users.views import TunnistamoOidcAuthorizeView
 
 
@@ -242,3 +245,36 @@ def test_public_clients_ability_to_skip_consent(
     else:
         assert response.status_code == 200
         assert 'name="allow" type="submit"' in response.content.decode('utf-8')
+
+
+@pytest.mark.django_db
+def test_when_authentication_completes_then_redirect_url_contains_first_authz_query_parameter(
+    oidcclient_factory, settings
+):
+    create_rsa_key()
+
+    settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
+        'users.tests.conftest.DummyFixedOidcBackend',
+    )
+    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_OIDC_ENDPOINT = 'https://dummy.example.com'
+    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_KEY = 'tunnistamo'
+    settings.EMAIL_EXEMPT_AUTH_BACKENDS = [DummyFixedOidcBackend.name]
+
+    reload_social_django_utils()
+
+    test_client = CancelExampleComRedirectClient()
+
+    start_oidc_authorize(
+        test_client,
+        oidcclient_factory,
+        backend_name=DummyFixedOidcBackend.name,
+    )
+
+    callback_url = reverse('social:complete', kwargs={'backend': DummyFixedOidcBackend.name})
+    state_value = test_client.session[f'{DummyFixedOidcBackend.name}_state']
+    response = test_client.get(callback_url, data={'state': state_value}, follow=False)
+
+    assert response.status_code == 302
+    redirect_url = response['Location']
+    query_params = parse_qs(urlparse(redirect_url).query)
+    assert query_params.get('first_authz') == ['false']

@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 import oidc_provider
 from django.contrib.auth import logout as django_user_logout
@@ -21,6 +22,18 @@ def combine_uniquely(iterable1, iterable2):
     for item in iterable2:
         result[item] = None
     return list(result.keys())
+
+
+def get_authorize_endpoint_redirect_to_login_response(next_url, login_url):
+    if next_url:
+        next_url_parts = urlparse(next_url, allow_fragments=True)
+        query_params = parse_qs(next_url_parts.query)
+        query_params['first_authz'] = ['false']
+        encoded_params = urlencode(query_params, doseq=True)
+        next_url_parts = next_url_parts._replace(query=encoded_params)
+        next_url = urlunparse(next_url_parts)
+
+    return redirect_to_login(next_url, login_url)
 
 
 def after_userlogin_hook(request, user, client):
