@@ -38,24 +38,25 @@ def after_userlogin_hook(request, user, client):
     request.session.modified = True
 
     last_login_backend = request.session.get('social_auth_last_login_backend')
+
     try:
         client_options = OidcClientOptions.objects.get(oidc_client=client)
+
+        allowed_methods = client_options.login_methods.all()
+        if allowed_methods is None:
+            raise PermissionDenied
+
+        allowed_providers = set((x.provider_id for x in allowed_methods))
+        if last_login_backend is not None:
+            active_user_social_auth = user.social_auth.filter(provider=last_login_backend).first()
+
+        if ((last_login_backend is None and user is not None)
+                or (active_user_social_auth and active_user_social_auth.provider not in allowed_providers)):
+            django_user_logout(request)
+            next_page = request.get_full_path()
+            return redirect_to_login(next_page, oidc_provider.settings.get('OIDC_LOGIN_URL'))
     except OidcClientOptions.DoesNotExist:
-        return None
-
-    allowed_methods = client_options.login_methods.all()
-    if allowed_methods is None:
-        raise PermissionDenied
-
-    allowed_providers = set((x.provider_id for x in allowed_methods))
-    if last_login_backend is not None:
-        active_user_social_auth = user.social_auth.filter(provider=last_login_backend).first()
-
-    if ((last_login_backend is None and user is not None)
-            or (active_user_social_auth and active_user_social_auth.provider not in allowed_providers)):
-        django_user_logout(request)
-        next_page = request.get_full_path()
-        return redirect_to_login(next_page, oidc_provider.settings.get('OIDC_LOGIN_URL'))
+        pass
 
     # Return None to continue the login flow
     return None
