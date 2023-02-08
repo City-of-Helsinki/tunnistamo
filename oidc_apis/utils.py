@@ -1,9 +1,9 @@
 from collections import OrderedDict
 
+import oidc_provider
 from django.contrib.auth import logout as django_user_logout
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
-from oidc_provider import settings
 from social_django.models import UserSocialAuth
 
 from users.models import OidcClientOptions, TunnistamoSession
@@ -55,7 +55,7 @@ def after_userlogin_hook(request, user, client):
             or (active_backend.exists() and active_backend.first().provider not in allowed_providers)):
         django_user_logout(request)
         next_page = request.get_full_path()
-        return redirect_to_login(next_page, settings.get('OIDC_LOGIN_URL'))
+        return redirect_to_login(next_page, oidc_provider.settings.get('OIDC_LOGIN_URL'))
 
     # Return None to continue the login flow
     return None
