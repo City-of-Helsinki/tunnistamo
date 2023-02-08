@@ -49,10 +49,10 @@ def after_userlogin_hook(request, user, client):
 
     allowed_providers = set((x.provider_id for x in allowed_methods))
     if last_login_backend is not None:
-        active_backend = user.social_auth.filter(provider=last_login_backend).first()
+        active_user_social_auth = user.social_auth.filter(provider=last_login_backend).first()
 
     if ((last_login_backend is None and user is not None)
-            or (active_backend and active_backend.provider not in allowed_providers)):
+            or (active_user_social_auth and active_user_social_auth.provider not in allowed_providers)):
         django_user_logout(request)
         next_page = request.get_full_path()
         return redirect_to_login(next_page, oidc_provider.settings.get('OIDC_LOGIN_URL'))
