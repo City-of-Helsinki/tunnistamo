@@ -292,7 +292,12 @@ class DummyFixedOidcBackend(DummyOidcBackendBase):
 
 
 def start_oidc_authorize(
-    django_client, oidcclient_factory, backend_name=DummyFixedOidcBackend.name, state=None, ui_locales=None
+    django_client,
+    oidcclient_factory,
+    backend_name=DummyFixedOidcBackend.name,
+    state=None,
+    ui_locales=None,
+    oidc_client_kwargs=None,
 ):
     """Start OIDC authorization flow
 
@@ -305,14 +310,19 @@ def start_oidc_authorize(
         order=1,
     )
 
-    redirect_uris = ['https://example.com/callback']
-    oidc_client = oidcclient_factory(redirect_uris=redirect_uris)
+    redirect_uri = 'https://example.com/callback'
+
+    if oidc_client_kwargs is None:
+        oidc_client_kwargs = {}
+    oidc_client_kwargs.setdefault('redirect_uris', [redirect_uri])
+
+    oidc_client = oidcclient_factory(**oidc_client_kwargs)
 
     authorize_url = reverse('authorize')
     authorize_data = {
         'client_id': oidc_client.client_id,
         'response_type': 'id_token token',
-        'redirect_uri': redirect_uris[0],
+        'redirect_uri': redirect_uri,
         'scope': 'openid',
         'response_mode': 'form_post',
         'nonce': 'abcdefg',
