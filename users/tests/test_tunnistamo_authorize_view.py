@@ -278,3 +278,54 @@ def test_when_authentication_completes_then_redirect_url_contains_first_authz_qu
     redirect_url = response['Location']
     query_params = parse_qs(urlparse(redirect_url).query)
     assert query_params.get('first_authz') == ['false']
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('do_reauthentication', (True, False))
+def test_when_previously_authenticated_backend_requires_reauthentication_then_user_is_redirected_to_login(
+    do_reauthentication, oidcclient_factory, settings
+):
+    create_rsa_key()
+
+    settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
+        'users.tests.conftest.DummyFixedOidcBackend',
+    )
+    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_OIDC_ENDPOINT = 'https://dummy.example.com'
+    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_KEY = 'tunnistamo'
+    settings.EMAIL_EXEMPT_AUTH_BACKENDS = [DummyFixedOidcBackend.name]
+
+    if do_reauthentication:
+        settings.ALWAYS_REAUTHENTICATE_BACKENDS = [DummyFixedOidcBackend.name]
+
+    reload_social_django_utils()
+
+    test_client = CancelExampleComRedirectClient()
+
+    # Start authentication
+    oidc_client = start_oidc_authorize(
+        test_client,
+        oidcclient_factory,
+        backend_name=DummyFixedOidcBackend.name,
+        oidc_client_kwargs={'require_consent': False}
+    )
+    redirect_uri = oidc_client.redirect_uris[0]
+
+    # Complete the authentication
+    callback_url = reverse('social:complete', kwargs={'backend': DummyFixedOidcBackend.name})
+    state_value = test_client.session[f'{DummyFixedOidcBackend.name}_state']
+    test_client.get(callback_url, data={'state': state_value}, follow=True)
+
+    # Start authentication again, this time with an already existing session
+    response = test_client.get(reverse('authorize'), data={
+        'client_id': oidc_client.client_id,
+        'redirect_uri': redirect_uri,
+        'response_type': oidc_client.response_types.first().value,
+        'scope': 'openid profile',
+        'nonce': 'testnonce',
+    }, follow=False)
+
+    assert response.status_code == 302
+    if do_reauthentication:
+        assert response.url.startswith('/login')
+    else:
+        assert response.url.startswith(redirect_uri)

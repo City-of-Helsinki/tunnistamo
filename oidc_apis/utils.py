@@ -2,6 +2,7 @@ from collections import OrderedDict
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 import oidc_provider
+from django.conf import settings
 from django.contrib.auth import logout as django_user_logout
 from django.contrib.auth.views import redirect_to_login
 from django.core.exceptions import PermissionDenied
@@ -37,17 +38,16 @@ def get_authorize_endpoint_redirect_to_login_response(next_url, login_url):
 
 
 def after_userlogin_hook(request, user, client):
-    """Marks Django session modified and ensures the current
-    session has an allowed login backend for the client.
+    """A function meant to be used as the django-oidc-provider hook after user login.
+    This is achieved by pointing 'OIDC_AFTER_USERLOGIN_HOOK' setting to this.
 
-    One purpose of this function is to keep the session used by the
-    oidc-provider fresh. This is achieved by pointing
-    'OIDC_AFTER_USERLOGIN_HOOK' setting to this.
+    This fuction does the following:
 
-    The other is to prevent authorizing users with an unallowed backend
-    for specific clients.
-
+    - Marks Django session modified.
+    - Ensures the current session uses an authentication backend that is allowed for the OIDC client.
+    - If the current session's authentication backend requires reauthentication, redirect user to login.
     """
+
     request.session.modified = True
 
     last_login_backend = request.session.get('social_auth_last_login_backend')
@@ -70,6 +70,12 @@ def after_userlogin_hook(request, user, client):
             return redirect_to_login(next_page, oidc_provider.settings.get('OIDC_LOGIN_URL'))
     except OidcClientOptions.DoesNotExist:
         pass
+
+    is_returning_from_idp = request.GET.get('first_authz', '') == 'false'
+    if not is_returning_from_idp and last_login_backend in settings.ALWAYS_REAUTHENTICATE_BACKENDS:
+        next_page = request.get_full_path()
+        return get_authorize_endpoint_redirect_to_login_response(
+            next_page, oidc_provider.settings.get('OIDC_LOGIN_URL'))
 
     # Return None to continue the login flow
     return None
