@@ -8,7 +8,7 @@
 
 asgiref==3.4.1
     # via django
-certifi==2021.5.30
+certifi==2022.12.7
     # via requests
 cffi==1.14.4
     # via cryptography
@@ -31,6 +31,20 @@ defusedxml==0.5.0
     #   social-auth-core
 deprecated==1.2.13
     # via jwcrypto
+django==3.2.16
+    # via
+    #   -r requirements.in
+    #   django-allauth
+    #   django-appconf
+    #   django-cors-headers
+    #   django-crequest
+    #   django-filter
+    #   django-helusers
+    #   django-multiselectfield
+    #   django-oauth-toolkit
+    #   django-translation-checker
+    #   djangorestframework
+    #   drf-oidc-auth
 django-allauth==0.44.0
     # via -r requirements.in
 django-appconf==1.0.5
@@ -57,7 +71,7 @@ django-npm==1.0.0
     # via -r requirements.in
 django-oauth-toolkit==1.2.0
     # via -r requirements.in
-git+https://github.com/City-of-Helsinki/django-oidc-provider.git@745b7ebf
+django-oidc-provider @ git+https://github.com/City-of-Helsinki/django-oidc-provider.git@tunnistamo
     # via -r requirements.in
 django-parler==2.2
     # via
@@ -65,22 +79,8 @@ django-parler==2.2
     #   django-translation-checker
 django-sass-processor==1.1
     # via -r requirements.in
-git+https://github.com/City-of-Helsinki/django-translation-checker.git@master
+django-translation-checker @ git+https://github.com/City-of-Helsinki/django-translation-checker.git@master
     # via -r requirements.in
-django==3.2.16
-    # via
-    #   -r requirements.in
-    #   django-allauth
-    #   django-appconf
-    #   django-cors-headers
-    #   django-crequest
-    #   django-filter
-    #   django-helusers
-    #   django-multiselectfield
-    #   django-oauth-toolkit
-    #   django-translation-checker
-    #   djangorestframework
-    #   drf-oidc-auth
 djangorestframework==3.12.4
     # via
     #   -r requirements.in
@@ -157,10 +157,6 @@ raven==6.9.0
     # via -r requirements.in
 rcssmin==1.0.6
     # via django-compressor
-requests-oauthlib==1.0.0
-    # via
-    #   django-allauth
-    #   social-auth-core
 requests==2.26.0
     # via
     #   -r requirements.in
@@ -172,13 +168,15 @@ requests==2.26.0
     #   pyjwkest
     #   requests-oauthlib
     #   social-auth-core
+requests-oauthlib==1.0.0
+    # via
+    #   django-allauth
+    #   social-auth-core
 rjsmin==1.1.0
     # via django-compressor
 rsa==4.7.2
     # via python-jose
-ruamel.yaml.clib==0.2.6
-    # via ruamel.yaml
-ruamel.yaml==0.17.21
+ruamel-yaml==0.17.21
     # via -r requirements.in
 six==1.16.0
     # via
