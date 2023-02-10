@@ -2,6 +2,9 @@ from social_core.backends.microsoft import MicrosoftOAuth2
 
 
 class EspooAzure(MicrosoftOAuth2):
+    """For the application in Espoo AD named "Varaamo Helsinki"
+
+    It's used in Respa and Varaamo in the production environment"""
     name = 'espoo'
     domain_uuid = None
     AUTHORIZATION_URL = \
