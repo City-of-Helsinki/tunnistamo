@@ -43,45 +43,55 @@ def get_backend_class(backend_name):
     return get_backend(settings.AUTHENTICATION_BACKENDS, backend_name)
 
 
+def _get_client_id_parameter_from_url(url):
+    """Parse client_id parameter from url"""
+    params = parse_qs(urlparse(url).query)
+    client_id = params.get('client_id')
+
+    if client_id and len(client_id):
+        client_id = client_id[0].strip()
+
+    return client_id
+
+
+def _get_allowed_login_methods_for_client_id(client_id):
+    """Return allowed login methods for the application or the client"""
+    if not client_id:
+        return None
+
+    app = None
+    oidc_client = None
+
+    try:
+        app = get_application_model().objects.get(client_id=client_id)
+    except get_application_model().DoesNotExist:
+        pass
+
+    try:
+        oidc_client = Client.objects.get(client_id=client_id)
+    except Client.DoesNotExist:
+        pass
+
+    allowed_methods = None
+    if app:
+        allowed_methods = app.login_methods.all()
+    elif oidc_client:
+        try:
+            client_options = OidcClientOptions.objects.get(oidc_client=oidc_client)
+            allowed_methods = client_options.login_methods.all()
+        except OidcClientOptions.DoesNotExist:
+            pass
+
+    return allowed_methods
+
+
 class LoginView(TemplateView):
     template_name = "login.html"
 
-    def get(self, request, *args, **kwargs):  # noqa  (too complex)
+    def get(self, request, *args, **kwargs):
         next_url = request.GET.get('next')
-        app = None
-        oidc_client = None
-
-        if next_url:
-            # Determine application from the 'next' query argument.
-            # FIXME: There should be a better way to get the app id.
-            params = parse_qs(urlparse(next_url).query)
-            client_id = params.get('client_id')
-
-            if client_id and len(client_id):
-                client_id = client_id[0].strip()
-
-            if client_id:
-                try:
-                    app = get_application_model().objects.get(client_id=client_id)
-                except get_application_model().DoesNotExist:
-                    pass
-
-                try:
-                    oidc_client = Client.objects.get(client_id=client_id)
-                except Client.DoesNotExist:
-                    pass
-
-            next_url = quote(next_url)
-
-        allowed_methods = None
-        if app:
-            allowed_methods = app.login_methods.all()
-        elif oidc_client:
-            try:
-                client_options = OidcClientOptions.objects.get(oidc_client=oidc_client)
-                allowed_methods = client_options.login_methods.all()
-            except OidcClientOptions.DoesNotExist:
-                pass
+        client_id = _get_client_id_parameter_from_url(next_url)
+        allowed_methods = _get_allowed_login_methods_for_client_id(client_id)
 
         if allowed_methods is None:
             allowed_methods = LoginMethod.objects.all()
@@ -93,7 +103,7 @@ class LoginView(TemplateView):
 
             m.login_url = reverse('social:begin', kwargs={'backend': m.provider_id})
             if next_url:
-                m.login_url += '?next=' + next_url
+                m.login_url += '?next=' + quote(next_url)
 
             if m.provider_id in getattr(settings, 'SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS'):
                 # This check is used to exclude Suomi.fi auth method when using non-compliant auth provider
