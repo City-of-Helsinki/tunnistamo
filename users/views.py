@@ -108,13 +108,11 @@ class LoginView(TemplateView):
         if len(methods) == 1:
             return redirect(methods[0].login_url)
 
-        self.login_methods = methods
-        return super(LoginView, self).get(request, *args, **kwargs)
+        self.extra_context = {
+            'login_methods': methods
+        }
 
-    def get_context_data(self, **kwargs):
-        context = super(LoginView, self).get_context_data(**kwargs)
-        context['login_methods'] = self.login_methods
-        return context
+        return super(LoginView, self).get(request, *args, **kwargs)
 
 
 def _process_uris(uris):
