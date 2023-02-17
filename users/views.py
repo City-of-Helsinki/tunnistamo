@@ -97,23 +97,23 @@ class LoginView(TemplateView):
             allowed_methods = LoginMethod.objects.all()
 
         methods = []
-        for m in allowed_methods:
-            if m.provider_id == 'saml':
+        for login_method in allowed_methods:
+            if login_method.provider_id == 'saml':
                 continue  # SAML support removed
 
-            m.login_url = reverse('social:begin', kwargs={'backend': m.provider_id})
+            login_method.login_url = reverse('social:begin', kwargs={'backend': login_method.provider_id})
             if next_url:
-                m.login_url += '?next=' + quote(next_url)
+                login_method.login_url += '?next=' + quote(next_url)
 
-            if m.provider_id in getattr(settings, 'SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS'):
+            if login_method.provider_id in getattr(settings, 'SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS'):
                 # This check is used to exclude Suomi.fi auth method when using non-compliant auth provider
                 if next_url is None:
                     continue
                 if re.match(getattr(settings, 'SOCIAL_AUTH_SUOMIFI_CALLBACK_MATCH'), next_url) is None:
                     continue
-                m.login_url += '&idp=' + m.provider_id
+                login_method.login_url += '&idp=' + login_method.provider_id
 
-            methods.append(m)
+            methods.append(login_method)
 
         if len(methods) == 1:
             return redirect(methods[0].login_url)
