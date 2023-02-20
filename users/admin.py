@@ -188,6 +188,7 @@ class TunnistamoSessionAdmin(admin.ModelAdmin):
                 elements__content_type=token_ct,
                 elements__object_id__in=matching_token_ids,
             )
+            use_distinct = True
 
         # Allow searching by UserSocialAuth provider
         social_auth_ct = ContentType.objects.get_for_model(UserSocialAuth)
@@ -199,6 +200,7 @@ class TunnistamoSessionAdmin(admin.ModelAdmin):
                 elements__content_type=social_auth_ct,
                 elements__object_id__in=matching_social_auth_ids,
             )
+            use_distinct = True
 
         return queryset, use_distinct
 
