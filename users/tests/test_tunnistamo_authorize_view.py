@@ -149,7 +149,7 @@ def test_original_client_id_is_passed_to_helsinki_tunnistus_authentication_servi
         django_client,
         oidcclient_factory,
         backend_name=HelsinkiTunnistus.name,
-        state=state,
+        extra_authorize_params={'state': state},
     )
 
     assert len(django_client.intercepted_requests) == 1
@@ -171,8 +171,7 @@ def test_ui_locales_parameter_of_authorize_request_is_passed_to_helsinki_tunnist
         django_client,
         oidcclient_factory,
         backend_name=HelsinkiTunnistus.name,
-        state=state,
-        ui_locales=ui_locales,
+        extra_authorize_params={'state': state, 'ui_locales': ui_locales},
     )
 
     assert len(django_client.intercepted_requests) == 1
