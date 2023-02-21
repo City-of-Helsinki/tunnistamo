@@ -296,9 +296,8 @@ def start_oidc_authorize(
     oidcclient_factory,
     backend_name=DummyFixedOidcBackend.name,
     login_methods=None,
-    state=None,
-    ui_locales=None,
     oidc_client_kwargs=None,
+    extra_authorize_params=None
 ):
     """Start OIDC authorization flow
 
@@ -337,10 +336,8 @@ def start_oidc_authorize(
         'response_mode': 'form_post',
         'nonce': 'abcdefg',
     }
-    if state:
-        authorize_data['state'] = state
-    if ui_locales:
-        authorize_data['ui_locales'] = ui_locales
+    if extra_authorize_params:
+        authorize_data.update(extra_authorize_params)
 
     backend = get_backend(settings.AUTHENTICATION_BACKENDS, backend_name)
     backend_oidc_config_url = backend().setting('OIDC_ENDPOINT') + '/.well-known/openid-configuration'

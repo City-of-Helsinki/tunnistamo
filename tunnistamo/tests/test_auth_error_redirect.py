@@ -47,7 +47,7 @@ def test_redirect_to_client_after_social_auth_error(
         django_client,
         oidcclient_factory,
         backend_name=HelsinkiTunnistus.name,
-        state=state,
+        extra_authorize_params={'state': state},
     )
 
     # Return the user from the social auth with an error.
