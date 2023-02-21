@@ -295,20 +295,24 @@ def start_oidc_authorize(
     django_client,
     oidcclient_factory,
     backend_name=DummyFixedOidcBackend.name,
+    login_methods=None,
     state=None,
     ui_locales=None,
     oidc_client_kwargs=None,
 ):
     """Start OIDC authorization flow
 
-    The client will be redirected to the Tunnistamo login view and from there to the
-    "Test login method". The redirects are required to have the "next" parameter in the
+    The client will be redirected to the Tunnistamo login view and from there to a login
+    method. The redirects are required to have the "next" parameter in the
     django_clients session."""
-    LoginMethod.objects.create(
-        provider_id=backend_name,
-        name='Test login method',
-        order=1,
-    )
+    if login_methods is None:
+        login_methods = [
+            LoginMethod.objects.create(
+                provider_id=backend_name,
+                name='Test login method',
+                order=1,
+            )
+        ]
 
     redirect_uri = 'https://example.com/callback'
 
@@ -317,6 +321,12 @@ def start_oidc_authorize(
     oidc_client_kwargs.setdefault('redirect_uris', [redirect_uri])
 
     oidc_client = oidcclient_factory(**oidc_client_kwargs)
+    oidc_client_options = OidcClientOptions.objects.create(
+        oidc_client=oidc_client,
+        site_type='test'
+    )
+    oidc_client_options.login_methods.set(login_methods)
+    oidc_client.save()
 
     authorize_url = reverse('authorize')
     authorize_data = {
