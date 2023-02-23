@@ -10,7 +10,6 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse
 from django.utils import translation
-from django.utils.http import quote
 from django.views.decorators.http import require_http_methods
 from django.views.generic.base import RedirectView, TemplateView
 from oauth2_provider.models import get_application_model
@@ -101,9 +100,9 @@ class LoginView(TemplateView):
             if login_method.provider_id == 'saml':
                 continue  # SAML support removed
 
-            login_method.login_url = reverse('social:begin', kwargs={'backend': login_method.provider_id})
+            login_url_params = {}
             if next_url:
-                login_method.login_url += '?next=' + quote(next_url)
+                login_url_params['next'] = next_url
 
             if login_method.provider_id in getattr(settings, 'SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS'):
                 # This check is used to exclude Suomi.fi auth method when using non-compliant auth provider
@@ -111,7 +110,12 @@ class LoginView(TemplateView):
                     continue
                 if re.match(getattr(settings, 'SOCIAL_AUTH_SUOMIFI_CALLBACK_MATCH'), next_url) is None:
                     continue
-                login_method.login_url += '&idp=' + login_method.provider_id
+                login_url_params['idp'] = login_method.provider_id
+
+            login_method.login_url = add_params_to_url(
+                reverse('social:begin', kwargs={'backend': login_method.provider_id}),
+                login_url_params
+            )
 
             methods.append(login_method)
 
