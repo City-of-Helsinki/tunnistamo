@@ -8,6 +8,7 @@ from oidc_provider.lib.errors import AuthorizeError, TokenError, TokenIntrospect
 
 from oidc_apis.utils import get_authorize_endpoint_redirect_to_login_response
 from services.models import Service
+from tunnistamo.middleware import add_params_to_url
 from users.models import TunnistamoSession, UserLoginEntry
 
 
@@ -78,6 +79,10 @@ class TunnistamoAuthorizeEndpoint(TunnistamoSessionEndpointMixin, AuthorizeEndpo
         )
 
     def redirect_to_login(self, next_url, login_url):
+        idp_hint = self.request.GET.get('idp_hint')
+        if idp_hint:
+            login_url = add_params_to_url(login_url, {'idp_hint': idp_hint})
+
         return get_authorize_endpoint_redirect_to_login_response(next_url, login_url)
 
 
