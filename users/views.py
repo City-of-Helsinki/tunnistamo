@@ -84,25 +84,45 @@ def _get_allowed_login_methods_for_client_id(client_id):
     return allowed_methods
 
 
+def _filter_login_methods_by_provider_ids_string(login_methods, provider_ids):
+    if not login_methods or not provider_ids:
+        return login_methods
+
+    provider_ids = [provider_id.strip() for provider_id in provider_ids.split(',')]
+
+    result = [
+        login_method
+        for login_method in login_methods
+        if login_method.provider_id in provider_ids
+    ]
+
+    return result if result else login_methods
+
+
 class LoginView(TemplateView):
     template_name = "login.html"
 
     def get(self, request, *args, **kwargs):
         next_url = request.GET.get('next')
         client_id = _get_client_id_parameter_from_url(next_url)
-        allowed_methods = _get_allowed_login_methods_for_client_id(client_id)
+        allowed_methods_for_client = _get_allowed_login_methods_for_client_id(client_id)
 
-        if allowed_methods is None:
-            allowed_methods = LoginMethod.objects.all()
+        idp_hint = request.GET.get('idp_hint')
+        login_methods = _filter_login_methods_by_provider_ids_string(allowed_methods_for_client, idp_hint)
+
+        if login_methods is None:
+            login_methods = LoginMethod.objects.all()
 
         methods = []
-        for login_method in allowed_methods:
+        for login_method in login_methods:
             if login_method.provider_id == 'saml':
                 continue  # SAML support removed
 
             login_url_params = {}
             if next_url:
                 login_url_params['next'] = next_url
+            if idp_hint:
+                login_url_params['idp_hint'] = idp_hint
 
             if login_method.provider_id in getattr(settings, 'SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS'):
                 # This check is used to exclude Suomi.fi auth method when using non-compliant auth provider
