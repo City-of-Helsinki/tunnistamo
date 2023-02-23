@@ -13,7 +13,8 @@ from oidc_provider.models import ResponseType
 from oidc_apis.models import Api, ApiDomain, ApiScope
 from oidc_apis.views import get_api_tokens_view
 from users.tests.conftest import (  # noqa
-    DummyFixedOidcBackend, oidcclient_factory, tunnistamosession_factory, use_translations, user, usersocialauth_factory
+    DummyFixedOidcBackend, loginmethod_factory, oidcclient_factory, tunnistamosession_factory, use_translations, user,
+    usersocialauth_factory
 )
 
 

@@ -1,6 +1,7 @@
-from urllib.parse import urlencode
+from urllib.parse import urlencode, urlparse
 
 import pytest
+from django.http import QueryDict
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
@@ -128,3 +129,50 @@ def test_should_not_redirect_to_oidc_client_if_the_next_parameter_is_not_to_an_o
     # Should redirect to login
     assert response.status_code == 302
     assert response.url.startswith('/login/')
+
+
+@pytest.mark.django_db
+def test_on_auth_error_redirect_to_login_should_remember_idp_hint(
+    settings,
+    oidcclient_factory,
+    loginmethod_factory,
+):
+    settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
+        'users.tests.conftest.DummyFixedOidcBackend',
+    )
+    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_OIDC_ENDPOINT = 'https://dummy.example.com'
+    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_ON_AUTH_ERROR_REDIRECT_TO_CLIENT = False
+    reload_social_django_utils()
+
+    django_client = CancelExampleComRedirectClient()
+
+    # Add multiple login methods to the client
+    login_methods = [
+        loginmethod_factory(provider_id='helsinki_adfs'),
+        loginmethod_factory(provider_id=DummyFixedOidcBackend.name),
+    ]
+
+    # Start the OIDC flow.
+    start_oidc_authorize(
+        django_client,
+        oidcclient_factory,
+        login_methods=login_methods,
+        # Set idp_hint to make Tunnistamo redirect the client to the
+        # DummyFixedOidcBackend
+        extra_authorize_params={'idp_hint': DummyFixedOidcBackend.name}
+    )
+
+    # Return the user from the social auth with an error.
+    response = _request_social_auth_complete_with_error(django_client)
+
+    assert response.status_code == 302
+    assert response.url.startswith('/login/')
+
+    # Validate that the idp_hint parameter is still present when the user is redirected
+    # back to the login view after unsuccessful social login
+    # For this to work, the setting SOCIAL_AUTH_FIELDS_STORED_IN_SESSION needs to
+    # have 'idp_hint' in it.
+    response_url_parts = urlparse(response.url)
+    response_query_parameters = QueryDict(response_url_parts.query)
+    assert 'idp_hint' in response_query_parameters
+    assert response_query_parameters['idp_hint'] == DummyFixedOidcBackend.name

@@ -65,6 +65,9 @@ class InterruptedSocialAuthMiddleware(SocialAuthExceptionMiddleware):
             return self._get_oidc_client_redirect_uri(request)
 
         url = '/login/?next=' + quote(strategy.session.get('next'))
+        if strategy.session.get('idp_hint'):
+            url += '&idp_hint=' + quote(strategy.session.get('idp_hint'))
+
         return url
 
     # Override raise_exception() to allow redirect also when debug is enabled
