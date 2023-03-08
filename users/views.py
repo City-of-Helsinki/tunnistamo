@@ -28,6 +28,7 @@ from social_django.utils import load_backend, load_strategy
 
 from auth_backends.adfs.base import BaseADFS
 from oidc_apis.models import ApiScope
+from tunnistamo.auth_tools import filter_login_methods_by_provider_ids_string
 from tunnistamo.endpoints import (
     TunnistamoAuthorizeEndpoint, TunnistamoTokenEndpoint, TunnistamoTokenIntrospectionEndpoint
 )
@@ -84,21 +85,6 @@ def _get_allowed_login_methods_for_client_id(client_id):
     return allowed_methods
 
 
-def _filter_login_methods_by_provider_ids_string(login_methods, provider_ids):
-    if not login_methods or not provider_ids:
-        return login_methods
-
-    provider_ids = [provider_id.strip() for provider_id in provider_ids.split(',')]
-
-    result = [
-        login_method
-        for login_method in login_methods
-        if login_method.provider_id in provider_ids
-    ]
-
-    return result if result else login_methods
-
-
 class LoginView(TemplateView):
     template_name = "login.html"
 
@@ -108,7 +94,7 @@ class LoginView(TemplateView):
         allowed_methods_for_client = _get_allowed_login_methods_for_client_id(client_id)
 
         idp_hint = request.GET.get('idp_hint')
-        login_methods = _filter_login_methods_by_provider_ids_string(allowed_methods_for_client, idp_hint)
+        login_methods = filter_login_methods_by_provider_ids_string(allowed_methods_for_client, idp_hint)
 
         if login_methods is None:
             login_methods = LoginMethod.objects.all()
