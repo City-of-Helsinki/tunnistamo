@@ -2,6 +2,7 @@ from urllib.parse import parse_qs, urlparse
 
 import pytest
 from Cryptodome.PublicKey import RSA
+from django.contrib.sessions.models import Session
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from oidc_provider.models import RESPONSE_TYPE_CHOICES, RSAKey, UserConsent
@@ -279,6 +280,87 @@ def test_when_authentication_completes_then_redirect_url_contains_first_authz_qu
     redirect_url = response['Location']
     query_params = parse_qs(urlparse(redirect_url).query)
     assert query_params.get('first_authz') == ['false']
+
+
+@pytest.mark.django_db
+def test_when_previously_authenticated_user_has_not_used_social_auth_then_user_is_logged_out_and_redirected_to_login(
+    user, oidcclient_factory, oidcclientoptions_factory, client
+):
+    redirect_uri = 'https://example.com/callback'
+    oidc_client = oidcclient_factory(
+        redirect_uris=[redirect_uri],
+    )
+    oidcclientoptions_factory(
+        oidc_client=oidc_client,
+        site_type='test'
+    )
+
+    client.force_login(user)
+
+    response = client.get(reverse('authorize'), data={
+        'client_id': oidc_client.client_id,
+        'redirect_uri': redirect_uri,
+        'response_type': oidc_client.response_types.first().value,
+        'scope': 'openid profile',
+        'nonce': 'testnonce',
+    }, follow=False)
+
+    # Absense of any sessions is proof that the user is not logged in
+    assert Session.objects.exists() is False
+
+    assert response.status_code == 302
+    assert urlparse(response.url).path == '/login/'
+
+
+@pytest.mark.django_db
+def test_when_previously_authenticated_user_used_not_allowed_login_method_then_user_logged_out_and_redirected_to_login(
+    loginmethod_factory, oidcclient_factory, oidcclientoptions_factory, settings
+):
+    create_rsa_key()
+
+    settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
+        'users.tests.conftest.DummyFixedOidcBackend',
+    )
+    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_OIDC_ENDPOINT = 'https://dummy.example.com'
+    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_KEY = 'tunnistamo'
+    settings.EMAIL_EXEMPT_AUTH_BACKENDS = [DummyFixedOidcBackend.name]
+
+    reload_social_django_utils()
+
+    test_client = CancelExampleComRedirectClient()
+
+    # Authenticate using one social auth backend
+    do_complete_oidc_authentication(
+        test_client,
+        oidcclient_factory,
+        backend_name=DummyFixedOidcBackend.name,
+        oidc_client_kwargs={'require_consent': False},
+    )
+
+    # Create another OIDC client that doesn't accept the social auth backend
+    # that was used in the first authentication
+    redirect_uri = 'https://2.example.com'
+    oidc_client = oidcclient_factory(redirect_uris=[redirect_uri])
+    oidc_client_options = oidcclientoptions_factory(
+        oidc_client=oidc_client,
+        site_type='test',
+    )
+    oidc_client_options.login_methods.set([loginmethod_factory(provider_id='heltunnistussuomifi')])
+
+    # Authenticate with the second client
+    response = test_client.get(reverse('authorize'), data={
+        'client_id': oidc_client.client_id,
+        'redirect_uri': redirect_uri,
+        'response_type': oidc_client.response_types.first().value,
+        'scope': 'openid profile',
+        'nonce': 'testnonce',
+    }, follow=False)
+
+    # Absense of any sessions is proof that the user is not logged in
+    assert Session.objects.exists() is False
+
+    assert response.status_code == 302
+    assert urlparse(response.url).path == '/login/'
 
 
 @pytest.mark.django_db
