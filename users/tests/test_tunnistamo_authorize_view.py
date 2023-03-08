@@ -10,7 +10,9 @@ from auth_backends.helsinki_tunnistus_suomifi import HelsinkiTunnistus
 from oidc_apis.factories import ApiFactory, ApiScopeFactory
 from tunnistamo.tests.conftest import create_rsa_key, reload_social_django_utils
 from users.factories import OIDCClientFactory, UserFactory
-from users.tests.conftest import CancelExampleComRedirectClient, DummyFixedOidcBackend, start_oidc_authorize
+from users.tests.conftest import (
+    CancelExampleComRedirectClient, DummyFixedOidcBackend, do_complete_oidc_authentication, start_oidc_authorize
+)
 from users.views import TunnistamoOidcAuthorizeView
 
 
@@ -300,19 +302,14 @@ def test_when_previously_authenticated_backend_requires_reauthentication_then_us
 
     test_client = CancelExampleComRedirectClient()
 
-    # Start authentication
-    oidc_client = start_oidc_authorize(
+    oidc_client = do_complete_oidc_authentication(
         test_client,
         oidcclient_factory,
         backend_name=DummyFixedOidcBackend.name,
-        oidc_client_kwargs={'require_consent': False}
+        oidc_client_kwargs={'require_consent': False},
     )
-    redirect_uri = oidc_client.redirect_uris[0]
 
-    # Complete the authentication
-    callback_url = reverse('social:complete', kwargs={'backend': DummyFixedOidcBackend.name})
-    state_value = test_client.session[f'{DummyFixedOidcBackend.name}_state']
-    test_client.get(callback_url, data={'state': state_value}, follow=True)
+    redirect_uri = oidc_client.redirect_uris[0]
 
     # Start authentication again, this time with an already existing session
     response = test_client.get(reverse('authorize'), data={

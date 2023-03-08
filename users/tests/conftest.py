@@ -362,6 +362,30 @@ def start_oidc_authorize(
     return oidc_client
 
 
+def do_complete_oidc_authentication(
+    django_client,
+    oidcclient_factory,
+    backend_name=DummyFixedOidcBackend.name,
+    login_methods=None,
+    oidc_client_kwargs=None,
+    extra_authorize_params=None
+):
+    oidc_client = start_oidc_authorize(
+        django_client,
+        oidcclient_factory,
+        backend_name=backend_name,
+        login_methods=login_methods,
+        oidc_client_kwargs=oidc_client_kwargs,
+        extra_authorize_params=extra_authorize_params,
+    )
+
+    callback_url = reverse('social:complete', kwargs={'backend': backend_name})
+    state_value = django_client.session[f'{backend_name}_state']
+    django_client.get(callback_url, data={'state': state_value}, follow=True)
+
+    return oidc_client
+
+
 class DummyADFSBackend(BaseADFS):
     name = 'dummy_adfs'
     AUTHORIZATION_URL = 'https://dummyadfs.example.com/adfs/oauth2/authorize'
