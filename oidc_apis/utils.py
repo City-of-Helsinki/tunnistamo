@@ -60,7 +60,7 @@ def after_userlogin_hook(request, user, client):
         if last_login_backend is not None:
             active_user_social_auth = user.social_auth.filter(provider=last_login_backend).first()
 
-        if ((last_login_backend is None and user is not None)
+        if (last_login_backend is None
                 or (active_user_social_auth and active_user_social_auth.provider not in allowed_providers)):
             django_user_logout(request)
             next_page = request.get_full_path()
