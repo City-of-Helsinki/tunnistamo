@@ -356,6 +356,52 @@ def test_when_previously_authenticated_user_used_not_allowed_login_method_then_u
 
 
 @pytest.mark.django_db
+def test_when_previously_authenticated_login_method_denied_by_idp_hint_then_user_logged_out_and_redirected_to_login(
+    loginmethod_factory, oidcclient_factory, oidcclientoptions_factory, dummy_backend
+):
+    login_method_1 = loginmethod_factory(provider_id=DummyFixedOidcBackend.name)
+    login_method_2 = loginmethod_factory(provider_id='heltunnistussuomifi')
+
+    test_client = CancelExampleComRedirectClient()
+
+    # Authenticate using one social auth backend
+    do_complete_oidc_authentication(
+        test_client,
+        oidcclient_factory,
+        backend_name=DummyFixedOidcBackend.name,
+        login_methods=[login_method_1],
+        oidc_client_kwargs={'require_consent': False},
+    )
+
+    # Create another OIDC client that accepts all social auth backends
+    # used in this test
+    redirect_uri = 'https://2.example.com'
+    oidc_client = oidcclient_factory(redirect_uris=[redirect_uri])
+    oidc_client_options = oidcclientoptions_factory(
+        oidc_client=oidc_client,
+        site_type='test',
+    )
+    oidc_client_options.login_methods.set([login_method_1, login_method_2])
+
+    # Authenticate with the second client, using an idp_hint that rules out
+    # the social auth backend that was used in the first authentication
+    response = test_client.get(reverse('authorize'), data={
+        'client_id': oidc_client.client_id,
+        'redirect_uri': redirect_uri,
+        'response_type': oidc_client.response_types.first().value,
+        'scope': 'openid profile',
+        'nonce': 'testnonce',
+        'idp_hint': login_method_2.provider_id,
+    }, follow=False)
+
+    # Absense of any sessions is proof that the user is not logged in
+    assert Session.objects.exists() is False
+
+    assert response.status_code == 302
+    assert urlparse(response.url).path == '/login/'
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize('do_reauthentication', (True, False))
 def test_when_previously_authenticated_backend_requires_reauthentication_then_user_is_redirected_to_login(
     do_reauthentication, oidcclient_factory, settings, dummy_backend

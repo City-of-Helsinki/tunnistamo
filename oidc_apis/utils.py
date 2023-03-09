@@ -7,6 +7,7 @@ from django.contrib.auth import logout as django_user_logout
 from django.contrib.auth.views import redirect_to_login
 from social_django.models import UserSocialAuth
 
+from tunnistamo.auth_tools import filter_login_methods_by_provider_ids_string
 from users.models import OidcClientOptions, TunnistamoSession
 
 
@@ -54,9 +55,12 @@ def after_userlogin_hook(request, user, client):
     try:
         client_options = OidcClientOptions.objects.get(oidc_client=client)
 
-        allowed_methods = client_options.login_methods.all()
+        allowed_methods_for_client = client_options.login_methods.all()
 
-        allowed_providers = set((x.provider_id for x in allowed_methods))
+        idp_hint = request.GET.get('idp_hint')
+        login_methods = filter_login_methods_by_provider_ids_string(allowed_methods_for_client, idp_hint)
+
+        allowed_providers = set((x.provider_id for x in login_methods))
         if last_login_backend is not None:
             active_user_social_auth = user.social_auth.filter(provider=last_login_backend).first()
 
