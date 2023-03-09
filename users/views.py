@@ -85,6 +85,37 @@ def _get_allowed_login_methods_for_client_id(client_id):
     return allowed_methods
 
 
+def _generate_final_login_methods(login_methods, next_url, idp_hint):
+    methods = []
+
+    for login_method in login_methods:
+        if login_method.provider_id == 'saml':
+            continue  # SAML support removed
+
+        login_url_params = {}
+        if next_url:
+            login_url_params['next'] = next_url
+        if idp_hint:
+            login_url_params['idp_hint'] = idp_hint
+
+        if login_method.provider_id in getattr(settings, 'SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS'):
+            # This check is used to exclude Suomi.fi auth method when using non-compliant auth provider
+            if next_url is None:
+                continue
+            if re.match(getattr(settings, 'SOCIAL_AUTH_SUOMIFI_CALLBACK_MATCH'), next_url) is None:
+                continue
+            login_url_params['idp'] = login_method.provider_id
+
+        login_method.login_url = add_params_to_url(
+            reverse('social:begin', kwargs={'backend': login_method.provider_id}),
+            login_url_params
+        )
+
+        methods.append(login_method)
+
+    return methods
+
+
 class LoginView(TemplateView):
     template_name = "login.html"
 
@@ -99,31 +130,7 @@ class LoginView(TemplateView):
         if login_methods is None:
             login_methods = LoginMethod.objects.all()
 
-        methods = []
-        for login_method in login_methods:
-            if login_method.provider_id == 'saml':
-                continue  # SAML support removed
-
-            login_url_params = {}
-            if next_url:
-                login_url_params['next'] = next_url
-            if idp_hint:
-                login_url_params['idp_hint'] = idp_hint
-
-            if login_method.provider_id in getattr(settings, 'SOCIAL_AUTH_SUOMIFI_ENABLED_IDPS'):
-                # This check is used to exclude Suomi.fi auth method when using non-compliant auth provider
-                if next_url is None:
-                    continue
-                if re.match(getattr(settings, 'SOCIAL_AUTH_SUOMIFI_CALLBACK_MATCH'), next_url) is None:
-                    continue
-                login_url_params['idp'] = login_method.provider_id
-
-            login_method.login_url = add_params_to_url(
-                reverse('social:begin', kwargs={'backend': login_method.provider_id}),
-                login_url_params
-            )
-
-            methods.append(login_method)
+        methods = _generate_final_login_methods(login_methods, next_url, idp_hint)
 
         if len(methods) == 1:
             return redirect(methods[0].login_url)
