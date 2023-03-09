@@ -17,6 +17,20 @@ from users.tests.conftest import (
 from users.views import TunnistamoOidcAuthorizeView
 
 
+@pytest.fixture
+def dummy_backend(settings):
+    create_rsa_key()
+
+    settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
+        'users.tests.conftest.DummyFixedOidcBackend',
+    )
+    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_OIDC_ENDPOINT = 'https://dummy.example.com'
+    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_KEY = 'tunnistamo'
+    settings.EMAIL_EXEMPT_AUTH_BACKENDS = [DummyFixedOidcBackend.name]
+
+    reload_social_django_utils()
+
+
 @pytest.mark.parametrize('with_trailing_slash', (True, False))
 @pytest.mark.django_db
 def test_tunnistamo_authorize_view_is_used(client, with_trailing_slash):
@@ -251,19 +265,8 @@ def test_public_clients_ability_to_skip_consent(
 
 @pytest.mark.django_db
 def test_when_authentication_completes_then_redirect_url_contains_first_authz_query_parameter(
-    oidcclient_factory, settings
+    oidcclient_factory, dummy_backend
 ):
-    create_rsa_key()
-
-    settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
-        'users.tests.conftest.DummyFixedOidcBackend',
-    )
-    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_OIDC_ENDPOINT = 'https://dummy.example.com'
-    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_KEY = 'tunnistamo'
-    settings.EMAIL_EXEMPT_AUTH_BACKENDS = [DummyFixedOidcBackend.name]
-
-    reload_social_django_utils()
-
     test_client = CancelExampleComRedirectClient()
 
     start_oidc_authorize(
@@ -314,19 +317,8 @@ def test_when_previously_authenticated_user_has_not_used_social_auth_then_user_i
 
 @pytest.mark.django_db
 def test_when_previously_authenticated_user_used_not_allowed_login_method_then_user_logged_out_and_redirected_to_login(
-    loginmethod_factory, oidcclient_factory, oidcclientoptions_factory, settings
+    loginmethod_factory, oidcclient_factory, oidcclientoptions_factory, dummy_backend
 ):
-    create_rsa_key()
-
-    settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
-        'users.tests.conftest.DummyFixedOidcBackend',
-    )
-    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_OIDC_ENDPOINT = 'https://dummy.example.com'
-    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_KEY = 'tunnistamo'
-    settings.EMAIL_EXEMPT_AUTH_BACKENDS = [DummyFixedOidcBackend.name]
-
-    reload_social_django_utils()
-
     test_client = CancelExampleComRedirectClient()
 
     # Authenticate using one social auth backend
@@ -366,21 +358,10 @@ def test_when_previously_authenticated_user_used_not_allowed_login_method_then_u
 @pytest.mark.django_db
 @pytest.mark.parametrize('do_reauthentication', (True, False))
 def test_when_previously_authenticated_backend_requires_reauthentication_then_user_is_redirected_to_login(
-    do_reauthentication, oidcclient_factory, settings
+    do_reauthentication, oidcclient_factory, settings, dummy_backend
 ):
-    create_rsa_key()
-
-    settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
-        'users.tests.conftest.DummyFixedOidcBackend',
-    )
-    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_OIDC_ENDPOINT = 'https://dummy.example.com'
-    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_KEY = 'tunnistamo'
-    settings.EMAIL_EXEMPT_AUTH_BACKENDS = [DummyFixedOidcBackend.name]
-
     if do_reauthentication:
         settings.ALWAYS_REAUTHENTICATE_BACKENDS = [DummyFixedOidcBackend.name]
-
-    reload_social_django_utils()
 
     test_client = CancelExampleComRedirectClient()
 
