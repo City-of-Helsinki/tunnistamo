@@ -127,6 +127,10 @@ class LoginView(TemplateView):
         idp_hint = request.GET.get('idp_hint')
         login_methods = filter_login_methods_by_provider_ids_string(allowed_methods_for_client, idp_hint)
 
+        last_login_backend = request.session.get('social_auth_last_login_backend')
+        if last_login_backend in settings.ALWAYS_REAUTHENTICATE_BACKENDS:
+            login_methods = filter_login_methods_by_provider_ids_string(login_methods, last_login_backend)
+
         if login_methods is None:
             login_methods = LoginMethod.objects.all()
 

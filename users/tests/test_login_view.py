@@ -1,8 +1,25 @@
-from urllib.parse import quote_plus
+from urllib.parse import quote_plus, urlparse
 
 import pytest
 from django.urls import reverse
 from django.utils.crypto import get_random_string
+
+from tunnistamo.tests.conftest import create_rsa_key, reload_social_django_utils
+from users.tests.conftest import CancelExampleComRedirectClient, DummyFixedOidcBackend, do_complete_oidc_authentication
+
+
+@pytest.fixture
+def dummy_backend(settings):
+    create_rsa_key()
+
+    settings.AUTHENTICATION_BACKENDS = settings.AUTHENTICATION_BACKENDS + (
+        'users.tests.conftest.DummyFixedOidcBackend',
+    )
+    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_OIDC_ENDPOINT = 'https://dummy.example.com'
+    settings.SOCIAL_AUTH_DUMMYFIXEDOIDCBACKEND_KEY = 'tunnistamo'
+    settings.EMAIL_EXEMPT_AUTH_BACKENDS = [DummyFixedOidcBackend.name]
+
+    reload_social_django_utils()
 
 
 @pytest.mark.django_db
@@ -257,3 +274,50 @@ def test_login_view_unknown_idp_hint_should_show_all_login_methods_in_client(
     response = client.get('/login/', params)
 
     assertCountEqual(response.context['login_methods'], login_methods)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('do_reauthentication', (True, False))
+def test_when_previously_authenticated_backend_requires_reauthentication_then_only_that_login_method_remains_usable(
+    do_reauthentication,
+    settings,
+    oidcclient_factory,
+    oidcclientoptions_factory,
+    loginmethod_factory,
+    dummy_backend,
+    assertCountEqual,
+):
+    login_method_1 = loginmethod_factory(provider_id=DummyFixedOidcBackend.name)
+    login_method_2 = loginmethod_factory(provider_id='google')
+
+    if do_reauthentication:
+        settings.ALWAYS_REAUTHENTICATE_BACKENDS = [login_method_1.provider_id]
+
+    oidc_client = oidcclient_factory(redirect_uris=['https://example.com/'])
+    oidc_client_options = oidcclientoptions_factory(oidc_client=oidc_client)
+    oidc_client_options.login_methods.set([
+        login_method_1,
+        login_method_2,
+    ])
+
+    test_client = CancelExampleComRedirectClient()
+
+    do_complete_oidc_authentication(
+        test_client,
+        oidcclient_factory,
+        login_methods=[login_method_1],
+        oidc_client_kwargs={'require_consent': False},
+    )
+
+    params = {
+        'next': f'/openid/authorize?client_id={oidc_client.client_id}',
+    }
+
+    response = test_client.get('/login/', params)
+
+    if do_reauthentication:
+        assert response.status_code == 302
+        assert urlparse(response.url).path == reverse('social:begin', kwargs={'backend': login_method_1.provider_id})
+    else:
+        assert response.status_code == 200
+        assertCountEqual(response.context['login_methods'], [login_method_1, login_method_2])
