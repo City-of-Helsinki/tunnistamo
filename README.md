@@ -105,7 +105,7 @@ to manage the Python dependencies.
 
 Update the requirements with:
 ```
-pip install pip-tools
+pip install -r requirements-dev.txt
 pip-compile --upgrade requirements.in
 pip-compile --upgrade requirements-dev.in
 pip-compile --upgrade requirements-prod.in
