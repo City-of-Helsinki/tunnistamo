@@ -5,7 +5,7 @@ django-parler>2.1
 django-cors-headers
 # Use our own fork of django-oidc-provider as long as the token extraction PR is not merged
 # https://github.com/juanifioren/django-oidc-provider/pull/389
-git+https://github.com/City-of-Helsinki/django-oidc-provider.git@tunnistamo
+git+https://github.com/City-of-Helsinki/django-oidc-provider.git@745b7ebf
 djangorestframework>=3.10
 pyjwt
 django-helusers
