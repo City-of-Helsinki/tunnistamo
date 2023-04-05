@@ -1,5 +1,6 @@
 flake8
 isort
+pip-tools
 pytest>=6.0
 pytest-cov>=2.10
 pytest-django>4.0
