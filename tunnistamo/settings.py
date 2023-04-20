@@ -360,9 +360,14 @@ LOGGING = {
             'level': 'WARNING',
             'propagate': False,
         },
-        '': {
+        'tunnistamo.middleware': {
             'handlers': ['console'],
             'level': 'DEBUG',
+            'propagate': False,
+        },
+        '': {
+            'handlers': ['console'],
+            'level': 'INFO',
             'propagate': False,
         }
     }
