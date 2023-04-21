@@ -178,8 +178,6 @@ rsa==4.7.2
     # via python-jose
 ruamel-yaml==0.17.21
     # via -r requirements.in
-ruamel-yaml-clib==0.2.6
-    # via ruamel-yaml
 six==1.16.0
     # via
     #   django-compressor
@@ -193,7 +191,7 @@ social-auth-core[openidconnect,saml]==4.1.0
     # via
     #   -r requirements.in
     #   social-auth-app-django
-sqlparse==0.4.2
+sqlparse==0.4.4
     # via django
 uritemplate==3.0.0
     # via coreapi
