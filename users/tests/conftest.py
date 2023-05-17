@@ -264,7 +264,7 @@ class DummyFixedOidcBackend(DummyOidcBackendBase):
             'family_name': 'User',
             'given_name': 'Test',
             'name': 'Test User',
-            'sub': '00000000-0000-4000-b000-000000000000'
+            'sub': self.setting('SUB_VALUE', '00000000-0000-4000-b000-000000000000')
         }
 
     def get_json(self, url, *args, **kwargs):
@@ -273,7 +273,7 @@ class DummyFixedOidcBackend(DummyOidcBackendBase):
             id_token = create_id_token(
                 self,
                 nonce=nonce,
-                sub='00000000-0000-4000-b000-000000000000',
+                sub=self.setting('SUB_VALUE', '00000000-0000-4000-b000-000000000000'),
                 email_verified=False,
                 name='Test User',
                 given_name='User',
