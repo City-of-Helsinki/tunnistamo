@@ -2,11 +2,12 @@ import logging
 import uuid
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, logout
 from django.shortcuts import render
 from django.urls import reverse
 from helusers.utils import uuid_to_username
 from social_core.backends.azuread import AzureADOAuth2
+from social_core.exceptions import AuthFailed
 from social_django.models import UserSocialAuth
 
 from auth_backends.adfs.base import BaseADFS
@@ -169,12 +170,12 @@ def update_ad_groups(details, backend, user=None, *args, **kwargs):
     user.update_ad_groups(details['ad_groups'])
 
 
-def check_existing_social_associations(backend, strategy, user=None, social=None, *args, **kwargs):
+def check_existing_social_associations(backend, strategy, user=None, social=None, request=None, *args, **kwargs):
     """Deny adding additional social auths
 
     social_core.pipeline.social_auth.associate_user would automatically
     add additional social auths for the user, if they succesfully
-    authenticated to another IdP while holding a session with Tunnistamo.
+    authenticated again to an IdP while holding a session with Tunnistamo.
     We don't want this to happen, as there is no interface for managing
     additional IdPs.
     """
@@ -199,9 +200,25 @@ def check_existing_social_associations(backend, strategy, user=None, social=None
         return
 
     if backend.name not in providers:
+        # Disallow attaching a different social auth backend to an existing user and
+        # show the user which backend they used previously.
+        logger.debug('User has used a different social auth provider before. Show error page.')
         strategy.request.other_logins = LoginMethod.objects.filter(provider_id__in=providers)
         error_view = AuthenticationErrorView(request=strategy.request)
         return error_view.get(strategy.request)
+    else:
+        # Disallow attaching a social auth from an existing social auth provider but
+        # with a different user.
+        logger.debug('User logged in with a same social auth provider as before but'
+                     ' with a different user. Log out and fail the login.')
+        # Save the existing next value from the session and add it back after log out
+        # so that InterruptedSocialAuthMiddleware can redirect back to the OIDC client
+        next_url = strategy.session.get('next')
+        logout(request)
+        if next_url:
+            strategy.session_set('next', next_url)
+
+        raise AuthFailed(backend, 'Duplicate login')
 
 
 def save_social_auth_backend(backend, user=None, *args, **kwargs):
