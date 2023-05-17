@@ -179,24 +179,29 @@ def check_existing_social_associations(backend, strategy, user=None, social=None
     additional IdPs.
     """
     logger.debug(f"starting check for existing social assoc; user:{user}; backend: {backend.name}; social:{social}")
-    if user and not social:
-        social_set = user.social_auth.all()
-        providers = [a.provider for a in social_set]
-        logger.debug(f"social does not exist; providers: {providers}")
+    if not user or social:
+        return
 
-        # This is an exception to the only-one-social-auth -rule because we want to
-        # allow the user to use both on-prem AD and Azure AD simultaneously.
-        if (
-            (backend.name == 'helsinkiazuread' and 'helsinki_adfs' in providers) or
-            (backend.name == 'helsinki_adfs' and 'helsinkiazuread' in providers)
-        ):
-            logger.debug('User is an AD user. Ok to have both on-prem AD and Azure AD in social auth.')
-            return
+    social_set = user.social_auth.all()
+    providers = [a.provider for a in social_set]
+    if not providers:
+        return
 
-        if providers and backend.name not in providers:
-            strategy.request.other_logins = LoginMethod.objects.filter(provider_id__in=providers)
-            error_view = AuthenticationErrorView(request=strategy.request)
-            return error_view.get(strategy.request)
+    logger.debug(f"social does not exist; providers: {providers}")
+
+    # This is an exception to the only-one-social-auth -rule because we want to
+    # allow the user to use both on-prem AD and Azure AD simultaneously.
+    if (
+        (backend.name == 'helsinkiazuread' and 'helsinki_adfs' in providers) or
+        (backend.name == 'helsinki_adfs' and 'helsinkiazuread' in providers)
+    ):
+        logger.debug('User is an AD user. Ok to have both on-prem AD and Azure AD in social auth.')
+        return
+
+    if backend.name not in providers:
+        strategy.request.other_logins = LoginMethod.objects.filter(provider_id__in=providers)
+        error_view = AuthenticationErrorView(request=strategy.request)
+        return error_view.get(strategy.request)
 
 
 def save_social_auth_backend(backend, user=None, *args, **kwargs):
