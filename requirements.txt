@@ -116,7 +116,7 @@ oauthlib==2.1.0
     #   django-oauth-toolkit
     #   requests-oauthlib
     #   social-auth-core
-pillow==9.3.0
+pillow==9.5.0
     # via -r requirements.in
 polib==1.1.0
     # via django-translation-checker
