@@ -157,7 +157,7 @@ raven==6.9.0
     # via -r requirements.in
 rcssmin==1.0.6
     # via django-compressor
-requests==2.26.0
+requests==2.31.0
     # via
     #   -r requirements.in
     #   coreapi
