@@ -67,12 +67,12 @@ class HelsinkiLibraryAskoADFS(BaseADFS):
                 logger.debug(f"'{in_name}' not found in data")
             attrs[out_name] = val
 
-        if 'last_first_name' in attrs:
+        if attrs['last_first_name'] and isinstance(attrs['last_first_name'], str):
             names = attrs['last_first_name'].split(' ')
             if 'first_name' not in attrs:
                 attrs['first_name'] = [names[0]]
             if 'last_name' not in attrs:
                 attrs['last_name'] = [' '.join(names[1:])]
-            del attrs['last_first_name']
+        del attrs['last_first_name']
 
         return attrs
