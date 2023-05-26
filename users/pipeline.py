@@ -166,6 +166,8 @@ def update_ad_groups(details, backend, user=None, *args, **kwargs):
 
     if not details['ad_groups']:
         details['ad_groups'] = []
+    elif isinstance(details['ad_groups'], str):
+        details['ad_groups'] = [details['ad_groups']]
 
     user.update_ad_groups(details['ad_groups'])
 

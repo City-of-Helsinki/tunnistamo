@@ -3,8 +3,10 @@ from django.contrib import auth
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from social_core.exceptions import AuthFailed
+from social_django.utils import load_backend, load_strategy
 
 from tunnistamo.tests.conftest import create_rsa_key, reload_social_django_utils
+from users.pipeline import update_ad_groups
 from users.tests.conftest import DummyFixedOidcBackend
 
 
@@ -53,3 +55,26 @@ def test_second_social_login_same_provider_different_uid(client, settings, dummy
 
     assert user.social_auth.count() == 1
     assert not auth.get_user(client).is_authenticated
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize('ad_groups,expected', (
+    (None, []),
+    ('', []),
+    ([], []),
+    ('group1', ['group1']),
+    (['group1'], ['group1']),
+    (['group1', 'group2'], ['group1', 'group2']),
+), ids=repr)
+def test_update_ad_groups_pipeline_part_should_work_with_variety_of_values_from_ad(
+    user, assertCountEqual, ad_groups, expected
+):
+    backend_name = 'helsinki_adfs'
+    strategy = load_strategy()
+    uri = reverse('social:complete', kwargs={'backend': backend_name})
+    backend = load_backend(strategy, backend_name, uri)
+    details = {'ad_groups': ad_groups}
+
+    update_ad_groups(details, backend, user)
+
+    assertCountEqual(user.ad_groups.all().values_list('name', flat=True), expected)
