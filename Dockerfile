@@ -48,7 +48,7 @@ RUN apt-install.sh \
       git \
       libxmlsec1-dev \
       libxml2-dev \
-      netcat \
+      netcat-traditional \
       pkg-config \
     && pip install -U pip \
     && pip install --no-cache-dir  -r /app/requirements.txt \
