@@ -88,7 +88,7 @@ FROM appbase as production
 # ==========================
 
 USER root
-RUN chgrp -R 0 /var/tunnistamo/static/css && chmod g+x -R /var/tunnistamo/static/css
+RUN chgrp -R 0 /var/tunnistamo && chmod g+w -R /var/tunnistamo
 
 USER appuser
 
