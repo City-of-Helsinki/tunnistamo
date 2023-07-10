@@ -87,7 +87,9 @@ EXPOSE 8000/tcp
 FROM appbase as production
 # ==========================
 
-USER appuser
+USER root
 RUN chgrp -R 0 /var/tunnistamo
+
+USER appuser
 
 EXPOSE 8000/tcp
