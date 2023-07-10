@@ -88,4 +88,6 @@ FROM appbase as production
 # ==========================
 
 USER appuser
+RUN chgrp -R 0 /var/tunnistamo
+
 EXPOSE 8000/tcp
