@@ -18,7 +18,7 @@ coreapi==2.3.3
     # via -r requirements.in
 coreschema==0.0.4
     # via coreapi
-cryptography==40.0.1
+cryptography==41.0.2
     # via
     #   -r requirements.in
     #   jwcrypto
@@ -178,8 +178,6 @@ rsa==4.7.2
     # via python-jose
 ruamel-yaml==0.17.21
     # via -r requirements.in
-ruamel-yaml-clib==0.2.6
-    # via ruamel-yaml
 six==1.16.0
     # via
     #   django-compressor
