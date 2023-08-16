@@ -7,14 +7,12 @@ django-cors-headers
 # https://github.com/juanifioren/django-oidc-provider/pull/389
 git+https://github.com/City-of-Helsinki/django-oidc-provider.git@745b7ebf
 djangorestframework>=3.10
-pyjwt
 django-helusers
-django-allauth
 django-bootstrap3
 psycopg2
 --no-binary psycopg2
 raven
-PyJWT
+PyJWT[crypto]
 cryptography
 django-npm
 libsass
