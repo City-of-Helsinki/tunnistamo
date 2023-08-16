@@ -34,7 +34,6 @@ deprecated==1.2.13
 django==3.2.19
     # via
     #   -r requirements.in
-    #   django-allauth
     #   django-appconf
     #   django-cors-headers
     #   django-crequest
@@ -45,8 +44,6 @@ django==3.2.19
     #   django-translation-checker
     #   djangorestframework
     #   drf-oidc-auth
-django-allauth==0.44.0
-    # via -r requirements.in
 django-appconf==1.0.5
     # via django-compressor
 django-bootstrap3==10.0.1
@@ -137,16 +134,13 @@ pyjwkest==1.4.0
 pyjwt[crypto]==2.4.0
     # via
     #   -r requirements.in
-    #   django-allauth
     #   social-auth-core
 python-jose==3.3.0
     # via
     #   -r requirements.in
     #   social-auth-core
 python3-openid==3.1.0
-    # via
-    #   django-allauth
-    #   social-auth-core
+    # via social-auth-core
 python3-saml==1.9.0
     # via
     #   -r requirements.in
@@ -161,7 +155,6 @@ requests==2.31.0
     # via
     #   -r requirements.in
     #   coreapi
-    #   django-allauth
     #   django-helusers
     #   django-oauth-toolkit
     #   geoip2
@@ -169,9 +162,7 @@ requests==2.31.0
     #   requests-oauthlib
     #   social-auth-core
 requests-oauthlib==1.0.0
-    # via
-    #   django-allauth
-    #   social-auth-core
+    # via social-auth-core
 rjsmin==1.1.0
     # via django-compressor
 rsa==4.7.2
