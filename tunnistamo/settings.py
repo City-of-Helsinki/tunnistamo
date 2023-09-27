@@ -71,6 +71,10 @@ env = environ.Env(
     # Client secret
     SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_SECRET=(str, ""),
 
+    SOCIAL_AUTH_HELSINKI_TUNNUS_OIDC_ENDPOINT=(str, ""),
+    SOCIAL_AUTH_HELSINKI_TUNNUS_KEY=(str, ""),
+    SOCIAL_AUTH_HELSINKI_TUNNUS_SECRET=(str, ""),
+
     SOCIAL_AUTH_ESPOO_ADFS_KEY=(str, ""),
     SOCIAL_AUTH_ESPOO_ADFS_SECRET=(str, ""),
 
@@ -206,6 +210,7 @@ AUTHENTICATION_BACKENDS = (
     'auth_backends.adfs.helsinki_library_asko.HelsinkiLibraryAskoADFS',
     'auth_backends.helsinki_username.HelsinkiUsername',
     'auth_backends.helsinki_tunnistus_suomifi.HelsinkiTunnistus',
+    'auth_backends.helsinki_tunnus.HelsinkiTunnus',
     'yletunnus.backends.YleTunnusOAuth2',
     'django.contrib.auth.backends.ModelBackend',
     'auth_backends.suomifi.SuomiFiSAMLAuth',
@@ -551,6 +556,14 @@ SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_SECRET = env("SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_SE
 SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_USER_FIELDS = ['username', 'email', 'uuid']
 SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_REDIRECT_LOGOUT_TO_END_SESSION = True
 SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_ON_AUTH_ERROR_REDIRECT_TO_CLIENT = True
+
+SOCIAL_AUTH_HELSINKI_TUNNUS_OIDC_ENDPOINT = env("SOCIAL_AUTH_HELSINKI_TUNNUS_OIDC_ENDPOINT")
+SOCIAL_AUTH_HELSINKI_TUNNUS_KEY = env("SOCIAL_AUTH_HELSINKI_TUNNUS_KEY")
+SOCIAL_AUTH_HELSINKI_TUNNUS_SECRET = env("SOCIAL_AUTH_HELSINKI_TUNNUS_SECRET")
+# Helsinki Tunnistus (Keycloak) sets the uuid for easier migration
+SOCIAL_AUTH_HELSINKI_TUNNUS_USER_FIELDS = ['username', 'email', 'uuid']
+SOCIAL_AUTH_HELSINKI_TUNNUS_REDIRECT_LOGOUT_TO_END_SESSION = True
+SOCIAL_AUTH_HELSINKI_TUNNUS_ON_AUTH_ERROR_REDIRECT_TO_CLIENT = True
 
 SOCIAL_AUTH_YLETUNNUS_APP_ID = env("SOCIAL_AUTH_YLETUNNUS_APP_ID")
 SOCIAL_AUTH_YLETUNNUS_APP_KEY = env("SOCIAL_AUTH_YLETUNNUS_APP_KEY")
