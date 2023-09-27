@@ -102,6 +102,12 @@ $fa-font-path: "../fonts/font-awesome";
   background-size: 85%;
 }
 
+.fa-helsinki_tunnus {
+  &:before {
+    content: $fa-var-envelope-o;
+  }
+}
+
 .login-method.login-method-yletunnus a.btn.btn-social {
   background-color: #00b4c8;
   border-color: #00b4c8;
@@ -146,4 +152,10 @@ $fa-font-path: "../fonts/font-awesome";
   color: #000000;
   background-color: #ffffff;
   border-color: #dddddd;
+}
+
+.login-method.login-method-helsinki_tunnus a.btn.btn-social {
+  color: #1a1a1a;
+  background-color: $hel-gold;
+  border-color: $hel-gold;
 }
