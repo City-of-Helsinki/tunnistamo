@@ -31,7 +31,7 @@ defusedxml==0.5.0
     #   social-auth-core
 deprecated==1.2.13
     # via jwcrypto
-django==3.2.21
+django==3.2.23
     # via
     #   -r requirements.in
     #   django-appconf
@@ -104,7 +104,7 @@ libsass==0.21.0
     # via -r requirements.in
 lxml==4.9.1
     # via xmlsec
-markupsafe==1.1
+markupsafe==1.1.0
     # via jinja2
 maxminddb==1.5.1
     # via geoip2
