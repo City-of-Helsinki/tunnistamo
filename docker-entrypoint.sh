@@ -92,6 +92,9 @@ if [[ ! -z "$@" ]]; then
 elif [[ "$DEV_SERVER" = "1" ]]; then
     python ./manage.py runserver 0.0.0.0:8000
 else
+    export UWSGI_THREADS=${UWSGI_THREADS:-1}
+    export UWSGI_PROCESSES=${UWSGI_PROCESSES:-4}
+
     # We want to have a *_URL environment variables configure
     # both Django static/media files URL generation
     # and the corresponding file serving in uWSGI.
