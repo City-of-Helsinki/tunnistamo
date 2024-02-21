@@ -53,7 +53,7 @@ RUN apt-install.sh \
     && pip install -U pip setuptools wheel \
     && pip install --no-cache-dir  -r /app/requirements.txt \
     && pip install --no-cache-dir  -r /app/requirements-prod.txt \
-    && apt-cleanup.sh build-essential pkg-config git
+    && apt-cleanup.sh build-essential pkg-config
 
 COPY docker-entrypoint.sh /app
 ENTRYPOINT ["./docker-entrypoint.sh"]
