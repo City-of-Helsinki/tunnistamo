@@ -50,7 +50,7 @@ RUN apt-install.sh \
       libxml2-dev \
       netcat-openbsd \
       pkg-config \
-    && pip install -U pip \
+    && pip install -U pip setuptools wheel \
     && pip install --no-cache-dir  -r /app/requirements.txt \
     && pip install --no-cache-dir  -r /app/requirements-prod.txt \
     && apt-cleanup.sh build-essential pkg-config git
