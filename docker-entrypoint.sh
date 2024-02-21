@@ -86,6 +86,11 @@ if [[ "$CREATE_SUPERUSER" = "1" ]]; then
     echo "Admin user created with credentials admin:admin (email: admin@example.com)"
 fi
 
+if [[ "$COMPILE_TRANSLATIONS" = "1" ]]; then
+    echo "Compile translations..."
+    ./manage.py compilemessages
+fi
+
 # Start server
 if [[ ! -z "$@" ]]; then
     "$@"
