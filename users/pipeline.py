@@ -192,14 +192,22 @@ def check_existing_social_associations(backend, strategy, user=None, social=None
 
     logger.debug(f"social does not exist; providers: {providers}")
 
-    # This is an exception to the only-one-social-auth -rule because we want to
-    # allow the user to use both on-prem AD and Azure AD simultaneously.
-    if (
-        (backend.name == 'helsinkiazuread' and 'helsinki_adfs' in providers) or
-        (backend.name == 'helsinki_adfs' and 'helsinkiazuread' in providers)
-    ):
-        logger.debug('User is an AD user. Ok to have both on-prem AD and Azure AD in social auth.')
-        return
+    # These are an exception to the only-one-social-auth -rule because we want to
+    # allow the user to use these provider pairs simultaneously.
+    allowed_exceptions = (
+        ("helsinkiazuread", "helsinki_adfs"),
+        ("helsinki_tunnus", "heltunnistussuomifi"),
+    )
+    for pair in allowed_exceptions:
+        if (
+            (backend.name == pair[0] and pair[1] in providers) or
+            (backend.name == pair[1] and pair[0] in providers)
+        ):
+            logger.debug(
+                f"User is a {pair[0]} user. Ok to have {pair[0]} "
+                f"and {pair[1]} as providers in social auth."
+            )
+            return
 
     if backend.name not in providers:
         # Disallow attaching a different social auth backend to an existing user and
