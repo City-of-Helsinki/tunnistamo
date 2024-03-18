@@ -3,10 +3,11 @@ from django.contrib import auth
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from social_core.exceptions import AuthFailed
+from social_django.models import UserSocialAuth
 from social_django.utils import load_backend, load_strategy
 
 from tunnistamo.tests.conftest import create_rsa_key, reload_social_django_utils
-from users.pipeline import update_ad_groups
+from users.pipeline import association_by_keycloak_uuid, update_ad_groups
 from users.tests.conftest import DummyFixedOidcBackend
 
 
@@ -78,3 +79,27 @@ def test_update_ad_groups_pipeline_part_should_work_with_variety_of_values_from_
     update_ad_groups(details, backend, user)
 
     assertCountEqual(user.ad_groups.all().values_list('name', flat=True), expected)
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize("login_backend,existing_backend,expected", (
+    ("heltunnistussuomifi", "helsinki_tunnus", True),
+    ("helsinki_tunnus", "heltunnistussuomifi", True),
+    ("heltunnistussuomifi", None, False),
+    ("helsinki_tunnus", None, False),
+    ("helsinki_adfs", "helsinki_tunnus", False),
+    ("helsinki_tunnus", "helsinki_adfs", False),
+), ids=repr)
+def test_association_by_keycloak_uuid(login_backend, existing_backend, user, expected):
+    if existing_backend:
+        UserSocialAuth.objects.create(user=user, provider=existing_backend, uid=user.uuid)
+    strategy = load_strategy()
+    uri = reverse("social:complete", kwargs={"backend": login_backend})
+    backend = load_backend(strategy, login_backend, uri)
+
+    pipeline_data = association_by_keycloak_uuid(strategy, backend, user.uuid)
+
+    if expected:
+        assert pipeline_data == {"user": user}
+    else:
+        assert pipeline_data is None

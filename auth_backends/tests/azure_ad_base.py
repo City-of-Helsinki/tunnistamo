@@ -75,6 +75,7 @@ class AzureADV2TenantOAuth2Test(OAuth2Test):
                 'users.pipeline.get_user_uuid',
                 'users.pipeline.require_email',
                 'users.pipeline.create_tunnistamo_session',
+                'users.pipeline.association_by_keycloak_uuid',
             ]
         ]
 

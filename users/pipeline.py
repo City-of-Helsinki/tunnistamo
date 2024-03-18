@@ -13,6 +13,8 @@ from social_django.models import UserSocialAuth
 from auth_backends.adfs.base import BaseADFS
 from auth_backends.adfs.helsinki import HelsinkiADFS
 from auth_backends.helsinki_azure_ad import HelsinkiAzureADTenantOAuth2
+from auth_backends.helsinki_tunnistus_suomifi import HelsinkiTunnistus
+from auth_backends.helsinki_tunnus import HelsinkiTunnus
 from auth_backends.tunnistamo import Tunnistamo
 from users.models import LoginMethod, TunnistamoSession
 from users.views import AuthenticationErrorView
@@ -155,6 +157,37 @@ def associate_by_email(strategy, details, user=None, *args, **kwargs):
     return error_view.get(strategy.request)
 
 
+def association_by_keycloak_uuid(strategy, backend, uuid, user=None, *args, **kwargs):
+    """For Keycloak based authentication, associate user based on UUID.
+
+    User might have logged in with another keycloak based authentication method. If a
+    keycloak based authentication is used, we'll try to associate the user
+    based on the UUID.
+
+    Since Tunnistamo might not be in sync with Keycloak, a user might e.g. have a
+    different email address in Keycloak than in Tunnistamo. This would normally cause a
+    new user to be created, but since a user with the same UUID might already exist,
+    this could lead to integrity errors.
+    """
+    if user or not isinstance(backend, (HelsinkiTunnus, HelsinkiTunnistus)):
+        return
+
+    user = strategy.get_user(uuid=uuid)
+
+    if (
+        user
+        and user.social_auth.filter(
+            provider__in=(HelsinkiTunnus.name, HelsinkiTunnistus.name)
+        ).exists()
+    ):
+        logger.debug(f"Keycloak user with the same UUID {user.uuid} exists.")
+        return {
+            "user": user,
+        }
+
+    return
+
+
 def update_ad_groups(details, backend, user=None, *args, **kwargs):
     """Update users AD groups.
 
@@ -176,7 +209,7 @@ def check_existing_social_associations(backend, strategy, user=None, social=None
     """Deny adding additional social auths
 
     social_core.pipeline.social_auth.associate_user would automatically
-    add additional social auths for the user, if they succesfully
+    add additional social auths for the user, if they successfully
     authenticated again to an IdP while holding a session with Tunnistamo.
     We don't want this to happen, as there is no interface for managing
     additional IdPs.
@@ -195,8 +228,8 @@ def check_existing_social_associations(backend, strategy, user=None, social=None
     # These are an exception to the only-one-social-auth -rule because we want to
     # allow the user to use these provider pairs simultaneously.
     allowed_exceptions = (
-        ("helsinkiazuread", "helsinki_adfs"),
-        ("helsinki_tunnus", "heltunnistussuomifi"),
+        (HelsinkiAzureADTenantOAuth2.name, HelsinkiADFS.name),
+        (HelsinkiTunnus.name, HelsinkiTunnistus.name),
     )
     for pair in allowed_exceptions:
         if (
