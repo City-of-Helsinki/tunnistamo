@@ -482,6 +482,11 @@ SOCIAL_AUTH_PIPELINE = (
     # a similar email address.
     # 'social_core.pipeline.social_auth.associate_by_email',
 
+    # User might have a social account with another Keycloak provider. Some fields
+    # between Tunnistamo and Keycloak might not be in sync (e.g. email), so we'll use
+    # UUID to find the user, since UUID should be in sync.
+    'users.pipeline.association_by_keycloak_uuid',
+
     # Create a user account if we haven't found one yet.
     'social_core.pipeline.user.create_user',
 
