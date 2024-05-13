@@ -18,7 +18,7 @@ class HelsinkiAzureADTenantOAuth2(AzureADV2TenantOAuth2):
     name_logged_in_to = pgettext('logged in to []', 'Azure AD')
     name_logout_from = pgettext('log out from []', 'Azure AD')
     name_goto = pgettext('go to []', 'Azure AD')
-    USER_DATA_URL = 'https://graph.microsoft.com/v1.0/me/memberOf?$select=id,displayName,securityEnabled'
+    USER_DATA_URL = 'https://graph.microsoft.com/v1.0/me/memberOf?$select=id,displayName,securityEnabled&$top=999'
 
     @property
     @lru_cache()
