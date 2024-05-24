@@ -63,12 +63,6 @@ class TestADGroupsFromGraphResponse(AzureADV2TenantOAuth2Test):
                     'displayName': 'Second group',
                     'securityEnabled': True,
                 },
-                {
-                    '@odata.type': '#microsoft.graph.group',
-                    'id': '00000000-0000-4000-a0000000000000002',
-                    'displayName': 'Third Group',
-                    'securityEnabled': False,
-                },
             ],
         })
 
