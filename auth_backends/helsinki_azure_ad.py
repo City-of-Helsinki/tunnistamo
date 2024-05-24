@@ -18,7 +18,13 @@ class HelsinkiAzureADTenantOAuth2(AzureADV2TenantOAuth2):
     name_logged_in_to = pgettext('logged in to []', 'Azure AD')
     name_logout_from = pgettext('log out from []', 'Azure AD')
     name_goto = pgettext('go to []', 'Azure AD')
-    USER_DATA_URL = 'https://graph.microsoft.com/v1.0/me/memberOf?$select=id,displayName,securityEnabled&$top=999'
+    USER_DATA_URL = (
+        'https://graph.microsoft.com/v1.0/me/memberOf?'
+        '$filter=securityEnabled eq true'
+        '&$count=true'
+        '&$top=999'
+        '&$select=id,displayName,securityEnabled'
+    )
 
     @property
     @lru_cache()
@@ -36,22 +42,25 @@ class HelsinkiAzureADTenantOAuth2(AzureADV2TenantOAuth2):
         because the transitive groups should not be used in the services.
 
         Additionally, the groups that are not 'security groups' are filtered out for the
-        same reason. The securityEnabled flag is checked in Python because the graph
-        endpoint doesn't support this filter: '$filter=(securityEnabled eq true)' """
+        same reason.
+
+        Entra guest users do not get access to displayName, in that case
+        the UUID of the group is returned.
+        """
         user_data = super().user_data(access_token, *args, **kwargs)
 
         try:
             result = self.request(
                 self.USER_DATA_URL,
                 headers={
-                    'Authorization': 'Bearer {0}'.format(access_token)
+                    'Authorization': 'Bearer {0}'.format(access_token),
+                    'ConsistencyLevel': 'eventual'
                 }
             ).json()
 
             user_data['groups'] = [
-                entry.get('displayName')
+                entry.get('displayName') or entry.get('id')
                 for entry in result.get('value', [])
-                if entry.get('securityEnabled')
             ]
         except (RequestException, JSONDecodeError, AttributeError) as e:
             # Just ignore the error if the request fails and use the groups already
