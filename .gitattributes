@@ -1,1 +1,6 @@
 tunnistamo/tests/data/*.xml eol=lf
+*.py eol=lf
+*.sh eol=lf
+Dockerfile eol=lef
+*.yml eol=lf
+

@@ -8,64 +8,61 @@
 
 argparse==1.4.0
     # via unittest2
-attrs==21.2.0
-    # via pytest
-build==1.0.3
+build==1.2.1
     # via pip-tools
 click==8.1.7
     # via pip-tools
-coverage==6.0.2
+coverage==7.5.3
     # via pytest-cov
-exceptiongroup==1.0.4
+exceptiongroup==1.2.1
     # via pytest
-factory-boy==3.2.0
+factory-boy==3.3.0
     # via -r requirements-dev.in
-faker==13.3.2
+faker==25.6.0
     # via factory-boy
-flake8==4.0.1
+flake8==7.0.0
     # via -r requirements-dev.in
-freezegun==1.1.0
+freezegun==1.5.1
     # via -r requirements-dev.in
 httpretty==1.1.4
     # via -r requirements-dev.in
-importlib-metadata==7.0.1
+importlib-metadata==7.1.0
     # via build
-iniconfig==1.1.1
+iniconfig==2.0.0
     # via pytest
-isort==5.9.3
+isort==5.13.2
     # via -r requirements-dev.in
 linecache2==1.0.0
     # via traceback2
-mccabe==0.6.1
+mccabe==0.7.0
     # via flake8
-packaging==21.0
+packaging==24.0
     # via
+    #   -c requirements.txt
     #   build
     #   pytest
-pip-tools==7.4.0
+pip-tools==7.4.1
     # via -r requirements-dev.in
-pluggy==1.0.0
+pluggy==1.5.0
     # via pytest
-pycodestyle==2.8.0
+pycodestyle==2.11.1
     # via flake8
-pyflakes==2.4.0
+pyflakes==3.2.0
     # via flake8
-pyparsing==2.4.7
-    # via packaging
-pyproject-hooks==1.0.0
+pyproject-hooks==1.1.0
     # via
     #   build
     #   pip-tools
-pytest==7.2.0
+pytest==8.2.2
     # via
     #   -r requirements-dev.in
     #   pytest-cov
     #   pytest-django
-pytest-cov==3.0.0
+pytest-cov==5.0.0
     # via -r requirements-dev.in
-pytest-django==4.4.0
+pytest-django==4.8.0
     # via -r requirements-dev.in
-python-dateutil==2.8.2
+python-dateutil==2.9.0.post0
     # via
     #   faker
     #   freezegun
@@ -74,20 +71,19 @@ six==1.16.0
     #   -c requirements.txt
     #   python-dateutil
     #   unittest2
-tomli==1.2.1
+tomli==2.0.1
     # via
     #   build
     #   coverage
     #   pip-tools
-    #   pyproject-hooks
     #   pytest
 traceback2==1.4.0
     # via unittest2
 unittest2==1.1.0
     # via -r requirements-dev.in
-wheel==0.42.0
+wheel==0.43.0
     # via pip-tools
-zipp==3.17.0
+zipp==3.19.2
     # via importlib-metadata
 
 # The following packages are considered to be unsafe in a requirements file:

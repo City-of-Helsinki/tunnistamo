@@ -19,7 +19,7 @@ env = environ.Env(
     DEBUG=(bool, False),
     SECRET_KEY=(str, ""),
     DATABASE_URL=(str, "postgres:///tunnistamo"),
-    ALLOWED_HOSTS=(list, []),
+    ALLOWED_HOSTS=(list, ["*"]),
     ALLOW_CROSS_SITE_SESSION_COOKIE=(bool, False),
     TRUST_X_FORWARDED_HOST=(bool, False),
 
