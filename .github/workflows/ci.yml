@@ -31,29 +31,22 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          # Required by Sonar
+          fetch-depth: 0
 
       - name: Set up Python 3.9
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
-
-      - name: Cache pip packages
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-pip-modules
-        with:
-          path: ~/.pip-cache
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements-dev.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          cache: 'pip'
+          cache-dependency-path: 'requirements*.txt'
 
       - name: Install system packages
         run: sudo apt update && sudo apt-get install -y libxmlsec1-dev xmlsec1 gettext
 
       - name: Install Python dependencies
-        run: pip install -r requirements.txt -r requirements-dev.txt codecov
+        run: pip install -r requirements.txt -r requirements-dev.txt
 
       - name: Compile translations
         run: python manage.py compilemessages
@@ -63,8 +56,20 @@ jobs:
         env:
           DATABASE_URL: postgres://tunnistamo:tunnistamo@localhost:5432/tunnistamo
 
-      - name: Coverage
-        run: codecov
+      - name: Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+
+      # Without this workaround Sonar reports a warning about an incorrect source path
+      - name: Override coverage report source path for Sonar
+        run: sed -i 's@'$GITHUB_WORKSPACE'@/github/workspace/@g' coverage.xml
+
+      - name: SonarCloud Scan
+        uses: SonarSource/sonarcloud-github-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
   coding-style:
     name: Coding style
@@ -75,21 +80,11 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Set up Python 3.9
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v5
         with:
           python-version: '3.9'
-
-      - name: Cache pip packages
-        uses: actions/cache@v2
-        env:
-          cache-name: cache-pip-modules
-        with:
-          path: ~/.pip-cache
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/requirements.txt') }}-${{ hashFiles('**/requirements-dev.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-build-${{ env.cache-name }}-
-            ${{ runner.os }}-build-
-            ${{ runner.os }}-
+          cache: 'pip'
+          cache-dependency-path: 'requirements*.txt'
 
       - name: Install system packages
         run: sudo apt update && sudo apt-get install -y libxmlsec1-dev xmlsec1
@@ -102,16 +97,3 @@ jobs:
 
       - name: Import sorting
         run: isort -c .
-
-  sonarcloud:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-      with:
-        # Disabling shallow clone is recommended for improving relevancy of reporting
-        fetch-depth: 0
-    - name: SonarCloud Scan
-      uses: sonarsource/sonarcloud-github-action@master
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
