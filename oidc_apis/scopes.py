@@ -142,6 +142,7 @@ class SuomiFiUserAttributeScopeClaims(ScopeClaims, metaclass=SuomiFiUserAttribut
             social_user = UserSocialAuth.objects.get(user=self.user, provider='suomifi')
         except UserSocialAuth.DoesNotExist:
             return dic
+
         for level in SuomiFiAccessLevel.objects.all():
             scope = 'suomifi_' + level.shorthand
             if scope in self.scopes:

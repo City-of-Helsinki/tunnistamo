@@ -18,6 +18,7 @@ from oidc_provider.models import Client, ResponseType, RSAKey
 from rest_framework.test import APIClient
 from social_core.backends.open_id_connect import OpenIdConnectAuth
 from social_core.backends.utils import get_backend
+from social_core.utils import cache
 from social_django.models import UserSocialAuth
 
 from auth_backends.adfs.base import BaseADFS
@@ -194,6 +195,7 @@ class DummyOidcBackendBase(OpenIdConnectAuth):
             ]
         }
 
+    @cache(ttl=86400)
     def get_jwks_keys(self):
         dic = dict(keys=[])
 

@@ -10,7 +10,7 @@ from django.db import DataError
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from django.utils.timezone import now
-from oauth2_provider.admin import Grant
+from oauth2_provider.models import Grant
 from oidc_provider.models import Code, RSAKey
 
 from services.models import Service

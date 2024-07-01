@@ -1,14 +1,13 @@
 import json
 import logging
 from datetime import timedelta
-from urllib.parse import parse_qsl, urlencode, urlsplit
+from urllib.parse import parse_qsl, quote, urlencode, urlsplit
 
 from django.conf import settings
 from django.http import HttpResponseForbidden, HttpResponseRedirect
 from django.middleware.locale import LocaleMiddleware as DjangoLocaleMiddleware
 from django.urls import reverse
 from django.utils import timezone, translation
-from django.utils.http import quote
 from django.utils.translation import gettext_lazy as _
 from oidc_provider.lib.errors import BearerTokenError
 from social_core.exceptions import AuthException
