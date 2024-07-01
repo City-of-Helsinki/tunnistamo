@@ -5,11 +5,18 @@ from collections import defaultdict
 from urllib.parse import parse_qs, urlencode, urlparse
 
 from django.conf import settings
+from django.contrib.auth import logout as auth_logout
+from django.contrib.auth.views import LogoutView
 from django.db.models import Case, Value, When
-from django.http import HttpResponse, JsonResponse
-from django.shortcuts import redirect
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
+from django.shortcuts import redirect, resolve_url
 from django.urls import reverse
 from django.utils import translation
+from django.utils.decorators import method_decorator
+from django.utils.http import url_has_allowed_host_and_scheme
+from django.views.decorators.cache import never_cache
+from django.views.decorators.csrf import csrf_protect
+from django.views.decorators.debug import sensitive_post_parameters
 from django.views.decorators.http import require_http_methods
 from django.views.generic.base import RedirectView, TemplateView
 from oauth2_provider.models import get_application_model
@@ -290,7 +297,7 @@ class TunnistamoOidcEndSessionView(EndSessionView):
             return UserSocialAuth.objects.none()
         return UserSocialAuth.objects.filter(user=user).order_by('-modified')
 
-    def get_oidc_backends_end_session_url(self, request, social_users):
+    def get_oidc_backends_end_session_url(self, request, social_users):  # noqa: C901
         """Return end session url of the first OIDC backend the user has a
         social auth entry on and hasn't been redirected yet.
 
@@ -349,6 +356,9 @@ class TunnistamoOidcEndSessionView(EndSessionView):
 
             return end_session_url
 
+    @method_decorator(sensitive_post_parameters())
+    @method_decorator(csrf_protect)
+    @method_decorator(never_cache)
     def dispatch(self, request, *args, **kwargs):
         user = request.user
 
@@ -419,6 +429,12 @@ class TunnistamoOidcEndSessionView(EndSessionView):
         for su in social_users:
             self.backend = get_backend_class(su.provider)
 
+        # Do logout in dispatch just like prior Django 4.1.
+        auth_logout(request)
+        next_page = self.get_next_page()
+        if next_page:
+            return HttpResponseRedirect(next_page)
+
         return super(EndSessionView, self).dispatch(request, *args, **kwargs)
 
     @staticmethod
@@ -453,6 +469,38 @@ class TunnistamoOidcEndSessionView(EndSessionView):
                 token.delete()
 
         return response
+
+    # Override the get and post methods to keep the functionality same as prior django 4.1
+    def post(self, request, *args, **kwargs):
+        return self.get(request, *args, **kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return super(LogoutView, self).get(request, *args, **kwargs)
+
+    def get_next_page(self):
+        if self.next_page is not None:
+            next_page = resolve_url(self.next_page)
+        elif settings.LOGOUT_REDIRECT_URL:
+            next_page = resolve_url(settings.LOGOUT_REDIRECT_URL)
+        else:
+            next_page = self.next_page
+
+        if (
+                self.redirect_field_name in self.request.POST
+                or self.redirect_field_name in self.request.GET
+        ):
+            next_page = self.request.POST.get(
+                self.redirect_field_name, self.request.GET.get(self.redirect_field_name)
+            )
+            url_is_safe = url_has_allowed_host_and_scheme(
+                url=next_page,
+                allowed_hosts=self.get_success_url_allowed_hosts(),
+                require_https=self.request.is_secure(),
+            )
+
+            if not url_is_safe:
+                next_page = self.request.path
+        return next_page
 
 
 class TunnistamoOidcTokenView(TokenView):

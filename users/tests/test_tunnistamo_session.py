@@ -150,8 +150,8 @@ def test_tunnistamo_session_add_element_cannot_add_non_model(user, tunnistamoses
 
 def _create_request_with_anonymous_user(rf):
     request = rf.get('/')
-    SessionMiddleware().process_request(request)
-    AuthenticationMiddleware().process_request(request)
+    SessionMiddleware(get_response=lambda response: response).process_request(request)
+    AuthenticationMiddleware(get_response=lambda response: response).process_request(request)
     request.session.save()
 
     return request

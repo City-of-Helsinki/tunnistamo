@@ -1,16 +1,15 @@
-django<4.0
+django<5.0
 django-multiselectfield
-django-oauth-toolkit
-django-parler>2.1
+django-oauth-toolkit<=2.0
+django-parler
 django-cors-headers
 # Use our own fork of django-oidc-provider as long as the token extraction PR is not merged
 # https://github.com/juanifioren/django-oidc-provider/pull/389
-git+https://github.com/City-of-Helsinki/django-oidc-provider.git@745b7ebfabd568acc282ec0e8ac098f54ee933f9
-djangorestframework>=3.10
+git+https://github.com/City-of-Helsinki/django-oidc-provider.git@f25cf7665eef59d15f14a8b2a8276ec955b5b73b
+djangorestframework
 django-helusers
 django-bootstrap3
-psycopg2
---no-binary psycopg2
+psycopg[c]
 raven
 PyJWT[crypto]
 cryptography
@@ -20,7 +19,7 @@ django-compressor
 django-environ
 django-sass-processor
 social-auth-core[openidconnect,saml]
-python-jose>=3.2.0
+python-jose
 social-auth-app-django
 requests
 jwcrypto

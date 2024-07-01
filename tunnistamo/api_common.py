@@ -1,8 +1,8 @@
 import datetime
 import json
 import logging
+from zoneinfo import ZoneInfo
 
-import pytz
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ImproperlyConfigured
@@ -18,7 +18,7 @@ from devices.models import InterfaceDevice, UserDevice
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
-local_tz = pytz.timezone(settings.TIME_ZONE)
+local_tz = ZoneInfo(settings.TIME_ZONE)
 
 
 def parse_scope(scope):

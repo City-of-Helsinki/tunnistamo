@@ -4,7 +4,5 @@
 #
 #    pip-compile --strip-extras requirements-prod.in
 #
---no-binary psycopg2
-
-uwsgi==2.0.23
+uwsgi==2.0.26
     # via -r requirements-prod.in

@@ -157,8 +157,6 @@ INSTALLED_APPS = (
     'users',
     'oidc_provider',
 
-    'django.contrib.admin',
-
     'social_django',
 
     'rest_framework',
@@ -168,7 +166,8 @@ INSTALLED_APPS = (
     'crequest',
     'django_filters',
 
-    'helusers',
+    'helusers.apps.HelusersConfig',
+    'helusers.apps.HelusersAdminConfig',
 
     'yletunnus',
     'hkijwt',

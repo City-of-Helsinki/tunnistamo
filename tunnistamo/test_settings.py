@@ -1,6 +1,6 @@
 from .settings import *
 
-ALLOWED_HOSTS = '*'
+ALLOWED_HOSTS = ['*']
 
 ###
 # Suomi.fi test configuration
