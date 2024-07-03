@@ -5,8 +5,9 @@ from auth_backends.backchannel_logout import OidcBackchannelLogoutMixin
 
 class HelsinkiTunnistus(OidcBackchannelLogoutMixin, OpenIdConnectAuth):
     """Authenticates the user against Keycloak proxying to suomi.fi
-       This is plain OIDC backend, except that it uses the Keycloak provided
-       user id ("sub" field) as the local user identifier.
+
+    This is plain OIDC backend, except that it uses the Keycloak provided
+    user id ("sub" field) as the local user identifier.
     """
     name = 'heltunnistussuomifi'
 
@@ -27,14 +28,16 @@ class HelsinkiTunnistus(OidcBackchannelLogoutMixin, OpenIdConnectAuth):
         #
         # This is done to relay the client_id to the Helsinki tunnistus Keycloak.
         # The session variable is set in the TunnistamoOidcAuthorizeView.get method.
-        original_client_id = self.strategy.request.session.get(
+        if original_client_id := self.strategy.request.session.get(
             "oidc_authorize_original_client_id"
-        )
-        if original_client_id:
+        ):
             extra_arguments["original_client_id"] = original_client_id
 
-        ui_locales = self.strategy.request.session.get("ui_locales")
-        if ui_locales:
+        # Keycloak action passthrough
+        if kc_action := self.strategy.request.session.get("oidc_authorize_kc_action"):
+            extra_arguments["kc_action"] = kc_action
+
+        if ui_locales := self.strategy.request.session.get("ui_locales"):
             extra_arguments["ui_locales"] = ui_locales
 
         return extra_arguments

@@ -116,14 +116,14 @@ def test_api_scopes_are_added_to_user_consent_after_authorization(client, api_sc
 @pytest.mark.django_db
 def test_original_client_id_is_saved_to_the_session(
     client,
-    loginmethod_factory,
     oidcclient_factory,
     create_client,
 ):
-    """Test that the original client id is saved to the session
+    """Test that the original client id is saved to the session.
 
     This is an implementation detail test, but we don't have a better way to test
-    this right now. Proper testing would need end-to-end tests with e.g. Selenium."""
+    this right now. Proper testing would need end-to-end tests with e.g. Selenium.
+    """
     oidc_client = None
 
     if create_client:
@@ -195,6 +195,66 @@ def test_ui_locales_parameter_of_authorize_request_is_passed_to_helsinki_tunnist
     intercepted_request = django_client.intercepted_requests[0]
     assert intercepted_request["path"] == '/authorize'
     assert intercepted_request["data"].get("ui_locales") == ui_locales
+
+
+@pytest.mark.parametrize("kc_action", (None, "UPDATE_PASSWORD"))
+@pytest.mark.django_db
+def test_kc_action_is_saved_to_the_session(
+    client,
+    oidcclient_factory,
+    kc_action,
+):
+    """Test that the keycloak action (kc_action) is saved to the session."""
+    oidcclient_factory(
+        client_id="test_client",
+        redirect_uris=['https://tunnistamo.test/redirect_uri'],
+        response_types=["id_token"]
+    )
+
+    url = reverse('authorize')
+
+    data = {
+        'client_id': 'test_client',
+        'response_type': 'id_token',
+        'redirect_uri': 'https://tunnistamo.test/redirect_uri',
+        'scope': 'openid',
+        'response_mode': 'form_post',
+        'nonce': 'abcdefg'
+    }
+
+    if kc_action:
+        data["kc_action"] = kc_action
+
+    client.get(url, data)
+
+    if kc_action:
+        session_kc_action = client.session.get("oidc_authorize_kc_action")
+        assert session_kc_action == kc_action
+    else:
+        assert "oidc_authorize_kc_action" not in client.session
+
+
+@pytest.mark.django_db
+def test_kc_action_is_passed_to_helsinki_tunnistus_authentication_service(
+    settings,
+    oidcclient_factory,
+):
+    settings.SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_OIDC_ENDPOINT = 'https://heltunnistussuomifi.example.com'
+    django_client = CancelExampleComRedirectClient()
+
+    state = get_random_string()
+    kc_action = "UPDATE_PASSWORD"
+    start_oidc_authorize(
+        django_client,
+        oidcclient_factory,
+        backend_name=HelsinkiTunnistus.name,
+        extra_authorize_params={'state': state, 'kc_action': kc_action},
+    )
+
+    assert len(django_client.intercepted_requests) == 1
+    intercepted_request = django_client.intercepted_requests[0]
+    assert intercepted_request["path"] == '/authorize'
+    assert intercepted_request["data"].get("kc_action") == kc_action
 
 
 @pytest.mark.django_db
