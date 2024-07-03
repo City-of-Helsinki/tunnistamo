@@ -166,9 +166,9 @@ class TunnistamoOidcAuthorizeView(AuthorizeView):
     def get(self, request, *args, **kwargs):
         request.GET = _extend_scope_in_query_params(request.GET)
 
-        if request.GET.get('client_id'):
+        if client_id := request.GET.get("client_id"):
             try:
-                client = Client.objects.get(client_id=request.GET.get('client_id'))
+                client = Client.objects.get(client_id=client_id)
 
                 # Save the client_id to the session to be used in the HelsinkiTunnistus
                 # social auth backend.
@@ -177,6 +177,10 @@ class TunnistamoOidcAuthorizeView(AuthorizeView):
                 # We don't care if the client wasn't found because the client will be
                 # validated again in the parent get method.
                 pass
+
+        # Keycloak action passthrough
+        if kc_action := request.GET.get("kc_action"):
+            request.session["oidc_authorize_kc_action"] = kc_action
 
         return super().get(request, *args, **kwargs)
 
