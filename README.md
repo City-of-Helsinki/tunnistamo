@@ -62,7 +62,7 @@ modify them in the same file by adding these lines:
 ```
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'custom_database',
         'USER': 'custom_user',
         'PASSWORD': 'your_password',
