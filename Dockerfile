@@ -1,5 +1,5 @@
 # =========================================================
-FROM helsinkitest/python-node:3.9-14-slim as staticbuilder
+FROM helsinkitest/python-node:3.9-14-slim AS staticbuilder
 # ---------------------------------------------------------
 # Stage for building static files for
 # the project. Installs Node as that
@@ -29,7 +29,7 @@ RUN python manage.py compilescss \
     && python manage.py collectstatic --noinput
 
 # ===========================================
-FROM helsinkitest/python:3.9-slim as appbase
+FROM helsinkitest/python:3.9-slim AS appbase
 # ===========================================
 
 WORKDIR /app
@@ -72,7 +72,7 @@ USER appuser
 RUN python manage.py compilemessages
 
 # =========================
-FROM appbase as development
+FROM appbase AS development
 # =========================
 
 COPY --chown=appuser:appuser requirements-dev.txt /app/requirements-dev.txt
@@ -84,7 +84,7 @@ USER appuser
 EXPOSE 8000/tcp
 
 # ==========================
-FROM appbase as production
+FROM appbase AS production
 # ==========================
 
 USER appuser
