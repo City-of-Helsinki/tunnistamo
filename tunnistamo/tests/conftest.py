@@ -80,7 +80,7 @@ def social_login(settings, test_client=None, trust_loa=True):
         'backend': DummyFixedOidcBackend.name
     })
 
-    state_value = get_random_string()
+    state_value = get_random_string(12)
     session = test_client.session
     session[f'{DummyFixedOidcBackend.name}_state'] = state_value
     session.save()
@@ -97,7 +97,7 @@ def create_oidc_clients_and_api():
     oidc_client = OidcClient.objects.create(
         name='Test Client',
         client_id='test_client',
-        client_secret=get_random_string(),
+        client_secret=get_random_string(12),
         require_consent=False,
         _scope='profile token_introspection'
     )
@@ -153,7 +153,7 @@ def get_tokens(test_client, oidc_client, response_type, scopes=None, fetch_token
         'scope': ' '.join(scopes),
         'response_type': response_type,
         'response_mode': 'form_post',
-        'nonce': get_random_string(),
+        'nonce': get_random_string(12),
     }
 
     response = test_client.get(authorize_url, authorize_request_data, follow=False)

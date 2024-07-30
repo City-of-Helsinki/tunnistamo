@@ -42,7 +42,7 @@ def test_authorize_endpoint(user, response_type, ended):
         'scope': 'openid profile',
         'response_type': response_type,
         'response_mode': 'form_post',
-        'nonce': get_random_string(),
+        'nonce': get_random_string(12),
     }
 
     response = django_test_client.get(authorize_url, authorize_request_data, follow=False)

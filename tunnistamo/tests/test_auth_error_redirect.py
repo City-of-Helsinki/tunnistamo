@@ -43,7 +43,7 @@ def test_redirect_to_client_after_social_auth_error(
     django_client = CancelExampleComRedirectClient(backend_name=HelsinkiTunnistus.name)
 
     # Start the OIDC flow.
-    state = get_random_string()
+    state = get_random_string(12)
     oidc_client = start_oidc_authorize(
         django_client,
         oidcclient_factory,

@@ -11,7 +11,7 @@ from oidc_provider.lib.utils.token import create_code
 @pytest.mark.django_db
 @pytest.mark.parametrize('code_verifier,should_succeed', (
     ('', False),
-    pytest.param(get_random_string(), True, id='random_string'),
+    pytest.param(get_random_string(12), True, id='random_string'),
 ))
 def test_token_endpoint_requires_code_verifier(
     client,
@@ -32,7 +32,7 @@ def test_token_endpoint_requires_code_verifier(
     tunnistamo_session = tunnistamosession_factory(user=user)
     oidc_client = oidcclient_factory(redirect_uris=['https://example.com/callback'])
 
-    nonce = get_random_string()
+    nonce = get_random_string(12)
     code_challenge = urlsafe_b64encode(
         hashlib.sha256(code_verifier.encode('ascii')).digest()
     ).decode('utf-8').replace('=', '')
