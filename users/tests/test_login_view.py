@@ -71,7 +71,7 @@ def test_login_view_ignore_unknown_app(client, loginmethod_factory, application_
     loginmethod_factory(provider_id='facebook')
 
     params = {
-        "next": "http://example.com/?client_id={}".format(get_random_string()),
+        "next": "http://example.com/?client_id={}".format(get_random_string(12)),
     }
 
     response = client.get('/login/', params)

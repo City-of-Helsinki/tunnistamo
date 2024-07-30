@@ -12,7 +12,7 @@ def link_to_url_found_in_response(response, url):
 
 @pytest.mark.django_db
 def test_logout(client, user_factory):
-    password = get_random_string()
+    password = get_random_string(12)
     user = user_factory(password=password)
 
     client.login(username=user.username, password=password)
@@ -54,7 +54,7 @@ def test_logout_redirect_next(client, user_factory, _next, expected, application
 @pytest.mark.parametrize('_next', (
     None,
     '',
-    pytest.param(get_random_string(), id='random_string'),
+    pytest.param(get_random_string(12), id='random_string'),
     12345,
     '//example.com',
     '/foo',
@@ -83,7 +83,7 @@ def test_logout_redirect_next_authenticated(client, user_factory, application_fa
     app = application_factory(post_logout_redirect_uris='http://example.com/', redirect_uris=['http://example.com/'])
     app.save()
 
-    password = get_random_string()
+    password = get_random_string(12)
     user = user_factory(password=password)
 
     client.login(username=user.username, password=password)
@@ -109,7 +109,7 @@ def test_logout_redirect_to_third_party_oidc_end_session(
     )
     settings.SOCIAL_AUTH_DUMMYOIDCBACKEND_REDIRECT_LOGOUT_TO_END_SESSION = redirect_enabled_in_backend
 
-    password = get_random_string()
+    password = get_random_string(12)
     user = user_factory(password=password)
 
     usersocialauth_factory(provider='dummyoidcbackend', user=user)
@@ -140,7 +140,7 @@ def test_logout_redirect_to_third_party_oidc_end_session_with_id_token_hint(
     )
     settings.SOCIAL_AUTH_DUMMYOIDCBACKEND_REDIRECT_LOGOUT_TO_END_SESSION = True
 
-    password = get_random_string()
+    password = get_random_string(12)
     user = user_factory(password=password)
 
     usersocialauth_factory(
@@ -179,7 +179,7 @@ def test_logout_redirect_to_third_party_oidc_end_session_retain_post_logout_redi
         redirect_uris=['https://example.com/']
     )
 
-    password = get_random_string()
+    password = get_random_string(12)
     user = user_factory(password=password)
 
     usersocialauth_factory(provider='dummyoidcbackend', user=user)
@@ -221,7 +221,7 @@ def test_logout_redirect_to_two_third_party_oidc_end_sessions(
         redirect_uris=['https://example.com/']
     )
 
-    password = get_random_string()
+    password = get_random_string(12)
     user = user_factory(password=password)
 
     usersocialauth_factory(provider='dummyoidcbackend', user=user)

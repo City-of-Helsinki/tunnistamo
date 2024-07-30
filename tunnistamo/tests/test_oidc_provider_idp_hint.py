@@ -27,7 +27,7 @@ def test_idp_hint_is_kept_when_redirecting_to_login_view(client, user, is_authen
         'scope': 'openid',
         'response_type': response_type,
         'response_mode': 'form_post',
-        'nonce': get_random_string(),
+        'nonce': get_random_string(12),
         'idp_hint': idp_hint_value,
     }
     if prompt:

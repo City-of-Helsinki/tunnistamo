@@ -29,7 +29,7 @@ def dummy_backend(settings):
 
 
 def request_social_complete(client):
-    state_value = get_random_string()
+    state_value = get_random_string(12)
     session = client.session
     session[f'{DummyFixedOidcBackend.name}_state'] = state_value
     session.save()

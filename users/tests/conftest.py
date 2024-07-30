@@ -56,9 +56,9 @@ def user_factory():
     User = get_user_model()  # NOQA
 
     def make_instance(**kwargs):
-        kwargs.setdefault('username', get_random_string())
-        kwargs.setdefault('password', get_random_string())
-        kwargs.setdefault('email', u'{}@example.com'.format(get_random_string()))
+        kwargs.setdefault('username', get_random_string(12))
+        kwargs.setdefault('password', get_random_string(12))
+        kwargs.setdefault('email', u'{}@example.com'.format(get_random_string(12)))
 
         instance = User.objects.create(**kwargs)
         instance.set_password(kwargs.pop('password'))
@@ -72,7 +72,7 @@ def user_factory():
 @pytest.fixture()
 def usersocialauth_factory():
     def make_instance(**kwargs):
-        kwargs.setdefault('uid', get_random_string())
+        kwargs.setdefault('uid', get_random_string(12))
 
         return UserSocialAuth.objects.create(**kwargs)
 
@@ -82,8 +82,8 @@ def usersocialauth_factory():
 @pytest.fixture()
 def application_factory():
     def make_instance(**kwargs):
-        kwargs.setdefault('name', get_random_string())
-        kwargs.setdefault('client_id', get_random_string())
+        kwargs.setdefault('name', get_random_string(12))
+        kwargs.setdefault('client_id', get_random_string(12))
         kwargs.setdefault('user', None)
         kwargs.setdefault('redirect_uris', '')
         kwargs.setdefault('client_type', Application.CLIENT_PUBLIC)
@@ -97,9 +97,9 @@ def application_factory():
 @pytest.fixture()
 def oidcclient_factory():
     def make_instance(**kwargs):
-        kwargs.setdefault('name', get_random_string())
+        kwargs.setdefault('name', get_random_string(12))
         kwargs.setdefault('client_type', 'public')
-        kwargs.setdefault('client_id', get_random_string())
+        kwargs.setdefault('client_id', get_random_string(12))
         kwargs.setdefault('redirect_uris', list())
 
         response_types = kwargs.pop('response_types', ['id_token token'])
@@ -126,7 +126,7 @@ def oidcclientoptions_factory():
 def loginmethod_factory():
     def make_instance(**kwargs):
         kwargs.setdefault('provider_id', None)
-        kwargs.setdefault('name', get_random_string())
+        kwargs.setdefault('name', get_random_string(12))
         kwargs.setdefault('order', 1)
 
         return LoginMethod.objects.create(**kwargs)
@@ -221,15 +221,15 @@ class DummyOidcBackend2(DummyOidcBackendBase):
 
 def create_id_token(backend, **kwargs):
     kwargs.setdefault('iss', backend.oidc_config().get('issuer'))
-    kwargs.setdefault('sub', get_random_string())
+    kwargs.setdefault('sub', get_random_string(12))
     kwargs.setdefault('aud', backend.setting('KEY'))
     kwargs.setdefault('azp', backend.setting('KEY'))
     kwargs.setdefault('exp', int(time.time()) + 60 * 5)
     kwargs.setdefault('iat', int(time.time()) - 10)
-    kwargs.setdefault('jti', get_random_string())
-    kwargs.setdefault('name', get_random_string())
-    kwargs.setdefault('given_name', get_random_string())
-    kwargs.setdefault('family_name', get_random_string())
+    kwargs.setdefault('jti', get_random_string(12))
+    kwargs.setdefault('name', get_random_string(12))
+    kwargs.setdefault('given_name', get_random_string(12))
+    kwargs.setdefault('family_name', get_random_string(12))
 
     keys = []
     for rsakey in RSAKey.objects.all():
@@ -269,7 +269,7 @@ class DummyFixedOidcBackend(DummyOidcBackendBase):
 
     def get_json(self, url, *args, **kwargs):
         if url == self.oidc_config()['token_endpoint']:
-            nonce = self.get_and_store_nonce(self.authorization_url(), get_random_string())
+            nonce = self.get_and_store_nonce(self.authorization_url(), get_random_string(12))
             id_token = create_id_token(
                 self,
                 nonce=nonce,

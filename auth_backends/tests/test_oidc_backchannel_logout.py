@@ -227,7 +227,7 @@ def test_logout_token_extra_nonce(
 ):
     logout_token = logout_token_factory(
         backend,
-        nonce=get_random_string(),
+        nonce=get_random_string(12),
     )
     backend.strategy.logout_token = logout_token
 
@@ -245,7 +245,7 @@ def test_logout_token_no_social_auth(
 ):
     logout_token = logout_token_factory(
         backend,
-        sub=get_random_string(),
+        sub=get_random_string(12),
     )
     backend.strategy.logout_token = logout_token
 
@@ -269,7 +269,7 @@ def test_backchannel_logout_not_implemented_in_backend(
 
     reload_social_django_utils()
 
-    password = get_random_string()
+    password = get_random_string(12)
     user = user_factory(password=password)
     usersocialauth_factory(provider='dummyoidcbackend', user=user)
 
@@ -310,7 +310,7 @@ def test_backchannel_successful_logout(
 
     reload_social_django_utils()
 
-    password = get_random_string()
+    password = get_random_string(12)
     user = user_factory(password=password)
 
     backend = DummyOidcBackchannelLogoutBackend()
@@ -367,7 +367,7 @@ def test_backchannel_logout_no_social_auth(
 
     reload_social_django_utils()
 
-    password = get_random_string()
+    password = get_random_string(12)
     user = user_factory(password=password)
 
     backend = DummyOidcBackchannelLogoutBackend()
@@ -416,9 +416,9 @@ def test_backchannel_successful_logout_other_session_unaffected(
 
     reload_social_django_utils()
 
-    password = get_random_string()
+    password = get_random_string(12)
     user = user_factory(password=password)
-    password2 = get_random_string()
+    password2 = get_random_string(12)
     user2 = user_factory(password=password2)
 
     backend = DummyOidcBackchannelLogoutBackend()

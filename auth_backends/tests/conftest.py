@@ -33,10 +33,10 @@ class DummyOidcBackchannelLogoutBackend(
 
 def create_backend_logout_token(backend, **kwargs):
     kwargs.setdefault('iss', backend.oidc_config().get('issuer'))
-    kwargs.setdefault('sub', get_random_string())
+    kwargs.setdefault('sub', get_random_string(12))
     kwargs.setdefault('aud', backend.setting('KEY'))
     kwargs.setdefault('iat', int(time.time()) - 10)
-    kwargs.setdefault('jti', get_random_string())
+    kwargs.setdefault('jti', get_random_string(12))
     kwargs.setdefault('events', {
         'http://schemas.openid.net/event/backchannel-logout': {},
     })

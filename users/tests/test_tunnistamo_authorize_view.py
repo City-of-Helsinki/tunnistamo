@@ -161,7 +161,7 @@ def test_original_client_id_is_passed_to_helsinki_tunnistus_authentication_servi
     settings.SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_OIDC_ENDPOINT = 'https://heltunnistussuomifi.example.com'
     django_client = CancelExampleComRedirectClient()
 
-    state = get_random_string()
+    state = get_random_string(12)
     oidc_client = start_oidc_authorize(
         django_client,
         oidcclient_factory,
@@ -182,7 +182,7 @@ def test_ui_locales_parameter_of_authorize_request_is_passed_to_helsinki_tunnist
     settings.SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_OIDC_ENDPOINT = 'https://heltunnistussuomifi.example.com'
     django_client = CancelExampleComRedirectClient()
 
-    state = get_random_string()
+    state = get_random_string(12)
     ui_locales = "this can be whatever"
     start_oidc_authorize(
         django_client,
@@ -242,7 +242,7 @@ def test_kc_action_is_passed_to_helsinki_tunnistus_authentication_service(
     settings.SOCIAL_AUTH_HELTUNNISTUSSUOMIFI_OIDC_ENDPOINT = 'https://heltunnistussuomifi.example.com'
     django_client = CancelExampleComRedirectClient()
 
-    state = get_random_string()
+    state = get_random_string(12)
     kc_action = "UPDATE_PASSWORD"
     start_oidc_authorize(
         django_client,
