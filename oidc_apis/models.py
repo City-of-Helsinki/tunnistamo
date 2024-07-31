@@ -5,7 +5,7 @@ from django.utils.crypto import get_random_string
 from django.utils.translation import gettext_lazy as _
 from multiselectfield import MultiSelectField
 from oidc_provider.models import Client
-from parler.fields import TranslatedField
+from parler.fields import TranslatedField, TranslationsForeignKey
 from parler.managers import TranslatableQuerySet
 from parler.models import TranslatableModel, TranslatedFieldsModel
 
@@ -193,7 +193,7 @@ class ApiScope(AutoFilledIdentifier, ImmutableFields, TranslatableModel):
 
 
 class ApiScopeTranslation(TranslatedFieldsModel):
-    master = models.ForeignKey(
+    master = TranslationsForeignKey(
         ApiScope, related_name='translations', null=True,
         on_delete=models.CASCADE,
         verbose_name=_("API scope"))
