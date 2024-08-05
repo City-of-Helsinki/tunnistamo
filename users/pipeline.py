@@ -337,3 +337,18 @@ def associate_between_helsinki_on_prem_ad_and_azure_ad(backend, details, user=No
         return {
             'user': existing_social_auth.user,
         }
+
+
+def save_kc_action_status_to_session(backend, strategy, *args, **kwargs):
+    """When a Keycloak action status is present save it to the session."""
+    if isinstance(backend, (HelsinkiTunnus, HelsinkiTunnistus)) and (
+        kc_action_status := strategy.request_data().get("kc_action_status")
+    ):
+        logger.debug(
+            f"kc_action_status {kc_action_status} in pipeline. Backend: {backend.name}."
+        )
+        strategy.session_set("kc_action_status", kc_action_status)
+    else:
+        strategy.session_pop("kc_action_status")
+
+    return

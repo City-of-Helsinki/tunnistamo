@@ -514,6 +514,9 @@ SOCIAL_AUTH_PIPELINE = (
 
     # Add loa to Tunnistamo Session
     'users.pipeline.add_loa_to_tunnistamo_session',
+
+    # Save status of the Keycloak action to session
+    'users.pipeline.save_kc_action_status_to_session',
 )
 
 ALLOW_DUPLICATE_EMAILS = env("ALLOW_DUPLICATE_EMAILS")

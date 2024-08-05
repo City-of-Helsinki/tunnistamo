@@ -33,6 +33,22 @@ class TunnistamoSessionEndpointMixin:
 
 
 class TunnistamoAuthorizeEndpoint(TunnistamoSessionEndpointMixin, AuthorizeEndpoint):
+
+    def __init__(self, request):
+        super().__init__(request)
+
+        if kc_value := self.request.session.get("kc_action_status"):
+            self.params["kc_action_status"] = kc_value
+
+    def create_response_uri(self):
+        """Add the status of the Keycloak action the callback url."""
+        uri = super().create_response_uri()
+
+        if kc_value := self.params.get("kc_action_status"):
+            uri = add_params_to_url(uri, {"kc_action_status": kc_value})
+
+        return uri
+
     def _get_tunnistamo_session(self):
         tunnistamo_session_id = self.request.session.get("tunnistamo_session_id")
         if not tunnistamo_session_id:

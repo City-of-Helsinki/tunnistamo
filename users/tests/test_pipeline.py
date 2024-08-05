@@ -1,5 +1,8 @@
+from urllib.parse import urlencode
+
 import pytest
 from django.contrib import auth
+from django.contrib.sessions.middleware import SessionMiddleware
 from django.urls import reverse
 from django.utils.crypto import get_random_string
 from social_core.exceptions import AuthFailed
@@ -7,7 +10,7 @@ from social_django.models import UserSocialAuth
 from social_django.utils import load_backend, load_strategy
 
 from tunnistamo.tests.conftest import create_rsa_key, reload_social_django_utils
-from users.pipeline import association_by_keycloak_uuid, update_ad_groups
+from users.pipeline import association_by_keycloak_uuid, save_kc_action_status_to_session, update_ad_groups
 from users.tests.conftest import DummyFixedOidcBackend
 
 
@@ -103,3 +106,31 @@ def test_association_by_keycloak_uuid(login_backend, existing_backend, user, exp
         assert pipeline_data == {"user": user}
     else:
         assert pipeline_data is None
+
+
+@pytest.mark.parametrize(
+    "backend_name,expected",
+    (
+        ("heltunnistussuomifi", "success"),
+        ("helsinki_tunnus", "success"),
+        ("helsinki_adfs", None),
+    ),
+    ids=repr,
+)
+def test_save_kc_action_status_to_session(backend_name, expected, rf):
+    uri = "{}?{}".format(
+        reverse("social:complete", kwargs={"backend": backend_name}),
+        urlencode(
+            {
+                "kc_action_status": "success",
+            }
+        ),
+    )
+    request = rf.get(uri)
+    SessionMiddleware(get_response=lambda response: response).process_request(request)
+    strategy = load_strategy(request)
+    backend = load_backend(strategy, backend_name, uri)
+
+    save_kc_action_status_to_session(backend, strategy)
+
+    assert strategy.session_get("kc_action_status") == expected
