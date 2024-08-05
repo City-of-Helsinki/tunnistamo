@@ -59,6 +59,38 @@ def test_authorize_endpoint(user, response_type, ended):
 
 
 @pytest.mark.django_db
+def test_authorize_endpoint_redirect_url_contains_kc_action_status_parameter(user):
+    django_test_client = DjangoTestClient()
+    django_test_client.force_login(user)
+    oidc_client = create_oidc_clients_and_api()
+
+    authorize_url = reverse("authorize")
+
+    authorize_request_data = {
+        "client_id": oidc_client.client_id,
+        "redirect_uri": oidc_client.redirect_uris[0],
+        "scope": "openid profile",
+        "response_type": "code",
+        "response_mode": "form_post",
+        "nonce": get_random_string(12),
+    }
+
+    # Add the expected parameters to the session which would be added in the social
+    # auth pipeline.
+    session = django_test_client.session
+    session.update({"kc_action_status": "success"})
+    session.save()
+
+    response = django_test_client.get(
+        authorize_url, authorize_request_data, follow=False
+    )
+
+    assert response.status_code == 302, response["Location"]
+
+    assert "kc_action_status=success" in response["Location"]
+
+
+@pytest.mark.django_db
 @pytest.mark.parametrize('response_type', [
     'code',
     # 'id_token',  # Cannot fetch id_token without an access code
