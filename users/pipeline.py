@@ -2,7 +2,7 @@ import logging
 import uuid
 
 from django.conf import settings
-from django.contrib.auth import get_user_model, logout
+from django.contrib.auth import REDIRECT_FIELD_NAME, get_user_model, logout
 from django.shortcuts import render
 from django.urls import reverse
 from helusers.utils import uuid_to_username
@@ -256,10 +256,10 @@ def check_existing_social_associations(backend, strategy, user=None, social=None
                      ' with a different user. Log out and fail the login.')
         # Save the existing next value from the session and add it back after log out
         # so that InterruptedSocialAuthMiddleware can redirect back to the OIDC client
-        next_url = strategy.session.get('next')
+        next_url = strategy.session_get(REDIRECT_FIELD_NAME)
         logout(request)
         if next_url:
-            strategy.session_set('next', next_url)
+            strategy.session_set(REDIRECT_FIELD_NAME, next_url)
 
         raise AuthFailed(backend, 'Duplicate login')
 
