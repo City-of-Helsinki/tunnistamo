@@ -228,6 +228,53 @@ def set_language_cookie(response):
     return response
 
 
+class TunnistamoSuomiFiEndSessionView(EndSessionView):
+    def __init__(self, suomifi_social_user=None, **kwargs):
+        super().__init__(**kwargs)
+        self.social_user = suomifi_social_user
+        self.user = None
+
+    def dispatch(self, request, *args, **kwargs):
+        self.request = request
+        if not self.user:
+            self.user = request.user
+
+        response = super().dispatch(request, *args, **kwargs)
+        return self._create_suomifi_logout_response(request, response.url)
+
+    def _create_suomifi_logout_response(self, request, redirect_url):
+        """Creates Suomi.fi logout redirect response for given social_user
+        and removes all related OIDC tokens. The user is directed to redirect_url
+        after succesful Suomi.fi logout.
+        """
+        token = ""
+        saml_backend = load_backend(
+            load_strategy(request),
+            "suomifi",
+            redirect_uri=getattr(settings, "LOGIN_URL")
+        )
+
+        id_token_hint = request.GET.get("id_token_hint")
+        if id_token_hint:
+            client_id = client_id_from_id_token(id_token_hint)
+            try:
+                client = Client.objects.get(client_id=client_id)
+                if redirect_url in client.post_logout_redirect_uris:
+                    token = saml_backend.create_return_token(
+                        client_id,
+                        client.post_logout_redirect_uris.index(redirect_url))
+            except Client.DoesNotExist:
+                pass
+
+        response = saml_backend.create_logout_redirect(self.social_user, token)
+
+        for token in Token.objects.filter(user=self.user):
+            if token.id_token.get("aud") == client_id:
+                token.delete()
+
+        return response
+
+
 class TunnistamoOidcEndSessionView(EndSessionView):
     def _validate_client_uri(self, uri):
         """Valid post logout URIs are explicitly managed in the database via
@@ -398,8 +445,10 @@ class TunnistamoOidcEndSessionView(EndSessionView):
         if suomifi_social_user is not None:
             # Case 1: Suomi.fi
             # create Suomi.fi logout redirect if needed
-            response = super(TunnistamoOidcEndSessionView, self).dispatch(request, *args, **kwargs)
-            return self._create_suomifi_logout_response(suomifi_social_user, user, request, response.url)
+            # Use the Suomi.fi end session view to handle the logout.
+
+            suomi_fi_end_session_view = TunnistamoSuomiFiEndSessionView(suomifi_social_user=suomifi_social_user)
+            return suomi_fi_end_session_view.dispatch(request, *args, **kwargs)
 
         # Case 2: default case
         if oidc_original_post_logout_redirect_uri:
@@ -436,39 +485,6 @@ class TunnistamoOidcEndSessionView(EndSessionView):
             return HttpResponseRedirect(next_page)
 
         return super(EndSessionView, self).dispatch(request, *args, **kwargs)
-
-    @staticmethod
-    def _create_suomifi_logout_response(social_user, user, request, redirect_url):
-        """Creates Suomi.fi logout redirect response for given social_user
-        and removes all related OIDC tokens. The user is directed to redirect_url
-        after succesful Suomi.fi logout.
-        """
-        token = ''
-        saml_backend = load_backend(
-            load_strategy(request),
-            'suomifi',
-            redirect_uri=getattr(settings, 'LOGIN_URL')
-        )
-
-        id_token_hint = request.GET.get('id_token_hint')
-        if id_token_hint:
-            client_id = client_id_from_id_token(id_token_hint)
-            try:
-                client = Client.objects.get(client_id=client_id)
-                if redirect_url in client.post_logout_redirect_uris:
-                    token = saml_backend.create_return_token(
-                        client_id,
-                        client.post_logout_redirect_uris.index(redirect_url))
-            except Client.DoesNotExist:
-                pass
-
-        response = saml_backend.create_logout_redirect(social_user, token)
-
-        for token in Token.objects.filter(user=user):
-            if token.id_token.get('aud') == client_id:
-                token.delete()
-
-        return response
 
     # Override the get and post methods to keep the functionality same as prior django 4.1
     def post(self, request, *args, **kwargs):
