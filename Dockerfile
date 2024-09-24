@@ -9,6 +9,8 @@ FROM helsinkitest/python-node:3.9-14-slim AS staticbuilder
 RUN apt-install.sh \
       libxmlsec1-dev \
       libxml2-dev \
+      libxslt-dev \
+      zlib1g-dev \
       pkg-config \
       git \
       curl \
@@ -48,6 +50,8 @@ RUN apt-install.sh \
       git \
       libxmlsec1-dev \
       libxml2-dev \
+      libxslt-dev \
+      zlib1g-dev \
       netcat-openbsd \
       pkg-config \
     && pip install -U pip setuptools wheel \
@@ -74,6 +78,10 @@ RUN python manage.py compilemessages
 # =========================
 FROM appbase AS development
 # =========================
+
+USER root
+RUN apt-install.sh build-essential
+USER appuser
 
 COPY --chown=appuser:appuser requirements-dev.txt /app/requirements-dev.txt
 RUN pip install --no-cache-dir -r /app/requirements-dev.txt
