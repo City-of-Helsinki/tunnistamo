@@ -52,13 +52,13 @@ RUN apt-install.sh \
       pkg-config \
     && pip install -U pip setuptools wheel \
     && pip install --no-cache-dir  -r /app/requirements.txt \
-    && pip install --no-cache-dir  -r /app/requirements-prod.txt \
+    && UWSGI_PROFILE_OVERRIDE="ssl=false" pip install --no-cache-dir  -r /app/requirements-prod.txt \
     && apt-cleanup.sh build-essential pkg-config
 
 COPY docker-entrypoint.sh /app
 ENTRYPOINT ["./docker-entrypoint.sh"]
 
-# STore static files under /var to not conflict with development volume mount
+# Store static files under /var to not conflict with development volume mount
 ENV STATIC_ROOT /var/tunnistamo/static
 ENV MEDIA_ROOT /var/tunnistamo/media
 ENV NODE_MODULES_ROOT /var/tunnistamo/node_modules
