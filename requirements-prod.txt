@@ -4,5 +4,8 @@
 #
 #    pip-compile --strip-extras requirements-prod.in
 #
+--no-binary lxml
+--no-binary xmlsec
+
 uwsgi==2.0.26
     # via -r requirements-prod.in
