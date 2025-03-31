@@ -1,3 +1,5 @@
+⚠️ **This repository is archived and no longer maintained. Helsinki Tunnistamo was replaced by Helsinki-profiili.**
+
 ![Build status](https://github.com/City-of-Helsinki/tunnistamo/actions/workflows/ci.yml/badge.svg)
 [![codecov](https://codecov.io/gh/City-of-Helsinki/tunnistamo/branch/master/graph/badge.svg)](https://codecov.io/gh/City-of-Helsinki/tunnistamo)
 [![Requirements](https://requires.io/github/City-of-Helsinki/tunnistamo/requirements.svg?branch=master)](https://requires.io/github/City-of-Helsinki/tunnistamo/requirements/?branch=master)
